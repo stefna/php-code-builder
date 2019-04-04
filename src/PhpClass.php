@@ -37,8 +37,8 @@ class PhpClass extends PhpTrait
 	 */
 	public function __construct(
 		string $identifier,
-		string $extends = '',
-		PhpDocComment $comment = null,
+		?string $extends = null,
+		?PhpDocComment $comment = null,
 		bool $final = false,
 		bool $abstract = false,
 		array $implements = []
