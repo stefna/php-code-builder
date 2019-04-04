@@ -41,6 +41,10 @@ class PhpConstant extends PhpElement
 		$name = $this->identifier;
 		switch ($this->case) {
 			case self::CASE_UPPER:
+			case self::CASE_LOWER:
+				$name = preg_replace('/(?<!^)[A-Z]/', '_$0', $name);
+				//Use this to make sure name are readable
+			case self::CASE_UPPER:
 				$name = strtoupper($name);
 				break;
 			case self::CASE_LOWER:
@@ -48,7 +52,8 @@ class PhpConstant extends PhpElement
 				break;
 		}
 
-		$ret .= "const $name = {$this->value};";
+		$value = FormatValue::format($this->value);
+		$ret .= "const $name = {$value};";
 
 		return $this->getSourceRow($ret);
 	}

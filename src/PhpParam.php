@@ -42,23 +42,7 @@ class PhpParam
 		$ret .= $this->type ? $this->type . ' ' : '';
 		$ret .= '$' . $this->name;
 		if ($this->value !== self::NO_VALUE) {
-			$value = $this->value;
-			switch (gettype($this->value)) {
-				case 'boolean':
-					$value = $value ? 'true' : 'false';
-					break;
-				case 'NULL':
-					$value = 'null';
-					break;
-				case 'string':
-					$value = "'$value'";
-					break;
-				case 'array':
-					$value = '[]';
-					break;
-			}
-
-			$ret .= ' = ' . $value;
+			$ret .= ' = ' . FormatValue::format($this->value);
 		}
 
 		return $ret;

@@ -11,6 +11,8 @@ namespace Stefna\PhpCodeBuilder;
  */
 class PhpVariable extends PhpElement
 {
+	private const NO_VALUE = '__PhpVariable_NoValue__';
+
 	/** @var PhpDocComment|null */
 	private $comment;
 
@@ -23,17 +25,10 @@ class PhpVariable extends PhpElement
 	/** @var bool */
 	private $static = false;
 
-	/**
-	 * @param string $access
-	 * @param string $identifier
-	 * @param string $initialization The value to set the variable at initialization
-	 * @param string $type
-	 * @param PhpDocComment $comment
-	 */
 	public function __construct(
 		string $access,
 		string $identifier,
-		string $initialization = '',
+		$value = self::NO_VALUE,
 		string $type = '',
 		PhpDocComment $comment = null
 	) {
@@ -43,7 +38,7 @@ class PhpVariable extends PhpElement
 		$this->comment = $comment;
 		$this->access = $access;
 		$this->identifier = $identifier;
-		$this->initializedValue = $initialization ? ' = ' . $initialization : '';
+		$this->initializedValue = $value;
 		$this->type = $type;
 	}
 
@@ -70,7 +65,12 @@ class PhpVariable extends PhpElement
 		if ($this->type && PHP_VERSION_ID >= 70400) {
 			$dec .= ' ' . $this->type;
 		}
-		$dec .= ' $' . $this->identifier . $this->initializedValue . ';';
+
+		$dec .= ' $' . $this->identifier;
+		if ($this->initializedValue !== self::NO_VALUE) {
+			$dec .= ' = ' . FormatValue::format($this->initializedValue);
+		}
+		$dec .= ';';
 
 		$sourceRow = $this->getSourceRow($dec);
 		// Strip unnecessary null as default value
@@ -88,6 +88,6 @@ class PhpVariable extends PhpElement
 
 	public function getInitializedValue(): string
 	{
-		return $this->initializedValue;
+		return $this->initializedValue === self::NO_VALUE ? '' : $this->initializedValue;
 	}
 }
