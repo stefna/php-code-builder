@@ -30,6 +30,9 @@ class PhpParam
 				case 'boolean':
 					$value = $value ? 'true' : 'false';
 					break;
+				case 'NULL':
+					$value = 'null';
+					break;
 				case 'string':
 					$value = "'$value'";
 					break;
