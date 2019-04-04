@@ -19,6 +19,9 @@ class PhpParam
 
 	public function __construct(string $type, string $name, $value = self::NO_VALUE)
 	{
+		if ($name[0] === '$') {
+			$name = substr($name, 1);
+		}
 		$this->name = $name;
 		$this->value = $value;
 
