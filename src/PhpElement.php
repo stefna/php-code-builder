@@ -84,6 +84,10 @@ abstract class PhpElement
 		return $ret;
 	}
 
+	/**
+	 * @param string $identifier
+	 * @return $this
+	 */
 	public function setIdentifier(string $identifier): self
 	{
 		$this->identifier = $identifier;
