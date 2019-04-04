@@ -6,22 +6,36 @@ class PhpParam
 {
 	private const NO_VALUE = '__PhpParam_NoValue__';
 
+	/** @var bool  */
+	private $allowNull = false;
+
 	/** @var string */
 	private $name;
+
 	/** @var string */
 	private $type;
+
 	private $value;
 
 	public function __construct(string $type, string $name, $value = self::NO_VALUE)
 	{
 		$this->name = $name;
 		$this->value = $value;
+
+		if ($type && $type[0] === '?') {
+			$this->allowNull = true;
+			$type = substr($type, 1);
+		}
+
 		$this->type = $type;
 	}
 
 	public function getSource(): string
 	{
 		$ret = '';
+		if ($this->allowNull && $this->type) {
+			$ret .= '?';
+		}
 		$ret .= $this->type ? $this->type . ' ' : '';
 		$ret .= '$' . $this->name;
 		if ($this->value !== self::NO_VALUE) {
@@ -70,5 +84,15 @@ class PhpParam
 	public function setValue($value): void
 	{
 		$this->value = $value;
+	}
+
+	public function allowNull(bool $flag): void
+	{
+		$this->allowNull = $flag;
+	}
+
+	public function isNullable(): bool
+	{
+		return $this->allowNull;
 	}
 }
