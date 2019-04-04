@@ -205,12 +205,6 @@ class PhpTrait extends PhpElement
 		return array_key_exists($identifier, $this->methods);
 	}
 
-	public function setExtends(string $extends): self
-	{
-		$this->extends = $extends;
-		return $this;
-	}
-
 	public function getVariable(string $identifier): ?PhpVariable
 	{
 		if (!$this->variableExists($identifier)) {
