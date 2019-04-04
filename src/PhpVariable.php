@@ -25,6 +25,9 @@ class PhpVariable extends PhpElement
 	/** @var bool */
 	private $static = false;
 
+	/** @var bool */
+	private $raw = false;
+
 	public function __construct(
 		string $access,
 		string $identifier,
@@ -62,13 +65,14 @@ class PhpVariable extends PhpElement
 		}
 
 		$dec = $this->access;
+		$dec .= $this->static ? ' static' : '';
 		if ($this->type && PHP_VERSION_ID >= 70400) {
 			$dec .= ' ' . $this->type;
 		}
 
 		$dec .= ' $' . $this->identifier;
 		if ($this->initializedValue !== self::NO_VALUE) {
-			$dec .= ' = ' . FormatValue::format($this->initializedValue);
+			$dec .= ' = ' . ($this->raw ? $this->initializedValue : FormatValue::format($this->initializedValue));
 		}
 		$dec .= ';';
 
@@ -89,5 +93,11 @@ class PhpVariable extends PhpElement
 	public function getInitializedValue(): string
 	{
 		return $this->initializedValue === self::NO_VALUE ? '' : $this->initializedValue;
+	}
+
+	public function enableRawValue(): self
+	{
+		$this->raw = true;
+		return $this;
 	}
 }
