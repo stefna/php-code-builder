@@ -12,7 +12,7 @@ namespace Stefna\PhpCodeBuilder;
 class PhpFunction extends PhpElement
 {
 	/** @var PhpParam[] */
-	private $params;
+	private $params = [];
 
 	/** @var string */
 	private $source;

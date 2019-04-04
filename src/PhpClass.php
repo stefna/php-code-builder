@@ -85,7 +85,7 @@ class PhpClass extends PhpTrait
 	protected function formatInheritance(): string
 	{
 		$ret = '';
-		if ($this->extends !== '') {
+		if ($this->extends) {
 			if (\strpos($this->extends, '\\') !== false) {
 				$this->extends = '\\' . ltrim($this->extends, '\\');
 			}
