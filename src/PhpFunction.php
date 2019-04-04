@@ -66,8 +66,13 @@ class PhpFunction extends PhpElement
 		return $ret;
 	}
 
-	public function addParam(string $name, ?string $type = null): self
+	public function addParam(string $name, $type = null): self
 	{
+		if (!is_array($type)) {
+			$type = [
+				'type' => $type,
+			];
+		}
 		$this->params[$name] = $type;
 
 		return $this;
@@ -126,10 +131,13 @@ class PhpFunction extends PhpElement
 		$parameterStrings = [];
 		foreach ($parameters as $name => $type) {
 			$parameterString = '$' . $name;
-			if (!empty($type) && $includeType) {
-				$parameterString = ($defaultNull ? '?' : '') . $type . ' ' . $parameterString;
+			if (!empty($type['type']) && $includeType) {
+				$parameterString = ($defaultNull ? '?' : '') . $type['type'] . ' ' . $parameterString;
 			}
-			if ($defaultNull) {
+			if (isset($type['value'])) {
+				$parameterString .= ' = '. $type['value'];
+			}
+			elseif ($defaultNull) {
 				$parameterString .= ' = null';
 			}
 			$parameterStrings[] = $parameterString;
