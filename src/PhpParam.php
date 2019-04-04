@@ -23,7 +23,7 @@ class PhpParam
 	{
 		$ret = '';
 		$ret .= $this->type ? $this->type . ' ' : '';
-		$ret .= $this->name;
+		$ret .= '$' . $this->name;
 		if ($this->value !== self::NO_VALUE) {
 			$value = $this->value;
 			switch (gettype($this->value)) {
