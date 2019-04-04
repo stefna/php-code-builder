@@ -20,6 +20,9 @@ class PhpVariable extends PhpElement
 	/** @var string */
 	private $type;
 
+	/** @var bool */
+	private $static = false;
+
 	/**
 	 * @param string $access
 	 * @param string $identifier
@@ -42,6 +45,12 @@ class PhpVariable extends PhpElement
 		$this->identifier = $identifier;
 		$this->initializedValue = $initialization ? ' = ' . $initialization : '';
 		$this->type = $type;
+	}
+
+	public function setStatic(): self
+	{
+		$this->static = true;
+		return $this;
 	}
 
 	/**
