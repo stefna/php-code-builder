@@ -11,7 +11,7 @@ namespace Stefna\PhpCodeBuilder;
  */
 class PhpFunction extends PhpElement
 {
-	/** @var string[] */
+	/** @var PhpParam[] */
 	private $params;
 
 	/** @var string */
@@ -38,11 +38,14 @@ class PhpFunction extends PhpElement
 		$this->comment = $comment;
 		$this->returnTypeHint = $returnTypeHint;
 		foreach ($params as $name => $type) {
-			if (is_string($name)) {
-				$this->addParam($name, $type);
+			if ($type instanceof PhpParam) {
+				$this->addParam($type);
+			}
+			elseif (is_string($name)) {
+				$this->addParam(new PhpParam($type, $name));
 			}
 			else {
-				$this->addParam($type);
+				$this->addParam(new PhpParam('', $type));
 			}
 		}
 	}
@@ -66,14 +69,9 @@ class PhpFunction extends PhpElement
 		return $ret;
 	}
 
-	public function addParam(string $name, $type = null): self
+	public function addParam(PhpParam $param): self
 	{
-		if (!is_array($type)) {
-			$type = [
-				'type' => $type,
-			];
-		}
-		$this->params[$name] = $type;
+		$this->params[$param->getName()] = $param;
 
 		return $this;
 	}
@@ -106,7 +104,6 @@ class PhpFunction extends PhpElement
 		return $this->getSourceRow($functionNameDefinition);
 	}
 
-
 	protected function formatFunctionBody(string $ret): string
 	{
 		if (!$this->isLongLine) {
@@ -121,26 +118,20 @@ class PhpFunction extends PhpElement
 		return $ret;
 	}
 
+	/**
+	 * @param int $baseLength
+	 * @param PhpParam[] $parameters
+	 * @param int $indent
+	 * @return string
+	 */
 	public static function buildParametersString(
 		int $baseLength,
 		array $parameters,
-		bool $includeType = true,
-		bool $defaultNull = false,
 		int $indent = 1
 	): string {
 		$parameterStrings = [];
-		foreach ($parameters as $name => $type) {
-			$parameterString = '$' . $name;
-			if (!empty($type['type']) && $includeType) {
-				$parameterString = ($defaultNull ? '?' : '') . $type['type'] . ' ' . $parameterString;
-			}
-			if (isset($type['value'])) {
-				$parameterString .= ' = '. $type['value'];
-			}
-			elseif ($defaultNull) {
-				$parameterString .= ' = null';
-			}
-			$parameterStrings[] = $parameterString;
+		foreach ($parameters as $param) {
+			$parameterStrings[] = $param->getSource();
 		}
 
 		$str = implode(', ', $parameterStrings);
