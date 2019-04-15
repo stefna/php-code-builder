@@ -14,7 +14,7 @@ class PhpFunction extends PhpElement
 	/** @var PhpParam[] */
 	private $params = [];
 
-	/** @var string */
+	/** @var string|array */
 	private $source;
 
 	/** @var PhpDocComment */
@@ -25,10 +25,17 @@ class PhpFunction extends PhpElement
 
 	private $isLongLine = false;
 
+	/**
+	 * @param string $identifier
+	 * @param array $params
+	 * @param array|string $source
+	 * @param PhpDocComment|null $comment
+	 * @param string|null $returnTypeHint
+	 */
 	public function __construct(
 		string $identifier,
 		array $params,
-		string $source,
+		$source,
 		PhpDocComment $comment = null,
 		?string $returnTypeHint = null
 	) {

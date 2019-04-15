@@ -15,11 +15,19 @@ class PhpMethod extends PhpFunction
 	private $static = false;
 	private $abstract = false;
 
+	/**
+	 * @param string $access
+	 * @param string $identifier
+	 * @param array $params
+	 * @param array|string $source
+	 * @param PhpDocComment|null $comment
+	 * @param string|null $returnTypeHint
+	 */
 	public function __construct(
 		string $access,
 		string $identifier,
 		array $params,
-		string $source,
+		$source,
 		PhpDocComment $comment = null,
 		?string $returnTypeHint = null
 	) {

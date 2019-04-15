@@ -60,28 +60,32 @@ abstract class PhpElement
 	 *
 	 * Has support for multiple lines
 	 *
-	 * @param string $source
+	 * @param string|array $source
 	 * @return string
 	 */
-	public function getSourceRow(string $source): string
+	public function getSourceRow($source): string
 	{
-		if (strpos($source, PHP_EOL) === false) {
+		if (is_string($source) && strpos($source, PHP_EOL) === false) {
 			return Indent::indent($this->indentionLevel) . $source . PHP_EOL;
 		}
 
-		$ret = '';
-		$rows = explode(PHP_EOL, $source);
-		if (trim($rows[0]) === '') {
-			$rows = array_splice($rows, 1);
+		if (is_string($source)) {
+			$rows = explode(PHP_EOL, $source);
+			if (trim($rows[0]) === '') {
+				$rows = array_splice($rows, 1);
+			}
+			if (trim($rows[count($rows) - 1]) === '') {
+				$rows = array_splice($rows, 0, count($rows) - 1);
+			}
 		}
-		if (trim($rows[count($rows) - 1]) === '') {
-			$rows = array_splice($rows, 0, count($rows) - 1);
-		}
-		foreach ($rows as $row) {
-			$ret .= Indent::indent($this->indentionLevel) . $row . PHP_EOL;
+		else {
+			$rows = $source;
 		}
 
-		return $ret;
+		if (is_array($rows)) {
+			return FlattenSource::source($rows, $this->indentionLevel);
+		}
+		return '';
 	}
 
 	/**
