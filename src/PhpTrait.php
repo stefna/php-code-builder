@@ -65,7 +65,7 @@ class PhpTrait extends PhpElement
 
 		if (count($this->constants) > 0) {
 			if ($addNewLine) {
-				$ret .= true;
+				$ret .= PHP_EOL;
 			}
 			foreach ($this->constants as $constant) {
 				$ret .= $constant->getSource();
@@ -75,7 +75,7 @@ class PhpTrait extends PhpElement
 
 		if (count($this->variables) > 0) {
 			if ($addNewLine) {
-				$ret .= true;
+				$ret .= PHP_EOL;
 			}
 			$varSources = [];
 			foreach ($this->variables as $variable) {
