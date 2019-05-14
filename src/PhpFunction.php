@@ -58,6 +58,26 @@ class PhpFunction extends PhpElement
 	}
 
 	/**
+	 * Set function body
+	 *
+	 * @param array|string $source
+	 */
+	public function setSource($source): void
+	{
+		$this->source = $source;
+	}
+
+	/**
+	 * Set function docblock
+	 *
+	 * @param PhpDocComment $comment
+	 */
+	public function setComment(PhpDocComment $comment): void
+	{
+		$this->comment = $comment;
+	}
+
+	/**
 	 * Returns the complete source code for the function
 	 *
 	 * @return string
