@@ -11,6 +11,10 @@ namespace Stefna\PhpCodeBuilder;
  */
 abstract class PhpElement
 {
+	public const PRIVATE_ACCESS = 'private';
+	public const PROTECTED_ACCESS = 'protected';
+	public const PUBLIC_ACCESS = 'public';
+
 	/**
 	 * The access of the function |public|private|protected
 	 *
