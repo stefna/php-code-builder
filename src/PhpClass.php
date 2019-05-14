@@ -76,6 +76,12 @@ class PhpClass extends PhpTrait
 		return $this;
 	}
 
+	public function addTrait(string $trait): self
+	{
+		$this->traits[] = $trait;
+		return $this;
+	}
+
 	public function setExtends(string $extends): self
 	{
 		$this->extends = $extends;
