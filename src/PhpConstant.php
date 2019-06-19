@@ -38,12 +38,21 @@ class PhpConstant extends PhpElement
 		$ret = '';
 		$ret .= $this->access ? $this->access . ' ' : '';
 
+		$name = $this->getName();
+		$value = FormatValue::format($this->value);
+		$ret .= "const $name = {$value};";
+
+		return $this->getSourceRow($ret);
+	}
+
+	public function getName(): string
+	{
 		$name = $this->identifier;
 		switch ($this->case) {
 			case self::CASE_UPPER:
 			case self::CASE_LOWER:
 				$name = preg_replace('/(?<!^)[A-Z]/', '_$0', $name);
-				//Use this to make sure name are readable
+			//Use this to make sure name are readable
 			case self::CASE_UPPER:
 				$name = strtoupper($name);
 				break;
@@ -52,10 +61,7 @@ class PhpConstant extends PhpElement
 				break;
 		}
 
-		$value = FormatValue::format($this->value);
-		$ret .= "const $name = {$value};";
-
-		return $this->getSourceRow($ret);
+		return $name;
 	}
 
 	public function setValue(string $value): self
