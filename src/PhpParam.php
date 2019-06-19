@@ -15,6 +15,8 @@ class PhpParam
 	/** @var string */
 	private $type;
 
+	private $complexType;
+
 	private $value;
 
 	public function __construct(string $type, string $name, $value = self::NO_VALUE)
@@ -81,5 +83,34 @@ class PhpParam
 	public function isNullable(): bool
 	{
 		return $this->allowNull;
+	}
+
+	public function isAllowNull(): bool
+	{
+		return $this->allowNull;
+	}
+
+	/**
+	 * @param bool $allowNull
+	 */
+	public function setAllowNull(bool $allowNull): void
+	{
+		$this->allowNull = $allowNull;
+	}
+
+	/**
+	 * Get complex return type hinting like arrays and constants
+	 */
+	public function getComplexType(): ?string
+	{
+		return $this->complexType;
+	}
+
+	/**
+	 * Set complex return typehint information
+	 */
+	public function setComplexType(string $complexType): void
+	{
+		$this->complexType = $complexType;
 	}
 }
