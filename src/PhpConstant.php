@@ -10,6 +10,8 @@ class PhpConstant extends PhpElement
 
 	/** @var string */
 	private $value;
+	/** @var bool */
+	private $rawValue = false;
 	/** @var int */
 	private $case;
 
@@ -39,7 +41,7 @@ class PhpConstant extends PhpElement
 		$ret .= $this->access ? $this->access . ' ' : '';
 
 		$name = $this->getName();
-		$value = FormatValue::format($this->value);
+		$value = $this->getFormattedValue();
 		$ret .= "const $name = {$value};";
 
 		return $this->getSourceRow($ret);
@@ -66,6 +68,14 @@ class PhpConstant extends PhpElement
 
 	public function setValue(string $value): self
 	{
+		$this->rawValue = false;
+		$this->value = $value;
+		return $this;
+	}
+
+	public function setRawValue(string $value): self
+	{
+		$this->rawValue = true;
 		$this->value = $value;
 		return $this;
 	}
@@ -73,6 +83,11 @@ class PhpConstant extends PhpElement
 	public function getValue(): string
 	{
 		return $this->value;
+	}
+
+	public function getFormattedValue(): string
+	{
+		return $this->rawValue ? $this->value : FormatValue::format($this->value);
 	}
 
 	public function setCase(int $case)
