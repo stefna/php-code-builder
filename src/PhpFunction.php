@@ -2,6 +2,8 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Type;
+
 /**
  * Class that represents the source code for a function in php
  *
@@ -13,46 +15,48 @@ class PhpFunction extends PhpElement
 {
 	/** @var PhpParam[] */
 	private $params = [];
-
 	/** @var string|array */
 	private $source;
-
 	/** @var PhpDocComment */
-	private $comment;
-
-	/** @var string|null */
-	private $returnTypeHint;
-
+	protected $comment;
+	/** @var Type */
+	protected $returnTypeHint;
+	/** @var bool */
 	private $isLongLine = false;
 
 	/**
 	 * @param string $identifier
 	 * @param array $params
 	 * @param array|string $source
+	 * @param Type $returnTypeHint
 	 * @param PhpDocComment|null $comment
-	 * @param string|null $returnTypeHint
 	 */
 	public function __construct(
 		string $identifier,
 		array $params,
 		$source,
-		PhpDocComment $comment = null,
-		?string $returnTypeHint = null
+		Type $returnTypeHint = null,
+		PhpDocComment $comment = null
 	) {
 		$this->access = '';
 		$this->identifier = $identifier;
 		$this->source = $source;
+		$this->returnTypeHint = $returnTypeHint ?? Type::empty();
+		if (!$comment && $this->returnTypeHint->needDockBlockTypeHint()) {
+			$comment = new PhpDocComment();
+			$comment->setReturn(PhpDocElementFactory::getReturn($this->returnTypeHint->getDocBlockTypeHint()));
+		}
 		$this->comment = $comment;
-		$this->returnTypeHint = $returnTypeHint;
 		foreach ($params as $name => $type) {
 			if ($type instanceof PhpParam) {
 				$this->addParam($type);
 			}
 			elseif (is_string($name)) {
-				$this->addParam(new PhpParam($type, $name));
+				$type = is_string($type) ? Type::fromString($type) : $type;
+				$this->addParam(new PhpParam($name, $type));
 			}
 			else {
-				$this->addParam(new PhpParam('', $type));
+				$this->addParam(new PhpParam($type, Type::empty()));
 			}
 		}
 	}
@@ -110,7 +114,6 @@ class PhpFunction extends PhpElement
 
 	protected function formatFunctionDefinition(): string
 	{
-		$returnTypeHint = $this->returnTypeHint ? ': ' . $this->returnTypeHint : '';
 		$functionNameDefinition = $this->formatFunctionAccessors();
 		$functionNameDefinition .= 'function ';
 		$functionNameDefinition .= $this->identifier;
@@ -119,8 +122,9 @@ class PhpFunction extends PhpElement
 
 		$functionNameDefinition .= "({$paramStr})";
 
-		if ($returnTypeHint) {
-			$functionNameDefinition .= $returnTypeHint;
+		$typeHint = $this->returnTypeHint->getTypeHint();
+		if ($typeHint) {
+			$functionNameDefinition .= ': ' . $typeHint;
 		}
 
 		if (strpos($paramStr, PHP_EOL) !== false) {

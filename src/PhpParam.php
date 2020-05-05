@@ -2,52 +2,44 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Type;
+
 class PhpParam
 {
 	private const NO_VALUE = '__PhpParam_NoValue__';
 
-	/** @var bool  */
-	private $allowNull = false;
-
 	/** @var string */
 	private $name;
 
-	/** @var string */
+	/** @var Type */
 	private $type;
 
 	private $complexType;
 
 	private $value;
 
-	public function __construct(string $type, string $name, $value = self::NO_VALUE)
+	public function __construct(string $name, Type $type, $value = self::NO_VALUE)
 	{
-		if ($name[0] === '$') {
+		if (strpos($name, '$') === 0) {
 			$name = substr($name, 1);
 		}
 		$this->name = $name;
 		$this->value = $value;
-
-		if ($type && $type[0] === '?') {
-			$this->allowNull = true;
-			$type = substr($type, 1);
-		}
-
 		$this->type = $type;
 	}
 
 	public function getSource(): string
 	{
 		$ret = '';
-		if ($this->allowNull && $this->type) {
-			$ret .= '?';
+		if (!$this->type->needDockBlockTypeHint()) {
+			$ret .= $this->type->getTypeHint();
 		}
-		$ret .= $this->type ? $this->type . ' ' : '';
-		$ret .= '$' . $this->name;
+		$ret .= ' $' . $this->name;
 		if ($this->value !== self::NO_VALUE) {
 			$ret .= ' = ' . FormatValue::format($this->value);
 		}
 
-		return $ret;
+		return trim($ret);
 	}
 
 	public function getName(): string
@@ -55,7 +47,7 @@ class PhpParam
 		return $this->name;
 	}
 
-	public function getType(): string
+	public function getType(): Type
 	{
 		return $this->type;
 	}
@@ -75,27 +67,14 @@ class PhpParam
 		$this->value = $value;
 	}
 
-	public function allowNull(bool $flag): void
+	public function allowNull(): void
 	{
-		$this->allowNull = $flag;
+		$this->type->addUnion('null');
 	}
 
 	public function isNullable(): bool
 	{
-		return $this->allowNull;
-	}
-
-	public function isAllowNull(): bool
-	{
-		return $this->allowNull;
-	}
-
-	/**
-	 * @param bool $allowNull
-	 */
-	public function setAllowNull(bool $allowNull): void
-	{
-		$this->allowNull = $allowNull;
+		return $this->type->isNullable();
 	}
 
 	/**

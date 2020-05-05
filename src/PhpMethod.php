@@ -2,6 +2,8 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Type;
+
 /**
  * Class that represents the source code for a method in php
  *
@@ -20,18 +22,18 @@ class PhpMethod extends PhpFunction
 	 * @param string $identifier
 	 * @param array $params
 	 * @param array|string $source
+	 * @param Type|null $returnTypeHint
 	 * @param PhpDocComment|null $comment
-	 * @param string|null $returnTypeHint
 	 */
 	public function __construct(
 		string $access,
 		string $identifier,
 		array $params,
 		$source,
-		PhpDocComment $comment = null,
-		?string $returnTypeHint = null
+		?Type $returnTypeHint = null,
+		?PhpDocComment $comment = null
 	) {
-		parent::__construct($identifier, $params, $source, $comment, $returnTypeHint);
+		parent::__construct($identifier, $params, $source, $returnTypeHint ?? Type::empty(), $comment);
 		$this->access = $access;
 	}
 

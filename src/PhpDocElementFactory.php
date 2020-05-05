@@ -20,7 +20,7 @@ class PhpDocElementFactory
 	 * @return PhpDocElement
 	 * @throws \InvalidArgumentException Throws exception if no name is supplied
 	 */
-	public static function getParam(string $dataType, string $name, string $description): PhpDocElement
+	public static function getParam(string $dataType, string $name, string $description = ''): PhpDocElement
 	{
 		if ($name === '') {
 			throw new \InvalidArgumentException('A parameter must have a name!');
@@ -86,7 +86,7 @@ class PhpDocElementFactory
 	 * @param string $description The description of the return value
 	 * @return PhpDocElement
 	 */
-	public static function getReturn(string $dataType, string $description): PhpDocElement
+	public static function getReturn(string $dataType, string $description = ''): PhpDocElement
 	{
 		return new PhpDocElement('return', $dataType, '', $description);
 	}
@@ -97,7 +97,7 @@ class PhpDocElementFactory
 	 * @param string $information The description of why the element is deprecated etc.
 	 * @return PhpDocElement
 	 */
-	public static function getDepricated(string $information = ''): PhpDocElement
+	public static function getDeprecated(string $information = ''): PhpDocElement
 	{
 		return new PhpDocElement('deprecated', '', '', $information);
 	}

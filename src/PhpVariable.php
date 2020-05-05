@@ -2,6 +2,8 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Type;
+
 /**
  * Class that represents the source code for a variable in php
  *
@@ -15,34 +17,45 @@ class PhpVariable extends PhpElement
 
 	/** @var PhpDocComment|null */
 	private $comment;
-
 	/** @var string */
 	private $initializedValue;
-
-	/** @var string */
+	/** @var Type */
 	private $type;
-
 	/** @var bool */
 	private $static = false;
-
 	/** @var bool */
 	private $raw = false;
+
+	public static function private(string $identifier, Type $type): self
+	{
+		return new self(self::PRIVATE_ACCESS, $identifier, self::NO_VALUE, $type);
+	}
+
+	public static function protected(string $identifier, Type $type): self
+	{
+		return new self(self::PROTECTED_ACCESS, $identifier, self::NO_VALUE, $type);
+	}
+
+	public static function public(string $identifier, Type $type): self
+	{
+		return new self(self::PUBLIC_ACCESS, $identifier, self::NO_VALUE, $type);
+	}
 
 	public function __construct(
 		string $access,
 		string $identifier,
 		$value = self::NO_VALUE,
-		string $type = '',
+		Type $type = null,
 		PhpDocComment $comment = null
 	) {
-		if ($type && !$comment && PHP_VERSION_ID < 70400) {
-			$comment = PhpDocComment::var($type);
+		if ($type && !$comment && (PHP_VERSION_ID < 70400 || $type->needDockBlockTypeHint())) {
+			$comment = PhpDocComment::var($type->getDocBlockTypeHint());
 		}
 		$this->comment = $comment;
 		$this->access = $access;
 		$this->identifier = $identifier;
 		$this->initializedValue = $value;
-		$this->type = $type;
+		$this->type = $type ?? Type::empty();
 	}
 
 	public function setStatic(): self
@@ -66,8 +79,8 @@ class PhpVariable extends PhpElement
 
 		$dec = $this->access;
 		$dec .= $this->static ? ' static' : '';
-		if ($this->type && PHP_VERSION_ID >= 70400) {
-			$dec .= ' ' . $this->type;
+		if (PHP_VERSION_ID >= 70400 && !$this->type->needDockBlockTypeHint()) {
+			$dec .= ' ' . $this->type->getTypeHint();
 		}
 
 		$dec .= ' $' . $this->identifier;
@@ -98,5 +111,10 @@ class PhpVariable extends PhpElement
 	{
 		$this->raw = true;
 		return $this;
+	}
+
+	public function getType(): Type
+	{
+		return $this->type;
 	}
 }
