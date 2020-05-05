@@ -154,13 +154,18 @@ class PhpTrait extends PhpElement
 	 * @throws DuplicateValue If the variable name already exists
 	 * @return $this
 	 */
-	public function addVariable(PhpVariable $variable): self
+	public function addVariable(PhpVariable $variable, bool $createGetterSetter = false): self
 	{
 		if ($this->variableExists($variable->getIdentifier())) {
 			throw new DuplicateValue("A variable of the name ({$variable->getIdentifier()}) is already defined.");
 		}
 
 		$this->variables[$variable->getIdentifier()] = $variable;
+
+		if ($createGetterSetter) {
+			$this->addMethod(PhpMethod::getter($variable));
+			$this->addMethod(PhpMethod::setter($variable));
+		}
 
 		return $this;
 	}
