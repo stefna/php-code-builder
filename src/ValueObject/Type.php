@@ -88,6 +88,9 @@ final class Type
 		if (in_array($type, self::INVALID_RETURN_TYPES, true)) {
 			return null;
 		}
+		if (substr($type, -2) === '[]') {
+			return null;
+		}
 
 		return ($this->nullable ? '?' : '') . $type;
 	}

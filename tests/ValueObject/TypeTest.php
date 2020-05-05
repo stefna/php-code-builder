@@ -55,6 +55,13 @@ class TypeTest extends TestCase
 		$this->assertSame('float', $type->getDocBlockTypeHint());
 	}
 
+	public function testArrayOf(): void
+	{
+		$type = Type::fromString('string[]');
+		$this->assertNull($type->getTypeHint());
+		$this->assertSame('string[]', $type->getDocBlockTypeHint());
+	}
+
 	/**
 	 * @dataProvider invalidInput
 	 */
