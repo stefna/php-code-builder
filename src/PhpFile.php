@@ -2,7 +2,6 @@
 
 namespace Stefna\PhpCodeBuilder;
 
-use Exception;
 use Stefna\PhpCodeBuilder\Exception\DuplicateValue;
 
 /**

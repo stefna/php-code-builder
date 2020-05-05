@@ -23,9 +23,6 @@ class PhpDocComment
 	/** @var PhpDocElement */
 	private $author;
 
-	/** @var PhpDocElement */
-	private $licence;
-
 	/** @var PhpDocElement[] */
 	private $throws;
 
@@ -40,7 +37,7 @@ class PhpDocComment
 	 */
 	public static function var(string $type): self
 	{
-		$doc = new static;
+		$doc = new static();
 		$doc->setVar(PhpDocElementFactory::getVar($type));
 
 		return $doc;
@@ -120,7 +117,6 @@ class PhpDocComment
 
 	public function setLicence(PhpDocElement $licence): self
 	{
-		$this->licence = $licence;
 		return $this;
 	}
 

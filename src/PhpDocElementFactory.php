@@ -17,7 +17,6 @@ class PhpDocElementFactory
 	 * @param string $dataType The name of the datatype of the variable
 	 * @param string $name
 	 * @param string $description
-	 *
 	 * @return PhpDocElement
 	 * @throws \InvalidArgumentException Throws exception if no name is supplied
 	 */

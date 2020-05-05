@@ -140,9 +140,7 @@ class PhpFunction extends PhpElement
 		$this->indentionLevel++;
 		$ret .= $this->getSourceRow($this->source);
 		$this->indentionLevel--;
-		$ret .= $this->getSourceRow('}');
-
-		return $ret;
+		return $ret . $this->getSourceRow('}');
 	}
 
 	/**

@@ -79,9 +79,8 @@ class PhpVariable extends PhpElement
 		$sourceRow = $this->getSourceRow($dec);
 		// Strip unnecessary null as default value
 		$sourceRow = preg_replace('@\s+=\s+null;@', ';', $sourceRow);
-		$ret .= $sourceRow;
 
-		return $ret;
+		return $ret . $sourceRow;
 	}
 
 	public function setInitializedValue(string $initializedValue): PhpVariable

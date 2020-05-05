@@ -2,8 +2,6 @@
 
 namespace Stefna\PhpCodeBuilder;
 
-use Stefna\PhpCodeBuilder\Exception\DuplicateValue;
-
 /**
  * Class that represents the source code for a class in php
  *
