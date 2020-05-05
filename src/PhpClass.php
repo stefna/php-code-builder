@@ -15,13 +15,10 @@ class PhpClass extends PhpTrait
 
 	/** @var bool */
 	private $abstract;
-
 	/** @var bool */
 	private $final;
-
 	/** @var string */
 	private $extends;
-
 	/** @var string[] */
 	private $implements;
 

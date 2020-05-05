@@ -15,10 +15,25 @@ class PhpConstant extends PhpElement
 	/** @var int */
 	private $case;
 
+	public static function public(string $identifier, $value = null): self
+	{
+		return new self(self::PUBLIC_ACCESS, $identifier, $value);
+	}
+
+	public static function private(string $identifier, $value = null): self
+	{
+		return new self(self::PRIVATE_ACCESS, $identifier, $value);
+	}
+
+	public static function protected(string $identifier, $value = null): self
+	{
+		return new self(self::PROTECTED_ACCESS, $identifier, $value);
+	}
+
 	public function __construct(
 		string $access,
 		string $identifier,
-		string $value = null,
+		?string $value = null,
 		int $case = 0
 	) {
 		$this->access = $access;
@@ -50,6 +65,8 @@ class PhpConstant extends PhpElement
 	public function getName(): string
 	{
 		$name = $this->identifier;
+		$name = preg_replace('/^(\d)/', '_$0', $name);
+
 		switch ($this->case) {
 			case self::CASE_UPPER:
 			case self::CASE_LOWER:

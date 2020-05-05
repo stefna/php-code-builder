@@ -17,6 +17,49 @@ class PhpMethod extends PhpFunction
 	private $static = false;
 	private $abstract = false;
 
+	public static function setter(PhpVariable $var, bool $fluent = false): self
+	{
+		$source = [
+			'$this->' . $var->getIdentifier() . ' = $' . $var->getIdentifier(),
+		];
+		if ($fluent) {
+			$source[] = 'return $this';
+		}
+
+		$type = $var->getType();
+		$docBlock = null;
+		if ($type->needDockBlockTypeHint()) {
+			$docBlock = new PhpDocComment();
+			$docBlock->addParam(PhpDocElementFactory::getParam($type->getDocBlockTypeHint(), $var->getIdentifier()));
+		}
+
+		return new self(self::PUBLIC_ACCESS, 'set' . ucfirst($var->getIdentifier()), [
+			new PhpParam($var->getIdentifier(), $type)
+		], $source, null, $docBlock);
+	}
+
+	public static function getter(PhpVariable $var): self
+	{
+		return self::public('get' . ucfirst($var->getIdentifier()), [], [
+			'return $this->' . $var->getIdentifier(),
+		], $var->getType());
+	}
+
+	public static function public(string $identifier, array $params, array $source, Type $type = null): self
+	{
+		return new self(self::PUBLIC_ACCESS, $identifier, $params, $source, $type ?? Type::empty());
+	}
+
+	public static function private(string $identifier, array $params, array $source, Type $type = null): self
+	{
+		return new self(self::PUBLIC_ACCESS, $identifier, $params, $source, $type ?? Type::empty());
+	}
+
+	public static function protected(string $identifier, array $params, array $source, Type $type = null): self
+	{
+		return new self(self::PUBLIC_ACCESS, $identifier, $params, $source, $type ?? Type::empty());
+	}
+
 	/**
 	 * @param string $access
 	 * @param string $identifier
