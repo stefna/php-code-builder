@@ -58,7 +58,7 @@ class TypeTest extends TestCase
 	public function testArrayOf(): void
 	{
 		$type = Type::fromString('string[]');
-		$this->assertNull($type->getTypeHint());
+		$this->assertSame('array', $type->getTypeHint());
 		$this->assertSame('string[]', $type->getDocBlockTypeHint());
 	}
 

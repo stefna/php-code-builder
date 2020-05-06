@@ -89,7 +89,7 @@ final class Type
 			return null;
 		}
 		if (substr($type, -2) === '[]') {
-			return null;
+			return 'array';
 		}
 
 		return ($this->nullable ? '?' : '') . $type;
@@ -97,7 +97,7 @@ final class Type
 
 	public function needDockBlockTypeHint(): bool
 	{
-		return $this->getTypeHint() === null;
+		return $this->getTypeHint() === null || substr($this->type, -2) === '[]';
 	}
 
 	public function getDocBlockTypeHint(): ?string

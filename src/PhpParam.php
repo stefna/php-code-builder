@@ -31,7 +31,7 @@ class PhpParam
 	public function getSource(): string
 	{
 		$ret = '';
-		if (!$this->type->needDockBlockTypeHint()) {
+		if ($this->type->getTypeHint()) {
 			$ret .= $this->type->getTypeHint();
 		}
 		$ret .= ' $' . $this->name;
