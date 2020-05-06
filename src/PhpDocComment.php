@@ -132,6 +132,12 @@ class PhpDocComment
 		return $this;
 	}
 
+	public function setParams(PhpDocElement ...$params): self
+	{
+		$this->params = $params;
+		return $this;
+	}
+
 	public function addThrows(PhpDocElement $throws): self
 	{
 		$this->throws[] = $throws;
