@@ -65,6 +65,11 @@ final class Type
 		$this->nullable = $nullable;
 	}
 
+	public function setType(string $type): void
+	{
+		$this->type = $type;
+	}
+
 	public function addUnion(string $type): void
 	{
 		if ($type === 'null') {
