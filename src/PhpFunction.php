@@ -81,6 +81,11 @@ class PhpFunction extends PhpElement
 		$this->comment = $comment;
 	}
 
+	public function getComment(): PhpDocComment
+	{
+		return $this->comment;
+	}
+
 	/**
 	 * Returns the complete source code for the function
 	 *
