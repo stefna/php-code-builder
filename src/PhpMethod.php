@@ -20,7 +20,7 @@ class PhpMethod extends PhpFunction
 	public static function setter(PhpVariable $var, bool $fluent = false): self
 	{
 		$source = [
-			'$this->' . $var->getIdentifier() . ' = $' . $var->getIdentifier(),
+			'$this->' . $var->getIdentifier() . ' = $' . $var->getIdentifier() . ';',
 		];
 		if ($fluent) {
 			$source[] = 'return $this;';
