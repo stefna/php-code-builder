@@ -123,4 +123,9 @@ final class Type
 	{
 		return count($this->types) > 1;
 	}
+
+	public function is(string $type): bool
+	{
+		return $this->type === $type;
+	}
 }
