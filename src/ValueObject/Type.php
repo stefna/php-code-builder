@@ -126,6 +126,6 @@ final class Type
 
 	public function is(string $type): bool
 	{
-		return $this->type === $type;
+		return (self::ALIAS_MAP[$this->type] ?? $this->type) === $type;
 	}
 }
