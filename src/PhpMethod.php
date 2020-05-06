@@ -40,8 +40,18 @@ class PhpMethod extends PhpFunction
 
 	public static function getter(PhpVariable $var): self
 	{
-		return self::public('get' . ucfirst($var->getIdentifier()), [], [
-			'return $this->' . $var->getIdentifier() . ';',
+		$type = $var->getType();
+		$prefix = 'get';
+		if ($type->is('bool')) {
+			$prefix = 'is';
+		}
+		$methodName = $identifier = $var->getIdentifier();
+		if (strpos($identifier, $prefix) === 0) {
+			$methodName = substr($methodName, strlen($prefix));
+		}
+
+		return self::public($prefix . ucfirst($methodName), [], [
+			'return $this->' . $identifier . ';',
 		], $var->getType());
 	}
 
