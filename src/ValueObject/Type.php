@@ -8,13 +8,13 @@ final class Type
 		'boolean' => 'bool',
 		'double' => 'float',
 		'integer' => 'int',
+		'number' => 'float',
 	];
 
 	private const INVALID_RETURN_TYPES = [
 		'mixed',
 		'resource',
 		'static',
-		'number',
 	];
 
 	public static function empty(): self
