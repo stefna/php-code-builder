@@ -23,7 +23,7 @@ class PhpMethod extends PhpFunction
 			'$this->' . $var->getIdentifier() . ' = $' . $var->getIdentifier(),
 		];
 		if ($fluent) {
-			$source[] = 'return $this';
+			$source[] = 'return $this;';
 		}
 
 		$type = $var->getType();
@@ -41,8 +41,21 @@ class PhpMethod extends PhpFunction
 	public static function getter(PhpVariable $var): self
 	{
 		return self::public('get' . ucfirst($var->getIdentifier()), [], [
-			'return $this->' . $var->getIdentifier(),
+			'return $this->' . $var->getIdentifier() . ';',
 		], $var->getType());
+	}
+
+	/**
+	 * @param PhpParam[] $params
+	 */
+	public static function constructor(array $params, array $source, bool $autoAssign = false): self
+	{
+		if ($autoAssign) {
+			foreach ($params as $param) {
+				$source[] = sprintf('$this->%s = $%s;', $param->getName(), $param->getName());
+			}
+		}
+		return self::public('__construct', $params, $source, Type::empty());
 	}
 
 	public static function public(string $identifier, array $params, array $source, Type $type = null): self
