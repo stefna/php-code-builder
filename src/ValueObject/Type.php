@@ -15,6 +15,7 @@ final class Type
 		'mixed',
 		'resource',
 		'static',
+		'object',
 	];
 
 	public static function empty(): self
