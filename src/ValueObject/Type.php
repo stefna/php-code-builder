@@ -98,7 +98,7 @@ final class Type
 			return 'array';
 		}
 
-		return ($this->nullable ? '?' : '') . $type;
+		return ($this->nullable ? '?' : '') . ($this->isTypeNamespaced() ? '\\' : '') . $type;
 	}
 
 	public function needDockBlockTypeHint(): bool
@@ -148,6 +148,11 @@ final class Type
 		}
 
 		return str_replace('[]', '', $type);
+	}
+
+	public function isTypeNamespaced(): bool
+	{
+		return strpos($this->type, '\\') !== false;
 	}
 
 	public function is(string $type): bool

@@ -2,6 +2,7 @@
 
 namespace ValueObject;
 
+use Stefna\PhpCodeBuilder\PhpClass;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 use PHPUnit\Framework\TestCase;
 
@@ -61,6 +62,22 @@ class TypeTest extends TestCase
 		$this->assertTrue($type->isArray());
 		$this->assertSame('array', $type->getTypeHint());
 		$this->assertSame('string[]', $type->getDocBlockTypeHint());
+	}
+
+	public function testNamespacedType(): void
+	{
+		$type = Type::fromString(PhpClass::class);
+		$this->assertTrue($type->isTypeNamespaced());
+		$this->assertNotSame(PhpClass::class, $type->getTypeHint());
+		$this->assertSame('\\' . PhpClass::class, $type->getTypeHint());
+	}
+
+	public function testRootNamespace(): void
+	{
+		$type = Type::fromString(\DateTimeImmutable::class);
+		$this->assertFalse($type->isTypeNamespaced());
+		$this->assertSame(\DateTimeImmutable::class, $type->getTypeHint());
+		$this->assertNotSame('\\' . \DateTimeImmutable::class, $type->getTypeHint());
 	}
 
 	/**
