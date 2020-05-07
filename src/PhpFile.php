@@ -16,24 +16,32 @@ class PhpFile
 {
 	/** @var string */
 	private $name;
-
 	/** @var bool */
 	private $strict = false;
-
 	/** @var string */
 	private $namespace;
-
 	/** @var PhpTrait[]|PhpClass[] */
 	private $classes = [];
-
 	/** @var PhpFunction[] */
 	private $functions = [];
-
 	/** @var string */
 	private $source;
-
 	/** @var string[] */
 	private $use = [];
+
+	public static function createFromClass(PhpTrait $object): self
+	{
+		$path = '';
+		if ($object->getNamespace()) {
+			$path = ltrim(str_replace('\\', DIRECTORY_SEPARATOR, $object->getNamespace()), DIRECTORY_SEPARATOR);
+			$path .= DIRECTORY_SEPARATOR;
+		}
+
+		$self = new self($path . $object->getIdentifier());
+		$self->setStrict();
+		$self->classes[$object->getIdentifier()] = $object;
+		return $self;
+	}
 
 	public function __construct($fileName)
 	{
@@ -124,7 +132,7 @@ class PhpFile
 	 */
 	public function save(string $directory): bool
 	{
-		return (bool)file_put_contents($directory . DIRECTORY_SEPARATOR . $this->name . '.php', $this->getSource());
+		return (bool)file_put_contents($directory . DIRECTORY_SEPARATOR . $this->getName(), $this->getSource());
 	}
 
 	/**
@@ -246,5 +254,13 @@ class PhpFile
 	public function functionExists($identifier): bool
 	{
 		return array_key_exists($identifier, $this->functions);
+	}
+
+	public function getName(): string
+	{
+		if (substr($this->name, -4) === '.php') {
+			return $this->name;
+		}
+		return $this->name . '.php';
 	}
 }
