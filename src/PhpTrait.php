@@ -10,27 +10,39 @@ class PhpTrait extends PhpElement
 
 	/** @var string[] */
 	protected $uses = [];
-
 	/** @var string[] */
 	protected $traits = [];
-
 	/** @var PhpConstant[] */
 	private $constants = [];
-
 	/** @var PhpVariable[] */
 	private $variables = [];
-
 	/** @var PhpFunction[] */
 	private $methods = [];
-
 	/** @var PhpDocComment */
 	private $comment;
+	/** @var string|null */
+	private $namespace;
 
 	public function __construct(string $identifier, PhpDocComment $comment = null)
 	{
+		if (strpos($identifier, '\\') !== false) {
+			$ns = explode('\\', $identifier);
+			$identifier = array_pop($ns);
+			$this->setNamespace(implode('\\', $ns));
+		}
 		$this->access = '';
 		$this->comment = $comment;
 		$this->identifier = $identifier;
+	}
+
+	public function setNamespace(string $namespace): void
+	{
+		$this->namespace = '\\' . trim($namespace, '\\');
+	}
+
+	public function getNamespace(): ?string
+	{
+		return $this->namespace;
 	}
 
 	/**

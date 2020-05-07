@@ -59,17 +59,22 @@ class PhpFile
 		}
 		$ret .= PHP_EOL . PHP_EOL;
 
+		if (count($this->classes) === 1) {
+			$class = reset($this->classes);
+			if ($class->getNamespace()) {
+				$this->namespace .= $class->getNamespace();
+				$this->namespace = trim($this->namespace, '\\');
+			}
+		}
+
 		if ($this->namespace) {
 			$ret .= 'namespace ' . $this->namespace . ';' . PHP_EOL . PHP_EOL;
 		}
 
 		$classesCode = '';
-
-		if (count($this->classes) > 0) {
-			foreach ($this->classes as $class) {
-				$classesCode .= $class->getSource();
-				$this->use = array_merge($this->use, $class->getUses());
-			}
+		foreach ($this->classes as $class) {
+			$classesCode .= $class->getSource();
+			$this->use = array_merge($this->use, $class->getUses());
 		}
 
 		if (count($this->use) > 0) {
