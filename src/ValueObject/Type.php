@@ -94,7 +94,7 @@ final class Type
 		if (in_array($type, self::INVALID_RETURN_TYPES, true)) {
 			return null;
 		}
-		if (substr($type, -2) === '[]') {
+		if ($this->isArray()) {
 			return 'array';
 		}
 
@@ -103,7 +103,7 @@ final class Type
 
 	public function needDockBlockTypeHint(): bool
 	{
-		return $this->getTypeHint() === null || substr($this->type, -2) === '[]';
+		return $this->getTypeHint() === null || $this->isArray();
 	}
 
 	public function getDocBlockTypeHint(): ?string
@@ -128,6 +128,26 @@ final class Type
 	public function isUnion(): bool
 	{
 		return count($this->types) > 1;
+	}
+
+	public function isArray(): bool
+	{
+		$type = self::ALIAS_MAP[$this->type] ?? $this->type;
+		return (substr($type, -2) === '[]' || strpos($type, 'array<') === 0);
+	}
+
+	public function getArrayType(): ?string
+	{
+		if (!$this->isArray()) {
+			return null;
+		}
+		$type = self::ALIAS_MAP[$this->type] ?? $this->type;
+		if (strpos($type, 'array<') !== false) {
+			preg_match('/array\<.*,(\s+)?(.*)\>/', $type, $match);
+			return $match[2] ?? null;
+		}
+
+		return str_replace('[]', '', $type);
 	}
 
 	public function is(string $type): bool

@@ -58,6 +58,7 @@ class TypeTest extends TestCase
 	public function testArrayOf(): void
 	{
 		$type = Type::fromString('string[]');
+		$this->assertTrue($type->isArray());
 		$this->assertSame('array', $type->getTypeHint());
 		$this->assertSame('string[]', $type->getDocBlockTypeHint());
 	}
@@ -95,7 +96,27 @@ class TypeTest extends TestCase
 			['mixed'],
 			['resource'],
 			['static'],
-			['number'],
+		];
+	}
+
+	/**
+	 * @dataProvider arrayTypes
+	 */
+	public function testArrayTypes(string $input, ?string $expectedType): void
+	{
+		$type = Type::fromString($input);
+		$this->assertSame($expectedType, $type->getArrayType());
+	}
+
+	public function arrayTypes()
+	{
+		return [
+			['int[]', 'int'],
+			['array<int, string>', 'string'],
+			['array<string,int>', 'int'],
+			['array<int, DateTime>', 'DateTime'],
+			['Uuid[]', 'Uuid'],
+			['string', null],
 		];
 	}
 }
