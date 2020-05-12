@@ -65,6 +65,11 @@ final class Type
 		$this->nullable = $nullable;
 	}
 
+	public function getType(): string
+	{
+		return $this->type;
+	}
+
 	public function setType(string $type): void
 	{
 		$this->type = $type;
@@ -113,11 +118,16 @@ final class Type
 			if ($this->nullable) {
 				$types[] = 'null';
 			}
+			foreach ($types as &$type) {
+				if (strpos($type, '\\')) {
+					$type = '\\' . $type;
+				}
+			}
 			return implode('|', $types);
 		}
 
 		$type = self::ALIAS_MAP[$this->type] ?? $this->type;
-		return $type . ($this->nullable ? '|null' : '');
+		return ($this->isTypeNamespaced() ? '\\' : '') . $type . ($this->nullable ? '|null' : '');
 	}
 
 	public function isNullable(): bool
