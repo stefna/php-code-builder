@@ -84,6 +84,11 @@ class PhpClass extends PhpTrait
 
 	public function setExtends(string $extends): self
 	{
+		if (strpos($extends, '\\')) {
+			$this->addUse($extends);
+			$p = explode('\\', $extends);
+			$extends = array_pop($p);
+		}
 		$this->extends = $extends;
 		return $this;
 	}
