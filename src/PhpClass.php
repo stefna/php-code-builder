@@ -66,6 +66,11 @@ class PhpClass extends PhpTrait
 	 */
 	public function addInterface(string $interface): self
 	{
+		if (strpos($interface, '\\')) {
+			$this->addUse($interface);
+			$p = explode('\\', $interface);
+			$interface = array_pop($p);
+		}
 		$this->implements[] = $interface;
 
 		return $this;
