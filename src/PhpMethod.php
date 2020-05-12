@@ -26,7 +26,7 @@ class PhpMethod extends PhpFunction
 			$source[] = 'return $this;';
 		}
 
-		$type = $var->getType();
+		$type = clone $var->getType();
 		$docBlock = null;
 		if ($type->needDockBlockTypeHint()) {
 			$docBlock = new PhpDocComment();
