@@ -142,8 +142,7 @@ final class Type
 
 	public function isArray(): bool
 	{
-		$type = self::ALIAS_MAP[$this->type] ?? $this->type;
-		return (substr($type, -2) === '[]' || strpos($type, 'array<') === 0);
+		return (substr($this->type, -2) === '[]' || strpos($this->type, 'array<') === 0);
 	}
 
 	public function getArrayType(): ?string
@@ -162,7 +161,12 @@ final class Type
 
 	public function isNative(): bool
 	{
-		return in_array(self::ALIAS_MAP[$this->type] ?? $this->type, [
+		$type = self::ALIAS_MAP[$this->type] ?? $this->type;
+		if ($this->isArray()) {
+			$type = $this->getArrayType();
+		}
+
+		return in_array($type, [
 			'string',
 			'float',
 			'bool',
