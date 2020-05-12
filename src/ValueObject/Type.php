@@ -150,6 +150,19 @@ final class Type
 		return str_replace('[]', '', $type);
 	}
 
+	public function isNative(): bool
+	{
+		return in_array(self::ALIAS_MAP[$this->type] ?? $this->type, [
+			'string',
+			'float',
+			'bool',
+			'int',
+			'resource',
+			'callable',
+			'object',
+		], true);
+	}
+
 	public function isTypeNamespaced(): bool
 	{
 		return strpos($this->type, '\\') !== false;
