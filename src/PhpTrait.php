@@ -16,7 +16,7 @@ class PhpTrait extends PhpElement
 	private $constants = [];
 	/** @var PhpVariable[] */
 	private $variables = [];
-	/** @var PhpFunction[] */
+	/** @var PhpMethod[] */
 	private $methods = [];
 	/** @var PhpDocComment */
 	private $comment;
@@ -228,6 +228,14 @@ class PhpTrait extends PhpElement
 			return null;
 		}
 		return $this->variables[$identifier];
+	}
+
+	public function getMethod(string $identifier): ?PhpMethod
+	{
+		if (!$this->methodExists($identifier)) {
+			return null;
+		}
+		return $this->methods[$identifier];
 	}
 
 	protected function formatInheritance(): string
