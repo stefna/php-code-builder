@@ -18,6 +18,11 @@ class PhpParam
 
 	private $value;
 
+	public static function fromVariable(PhpVariable $var): self
+	{
+		return new self($var->getIdentifier(), $var->getType());
+	}
+
 	public function __construct(string $name, Type $type, $value = self::NO_VALUE)
 	{
 		if (strpos($name, '$') === 0) {
