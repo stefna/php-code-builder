@@ -171,6 +171,13 @@ class PhpTrait extends PhpElement
 		if ($this->variableExists($variable->getIdentifier())) {
 			throw new DuplicateValue("A variable of the name ({$variable->getIdentifier()}) is already defined.");
 		}
+		$type = $variable->getType();
+		if ($type->isTypeNamespaced()) {
+			$typeClass = $type->isArray() ? $type->getArrayType() : $type->getType();
+			$this->addUse($typeClass);
+			$p = explode('\\', $typeClass);
+			$type->setType(array_pop($p) . ($type->isArray() ? '[]' : ''));
+		}
 
 		$this->variables[$variable->getIdentifier()] = $variable;
 
