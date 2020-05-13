@@ -260,8 +260,7 @@ class PhpTrait extends PhpElement
 		if ($type->isTypeNamespaced()) {
 			$typeClass = $type->isArray() ? $type->getArrayType() : $type->getType();
 			$this->addUse($typeClass);
-			$p = explode('\\', $typeClass);
-			$type->setType(array_pop($p) . ($type->isArray() ? '[]' : ''));
+			$type->simplifyName();
 		}
 	}
 }

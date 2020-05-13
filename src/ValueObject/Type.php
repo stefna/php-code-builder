@@ -19,6 +19,8 @@ final class Type
 	];
 	/** @var bool */
 	private $namespaced;
+	/** @var bool */
+	private $simplify = false;
 
 	public static function empty(): self
 	{
@@ -68,6 +70,13 @@ final class Type
 		$this->nullable = $nullable;
 	}
 
+	public function simplifyName(): void
+	{
+		$this->simplify = true;
+		$p = explode('\\', $this->type);
+		$this->type = array_pop($p);
+	}
+
 	public function getType(): string
 	{
 		return $this->type;
@@ -106,7 +115,7 @@ final class Type
 			return 'array';
 		}
 
-		return ($this->nullable ? '?' : '') . ($this->isTypeNamespaced() ? '\\' : '') . $type;
+		return ($this->nullable ? '?' : '') . ($this->namespaced && !$this->simplify ? '\\' : '') . $type;
 	}
 
 	public function needDockBlockTypeHint(): bool
@@ -130,7 +139,7 @@ final class Type
 		}
 
 		$type = self::ALIAS_MAP[$this->type] ?? $this->type;
-		return ($this->isTypeNamespaced() ? '\\' : '') . $type . ($this->nullable ? '|null' : '');
+		return ($this->namespaced && !$this->simplify ? '\\' : '') . $type . ($this->nullable ? '|null' : '');
 	}
 
 	public function isNullable(): bool
