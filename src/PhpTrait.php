@@ -257,7 +257,7 @@ class PhpTrait extends PhpElement
 	 */
 	private function addUseFromType(ValueObject\Type $type): void
 	{
-		if ($type->isTypeNamespaced()) {
+		if ($type->isTypeNamespaced() && !$type->isSimplify()) {
 			$typeClass = $type->isArray() ? $type->getArrayType() : $type->getType();
 			$this->addUse($typeClass);
 			$type->simplifyName();
