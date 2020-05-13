@@ -16,13 +16,13 @@ class PhpDocElementFactory
 	/**
 	 * Creates a param element
 	 *
-	 * @param string $dataType The name of the datatype of the variable
+	 * @param Type|string $dataType The name of the datatype of the variable
 	 * @param string $name
 	 * @param string $description
 	 * @return PhpDocElement
 	 * @throws \InvalidArgumentException Throws exception if no name is supplied
 	 */
-	public static function getParam(string $dataType, string $name, string $description = ''): PhpDocElement
+	public static function getParam($dataType, string $name, string $description = ''): PhpDocElement
 	{
 		if ($name === '') {
 			throw new \InvalidArgumentException('A parameter must have a name!');
@@ -57,7 +57,7 @@ class PhpDocElementFactory
 	 * Creates a throws element
 	 *
 	 * @param Type|string $dataType The name of the datatype
-	 * @param Type|string $name The name of the variable
+	 * @param string $name The name of the variable
 	 * @param string $description Description of the variable
 	 * @return PhpDocElement
 	 */
@@ -84,11 +84,11 @@ class PhpDocElementFactory
 	/**
 	 * Creates a return element
 	 *
-	 * @param string $dataType The name of the datatype
+	 * @param Type|string $dataType The name of the datatype
 	 * @param string $description The description of the return value
 	 * @return PhpDocElement
 	 */
-	public static function getReturn(string $dataType, string $description = ''): PhpDocElement
+	public static function getReturn($dataType, string $description = ''): PhpDocElement
 	{
 		return new PhpDocElement('return', $dataType, '', $description);
 	}
