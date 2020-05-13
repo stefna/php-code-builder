@@ -17,6 +17,8 @@ final class Type
 		'static',
 		'object',
 	];
+	/** @var bool */
+	private $namespaced;
 
 	public static function empty(): self
 	{
@@ -62,6 +64,7 @@ final class Type
 	public function __construct(string $type, bool $nullable = false)
 	{
 		$this->type = $type;
+		$this->namespaced = strpos($type, '\\') !== false;
 		$this->nullable = $nullable;
 	}
 
@@ -179,7 +182,7 @@ final class Type
 
 	public function isTypeNamespaced(): bool
 	{
-		return strpos($this->type, '\\') !== false;
+		return $this->namespaced;
 	}
 
 	public function is(string $type): bool
