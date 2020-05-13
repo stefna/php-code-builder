@@ -77,6 +77,11 @@ final class Type
 		$this->type = array_pop($p);
 	}
 
+	public function isSimplify(): bool
+	{
+		return $this->simplify;
+	}
+
 	public function getType(): string
 	{
 		return $this->type;
