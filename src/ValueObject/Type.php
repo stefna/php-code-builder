@@ -90,6 +90,7 @@ final class Type
 	public function setType(string $type): void
 	{
 		$this->type = $type;
+		$this->namespaced = strpos($type, '\\') !== false;
 	}
 
 	public function addUnion(string $type): void
