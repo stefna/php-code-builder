@@ -86,6 +86,19 @@ class PhpFunction extends PhpElement
 		return $this->comment;
 	}
 
+	public function getReturnType(): Type
+	{
+		return $this->returnTypeHint;
+	}
+
+	/**
+	 * @return PhpParam[]
+	 */
+	public function getParams(): array
+	{
+		return $this->params;
+	}
+
 	/**
 	 * Returns the complete source code for the function
 	 *

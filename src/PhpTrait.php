@@ -171,14 +171,7 @@ class PhpTrait extends PhpElement
 		if ($this->variableExists($variable->getIdentifier())) {
 			throw new DuplicateValue("A variable of the name ({$variable->getIdentifier()}) is already defined.");
 		}
-		$type = $variable->getType();
-		if ($type->isTypeNamespaced()) {
-			$typeClass = $type->isArray() ? $type->getArrayType() : $type->getType();
-			$this->addUse($typeClass);
-			$p = explode('\\', $typeClass);
-			$type->setType(array_pop($p) . ($type->isArray() ? '[]' : ''));
-		}
-
+		$this->addUseFromType($variable->getType());
 		$this->variables[$variable->getIdentifier()] = $variable;
 
 		if ($createGetterSetter) {
@@ -200,6 +193,10 @@ class PhpTrait extends PhpElement
 	{
 		if ($this->methodExists($method->getIdentifier())) {
 			throw new DuplicateValue("A function of the name ({$method->getIdentifier()}) does already exist.");
+		}
+		$this->addUseFromType($method->getReturnType());
+		foreach ($method->getParams() as $param) {
+			$this->addUseFromType($param->getType());
 		}
 
 		$this->methods[$method->getIdentifier()] = $method;
@@ -253,5 +250,18 @@ class PhpTrait extends PhpElement
 	protected function formatAccessor(): string
 	{
 		return '';
+	}
+
+	/**
+	 * @param ValueObject\Type $type
+	 */
+	private function addUseFromType(ValueObject\Type $type): void
+	{
+		if ($type->isTypeNamespaced()) {
+			$typeClass = $type->isArray() ? $type->getArrayType() : $type->getType();
+			$this->addUse($typeClass);
+			$p = explode('\\', $typeClass);
+			$type->setType(array_pop($p) . ($type->isArray() ? '[]' : ''));
+		}
 	}
 }
