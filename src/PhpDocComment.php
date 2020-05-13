@@ -2,6 +2,8 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Type;
+
 /**
  * Class that represents the source code for a phpdoc comment in php
  *
@@ -35,7 +37,7 @@ class PhpDocComment
 	 * @param string $type
 	 * @return PhpDocComment
 	 */
-	public static function var(string $type): self
+	public static function var(Type $type): self
 	{
 		$doc = new static();
 		$doc->setVar(PhpDocElementFactory::getVar($type));
@@ -69,7 +71,7 @@ class PhpDocComment
 		$tags = [];
 		if ($this->var !== null) {
 			if (!$description) {
-				return "/** @var {$this->var->getDataType()} */" . PHP_EOL;
+				return "/** @var {$this->var->getDataType()->getDocBlockTypeHint()} */" . PHP_EOL;
 			}
 			$tags[] = $this->var->getSource();
 		}

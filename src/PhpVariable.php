@@ -49,7 +49,7 @@ class PhpVariable extends PhpElement
 		PhpDocComment $comment = null
 	) {
 		if ($type && !$comment && (PHP_VERSION_ID < 70400 || $type->needDockBlockTypeHint())) {
-			$comment = PhpDocComment::var($type->getDocBlockTypeHint());
+			$comment = PhpDocComment::var($type);
 		}
 		$this->comment = $comment;
 		$this->access = $access;

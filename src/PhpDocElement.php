@@ -2,6 +2,8 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Type;
+
 /**
  * Class that represents a element (var, param, throws etc.) in a comment in php
  *
@@ -14,7 +16,7 @@ class PhpDocElement
 	/*** @var string */
 	private $type;
 
-	/*** @var string */
+	/*** @var Type */
 	private $datatype;
 
 	/*** @var string*/
@@ -23,10 +25,13 @@ class PhpDocElement
 	/*** @var string */
 	private $description;
 
-	public function __construct(string $type, string $dataType, string $variableName, string $description)
+	/**
+	 * @param Type|string $dataType
+	 */
+	public function __construct(string $type, $dataType, string $variableName, string $description)
 	{
 		$this->type = $type;
-		$this->datatype = $dataType;
+		$this->datatype = is_string($dataType) ? Type::fromString($dataType) : $dataType;
 		$this->variableName = $variableName;
 		$this->description = $description;
 	}
@@ -43,7 +48,7 @@ class PhpDocElement
 		$ret .= '@' . $this->type;
 
 		if ($this->datatype !== '') {
-			$ret .= ' ' . $this->datatype;
+			$ret .= ' ' . $this->datatype->getDocBlockTypeHint();
 		}
 
 		if ($this->variableName !== '') {
@@ -64,7 +69,7 @@ class PhpDocElement
 		return $this->type;
 	}
 
-	public function getDataType(): string
+	public function getDataType(): Type
 	{
 		return $this->datatype;
 	}

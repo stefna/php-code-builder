@@ -2,6 +2,8 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Type;
+
 /**
  * Class that contains static methods to create preset doc elements
  *
@@ -54,12 +56,12 @@ class PhpDocElementFactory
 	/**
 	 * Creates a throws element
 	 *
-	 * @param string $dataType The name of the datatype
-	 * @param string $name The name of the variable
+	 * @param Type|string $dataType The name of the datatype
+	 * @param Type|string $name The name of the variable
 	 * @param string $description Description of the variable
 	 * @return PhpDocElement
 	 */
-	public static function getVar(string $dataType, string $name = '', string $description = ''): PhpDocElement
+	public static function getVar($dataType, string $name = '', string $description = ''): PhpDocElement
 	{
 		return new PhpDocElement('var', $dataType, $name, $description);
 	}
