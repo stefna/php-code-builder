@@ -66,6 +66,7 @@ class PhpConstant extends PhpElement
 	{
 		$name = $this->identifier;
 		$name = preg_replace('/^(\d)/', '_$0', $name);
+		$name = str_replace('-', '_', $name);
 
 		switch ($this->case) {
 			case self::CASE_UPPER:
