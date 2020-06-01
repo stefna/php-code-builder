@@ -35,6 +35,19 @@ class PhpTrait extends PhpElement
 		$this->identifier = $identifier;
 	}
 
+	public function setComment(PhpDocComment $comment): void
+	{
+		$this->comment = $comment;
+	}
+
+	public function getComment(): PhpDocComment
+	{
+		if (!$this->comment) {
+			$this->comment = new PhpDocComment();
+		}
+		return $this->comment;
+	}
+
 	public function setNamespace(string $namespace): void
 	{
 		$this->namespace = '\\' . trim($namespace, '\\');

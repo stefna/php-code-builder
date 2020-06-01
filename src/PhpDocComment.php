@@ -31,6 +31,9 @@ class PhpDocComment
 	/** @var string */
 	private $description;
 
+	/** @var PhpDocElement[] */
+	private $methods = [];
+
 	/**
 	 * Create single line var docblock
 	 *
@@ -91,6 +94,9 @@ class PhpDocComment
 		if ($this->return !== null) {
 			$tags[] = $this->return->getSource();
 		}
+		foreach ($this->methods as $method) {
+			$tags[] = $method->getSource();
+		}
 
 		if (!empty($description) && !empty($tags)) {
 			$description .= ' *' . PHP_EOL;
@@ -103,6 +109,11 @@ class PhpDocComment
 		}
 
 		return $ret;
+	}
+
+	public function addMethod(PhpDocElement $method)
+	{
+		$this->methods[] = $method;
 	}
 
 	public function setVar(PhpDocElement $var): self

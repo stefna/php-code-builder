@@ -53,6 +53,11 @@ class PhpDocElementFactory
 		return new PhpDocElement('throws', $exception, '', $description);
 	}
 
+	public static function method(string $returnType, string $returnClass, string $methodName): PhpDocElement
+	{
+		return new PhpDocElement('method', $returnType, '', $returnClass . ' ' . $methodName . '()');
+	}
+
 	/**
 	 * Creates a throws element
 	 *
