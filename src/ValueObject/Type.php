@@ -93,8 +93,15 @@ final class Type
 		$this->namespaced = strpos($type, '\\') !== false;
 	}
 
-	public function addUnion(string $type): void
+	/**
+	 * @param string|Type $type
+	 */
+	public function addUnion($type): void
 	{
+		if ($type instanceof Type) {
+			$this->types[] = $type->type;
+			return;
+		}
 		if ($type === 'null') {
 			$this->nullable = true;
 			return;
