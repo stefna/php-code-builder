@@ -91,6 +91,11 @@ class PhpFunction extends PhpElement
 		return $this->returnTypeHint;
 	}
 
+	public function setReturnTypeHint(Type $returnTypeHint): void
+	{
+		$this->returnTypeHint = $returnTypeHint;
+	}
+
 	/**
 	 * @return PhpParam[]
 	 */
