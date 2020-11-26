@@ -35,7 +35,7 @@ class PhpMethod extends PhpFunction
 
 		return new self(self::PUBLIC_ACCESS, 'set' . ucfirst($var->getIdentifier()), [
 			new PhpParam($var->getIdentifier(), $type)
-		], $source, null, $docBlock);
+		], $source, Type::fromString('void'), $docBlock);
 	}
 
 	public static function getter(PhpVariable $var): self
