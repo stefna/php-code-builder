@@ -42,10 +42,6 @@ class PhpFunction extends PhpElement
 		$this->identifier = $identifier;
 		$this->source = $source;
 		$this->returnTypeHint = $returnTypeHint ?? Type::empty();
-		if (!$comment && $this->returnTypeHint->needDockBlockTypeHint()) {
-			$comment = new PhpDocComment();
-			$comment->setReturn(PhpDocElementFactory::getReturn($this->returnTypeHint->getDocBlockTypeHint()));
-		}
 		$this->comment = $comment;
 		foreach ($params as $name => $type) {
 			if ($type instanceof PhpParam) {
@@ -111,6 +107,11 @@ class PhpFunction extends PhpElement
 	 */
 	public function getSource(): string
 	{
+		if (!$this->comment && $this->returnTypeHint->needDockBlockTypeHint()) {
+			$this->comment = new PhpDocComment();
+			$this->comment->setReturn(PhpDocElementFactory::getReturn($this->returnTypeHint->getDocBlockTypeHint()));
+		}
+
 		$ret = '';
 		if ($this->comment !== null) {
 			$ret .= $this->getSourceRow($this->comment->getSource());
