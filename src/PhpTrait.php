@@ -207,6 +207,11 @@ class PhpTrait extends PhpElement
 		if ($this->methodExists($method->getIdentifier())) {
 			throw new DuplicateValue("A function of the name ({$method->getIdentifier()}) does already exist.");
 		}
+		return $this->replaceMethod($method->getIdentifier(), $method);
+	}
+
+	public function replaceMethod(string $identifier, PhpMethod $method): self
+	{
 		$this->addUseFromType($method->getReturnType());
 		foreach ($method->getParams() as $param) {
 			$this->addUseFromType($param->getType());
