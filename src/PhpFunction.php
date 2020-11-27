@@ -42,7 +42,7 @@ class PhpFunction extends PhpElement
 		$this->identifier = $identifier;
 		$this->source = $source;
 		$this->returnTypeHint = $returnTypeHint ?? Type::empty();
-		$this->comment = $comment;
+		$this->comment = $comment ?? new PhpDocComment();
 		foreach ($params as $name => $type) {
 			if ($type instanceof PhpParam) {
 				$this->addParam($type);
@@ -107,14 +107,20 @@ class PhpFunction extends PhpElement
 	 */
 	public function getSource(): string
 	{
-		if (!$this->comment && $this->returnTypeHint->needDockBlockTypeHint()) {
-			$this->comment = new PhpDocComment();
-			$this->comment->setReturn(PhpDocElementFactory::getReturn($this->returnTypeHint->getDocBlockTypeHint()));
+		$comment = $this->comment;
+		if ($this->returnTypeHint->needDockBlockTypeHint()) {
+			$comment->setReturn(PhpDocElementFactory::getReturn($this->returnTypeHint->getDocBlockTypeHint()));
+		}
+
+		foreach ($this->params as $param) {
+			if ($param->getType()->needDockBlockTypeHint()) {
+				$comment->addParam(PhpDocElementFactory::getParam($param->getType(), $param->getName()));
+			}
 		}
 
 		$ret = '';
-		if ($this->comment !== null) {
-			$ret .= $this->getSourceRow($this->comment->getSource());
+		if ($commentSource = $comment->getSource()) {
+			$ret .= $this->getSourceRow($commentSource);
 		}
 
 		$ret .= $this->formatFunctionDefinition();
