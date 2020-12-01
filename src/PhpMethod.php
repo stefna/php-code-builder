@@ -60,23 +60,12 @@ class PhpMethod extends PhpFunction
 	 */
 	public static function constructor(array $params, array $source, bool $autoAssign = false): self
 	{
-		$docParams = [];
 		if ($autoAssign) {
 			foreach ($params as $param) {
-				if ($param->getType()->needDockBlockTypeHint()) {
-					$docParams[] = PhpDocElementFactory::getParam(
-						$param->getType()->getDocBlockTypeHint(),
-						$param->getName()
-					);
-				}
 				$source[] = sprintf('$this->%s = $%s;', $param->getName(), $param->getName());
 			}
 		}
 		$docBlock = null;
-		if (count($docParams)) {
-			$docBlock = new PhpDocComment();
-			$docBlock->setParams(...$docParams);
-		}
 		return new self(self::PUBLIC_ACCESS, '__construct', $params, $source, Type::empty(), $docBlock);
 	}
 
