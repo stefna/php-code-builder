@@ -136,4 +136,13 @@ class TypeTest extends TestCase
 			['string', null],
 		];
 	}
+
+	public function testSimplifiedName(): void
+	{
+		$type = Type::fromString(self::class);
+		$this->assertSame(self::class, $type->getType());
+		$type->simplifyName();
+		$this->assertTrue($type->isSimplified());
+		$this->assertSame('TypeTest', $type->getType());
+	}
 }

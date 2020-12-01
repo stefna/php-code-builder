@@ -20,7 +20,13 @@ final class Type
 	/** @var bool */
 	private $namespaced;
 	/** @var bool */
-	private $simplify = false;
+	private $simplified = false;
+	/** @var bool */
+	private $nullable;
+	/** @var string */
+	private $type;
+	/** @var Type[] */
+	private $types = [];
 
 	public static function empty(): self
 	{
@@ -56,13 +62,6 @@ final class Type
 		return new self($type);
 	}
 
-	/** @var bool */
-	private $nullable;
-	/** @var string */
-	private $type;
-	/** @var string[] */
-	private $types = [];
-
 	public function __construct(string $type, bool $nullable = false)
 	{
 		$this->type = $type;
@@ -72,14 +71,14 @@ final class Type
 
 	public function simplifyName(): void
 	{
-		$this->simplify = true;
+		$this->simplified = true;
 		$p = explode('\\', $this->type);
 		$this->type = array_pop($p);
 	}
 
-	public function isSimplify(): bool
+	public function isSimplified(): bool
 	{
-		return $this->simplify;
+		return $this->simplified;
 	}
 
 	public function getType(): string
@@ -91,6 +90,7 @@ final class Type
 	{
 		$this->type = $type;
 		$this->namespaced = strpos($type, '\\') !== false;
+		$this->simplified = false;
 	}
 
 	/**
@@ -98,20 +98,22 @@ final class Type
 	 */
 	public function addUnion($type): void
 	{
-		if ($type instanceof Type) {
-			$this->types[] = $type->type;
-			return;
-		}
 		if ($type === 'null') {
 			$this->nullable = true;
 			return;
 		}
+		if (!$type instanceof Type) {
+			$type = Type::fromString($type);
+		}
 		if (!count($this->types)) {
-			$this->types[] = $this->type;
+			$this->types[] = $this;
 		}
-		if (!in_array($type, $this->types, true)) {
-			$this->types[] = $type;
+		foreach ($this->types as $currentType) {
+			if ($currentType->type === $type->type) {
+				return;
+			}
 		}
+		$this->types[] = $type;
 	}
 
 	public function getTypeHint(): ?string
@@ -128,7 +130,7 @@ final class Type
 			return 'array';
 		}
 
-		return ($this->nullable ? '?' : '') . ($this->namespaced && !$this->simplify ? '\\' : '') . $type;
+		return ($this->nullable ? '?' : '') . ($this->namespaced && !$this->simplified ? '\\' : '') . $type;
 	}
 
 	public function needDockBlockTypeHint(): bool
@@ -139,20 +141,23 @@ final class Type
 	public function getDocBlockTypeHint(): ?string
 	{
 		if (count($this->types)) {
-			$types = $this->types;
-			if ($this->nullable) {
-				$types[] = 'null';
-			}
-			foreach ($types as &$type) {
-				if (strpos($type, '\\')) {
-					$type = '\\' . $type;
+			$docType = [];
+			foreach ($this->types as $type) {
+				if (strpos($type->type, '\\')) {
+					$docType[] = '\\' . $type->type;
+				}
+				else {
+					$docType[] = $type->type;
 				}
 			}
-			return implode('|', $types);
+			if ($this->nullable) {
+				$docType[] = 'null';
+			}
+			return implode('|', $docType);
 		}
 
 		$type = self::ALIAS_MAP[$this->type] ?? $this->type;
-		return ($this->namespaced && !$this->simplify ? '\\' : '') . $type . ($this->nullable ? '|null' : '');
+		return ($this->namespaced && !$this->simplified ? '\\' : '') . $type . ($this->nullable ? '|null' : '');
 	}
 
 	public function isNullable(): bool
@@ -163,6 +168,14 @@ final class Type
 	public function isUnion(): bool
 	{
 		return count($this->types) > 1;
+	}
+
+	/**
+	 * @return Type[]
+	 */
+	public function getUnionTypes(): array
+	{
+		return $this->types;
 	}
 
 	public function isArray(): bool
