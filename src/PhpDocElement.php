@@ -15,13 +15,10 @@ class PhpDocElement
 {
 	/*** @var string */
 	private $type;
-
 	/*** @var Type */
 	private $datatype;
-
-	/*** @var string*/
+	/*** @var string */
 	private $variableName;
-
 	/*** @var string */
 	private $description;
 
@@ -47,7 +44,7 @@ class PhpDocElement
 
 		$ret .= '@' . $this->type;
 
-		if ($this->datatype !== '') {
+		if ($this->datatype) {
 			$ret .= ' ' . $this->datatype->getDocBlockTypeHint();
 		}
 
