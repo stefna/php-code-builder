@@ -141,7 +141,7 @@ class PhpDocComment
 
 	public function addParam(PhpDocElement $param): self
 	{
-		$this->params[] = $param;
+		$this->params[$param->getHashCode()] = $param;
 		return $this;
 	}
 

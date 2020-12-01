@@ -83,4 +83,14 @@ class PhpDocElement
 	{
 		return $this->description;
 	}
+
+	public function getHashCode(): string
+	{
+		return md5(implode('', [
+			$this->type,
+			$this->variableName,
+			$this->description,
+			($this->datatype ? $this->datatype->getDocBlockTypeHint() : ''),
+		]));
+	}
 }
