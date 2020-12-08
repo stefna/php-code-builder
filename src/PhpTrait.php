@@ -66,7 +66,7 @@ class PhpTrait extends PhpElement
 		$ret = '';
 
 		if ($this->comment) {
-			$ret .= $this->comment->getSource();
+			$ret .= ltrim($this->comment->getSource());
 		}
 
 
