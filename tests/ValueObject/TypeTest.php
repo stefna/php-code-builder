@@ -145,4 +145,12 @@ class TypeTest extends TestCase
 		$this->assertTrue($type->isSimplified());
 		$this->assertSame('TypeTest', $type->getType());
 	}
+
+	public function testUnionTypeDocBlock(): void
+	{
+		$type = Type::empty();
+		$type->addUnion(Type::fromString('string'));
+		$type->addUnion(Type::fromString('float'));
+		$this->assertSame('string|float', $type->getDocBlockTypeHint());
+	}
 }

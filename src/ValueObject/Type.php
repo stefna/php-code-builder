@@ -153,7 +153,7 @@ final class Type
 			if ($this->nullable) {
 				$docType[] = 'null';
 			}
-			return implode('|', $docType);
+			return implode('|', array_filter($docType));
 		}
 
 		$type = self::ALIAS_MAP[$this->type] ?? $this->type;
