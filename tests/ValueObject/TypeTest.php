@@ -153,4 +153,14 @@ class TypeTest extends TestCase
 		$type->addUnion(Type::fromString('float'));
 		$this->assertSame('string|float', $type->getDocBlockTypeHint());
 	}
+
+
+	public function testUnionTypeWithEmptyBase(): void
+	{
+		$type = Type::empty();
+		$type->addUnion(Type::fromString('string'));
+		$type->addUnion(Type::fromString('float'));
+
+		$this->assertCount(2, $type->getUnionTypes());
+	}
 }

@@ -190,7 +190,14 @@ final class Type
 	 */
 	public function getUnionTypes(): array
 	{
-		return $this->types;
+		$returnTypes = [];
+		foreach ($this->types as $type) {
+			if ($type->type === '') {
+				continue;
+			}
+			$returnTypes[] = $type;
+		}
+		return $returnTypes;
 	}
 
 	public function isArray(): bool
