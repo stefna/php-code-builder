@@ -165,6 +165,21 @@ final class Type
 		return $this->nullable;
 	}
 
+	public function notNull(): self
+	{
+		if (!$this->isNullable()) {
+			return $this;
+		}
+		foreach ($this->types as $index => $type) {
+			if ($type === 'null') {
+				$self = clone $this;
+				unset($self->types[$index]);
+				return $self;
+			}
+		}
+		return $this;
+	}
+
 	public function isUnion(): bool
 	{
 		return count($this->types) > 1;
