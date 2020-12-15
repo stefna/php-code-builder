@@ -62,7 +62,7 @@ class PhpParam
 		return $this->value;
 	}
 
-	public function setType(string $type): void
+	public function setType(Type $type): void
 	{
 		$this->type = $type;
 	}
