@@ -137,6 +137,9 @@ class PhpTrait extends PhpElement
 	 */
 	public function addUse(string $class, string $alias = null): self
 	{
+		if ($this->namespace . '\\' . $this->identifier === '\\' . $class) {
+			return $this;
+		}
 		$this->uses[$class] = $alias ?: $class;
 
 		return $this;
