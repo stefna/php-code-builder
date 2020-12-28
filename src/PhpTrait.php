@@ -3,36 +3,36 @@
 namespace Stefna\PhpCodeBuilder;
 
 use Stefna\PhpCodeBuilder\Exception\DuplicateValue;
+use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
 class PhpTrait extends PhpElement
 {
 	protected const TYPE = 'trait';
 
-	/** @var string[] */
+	/** @var Identifier[] */
 	protected $uses = [];
-	/** @var string[] */
+	/** @var Identifier[] */
 	protected $traits = [];
-	/** @var PhpConstant[] */
-	private $constants = [];
-	/** @var PhpVariable[] */
-	private $variables = [];
-	/** @var PhpMethod[] */
-	private $methods = [];
+	/** @var PhpConstant[]|\SplObjectStorage<Identifier, PhpConstant> */
+	private $constants;
+	/** @var PhpVariable[]|\SplObjectStorage<Identifier, PhpVariable> */
+	private $variables;
+	/** @var PhpMethod[]|\SplObjectStorage<Identifier, PhpMethod> */
+	private $methods;
 	/** @var PhpDocComment */
 	private $comment;
-	/** @var string|null */
-	private $namespace;
 
-	public function __construct(string $identifier, PhpDocComment $comment = null)
+	/**
+	 * @param Identifier|string
+	 */
+	public function __construct($identifier, PhpDocComment $comment = null)
 	{
-		if (strpos($identifier, '\\') !== false) {
-			$ns = explode('\\', $identifier);
-			$identifier = array_pop($ns);
-			$this->setNamespace(implode('\\', $ns));
-		}
 		$this->access = '';
 		$this->comment = $comment;
-		$this->identifier = $identifier;
+		$this->identifier = Identifier::fromUnknown($identifier);
+		$this->methods = new \SplObjectStorage();
+		$this->variables = new \SplObjectStorage();
+		$this->constants = new \SplObjectStorage();
 	}
 
 	public function setComment(PhpDocComment $comment): void
@@ -48,16 +48,6 @@ class PhpTrait extends PhpElement
 		return $this->comment;
 	}
 
-	public function setNamespace(string $namespace): void
-	{
-		$this->namespace = '\\' . trim($namespace, '\\');
-	}
-
-	public function getNamespace(): ?string
-	{
-		return $this->namespace;
-	}
-
 	/**
 	 * @return string Returns the compete source code for the class
 	 */
@@ -69,11 +59,10 @@ class PhpTrait extends PhpElement
 			$ret .= ltrim($this->comment->getSource());
 		}
 
-
 		$ret .= $this->formatAccessor();
 
 		$ret .= static::TYPE;
-		$ret .= ' ' . $this->identifier;
+		$ret .= ' ' . $this->identifier->getName();
 
 		$ret .= $this->formatInheritance();
 
@@ -83,7 +72,7 @@ class PhpTrait extends PhpElement
 
 		if (count($this->traits)) {
 			foreach ($this->traits as $trait) {
-				$ret .= Indent::indent(1) . 'use ' . $trait . ';' . PHP_EOL;
+				$ret .= Indent::indent(1) . 'use ' . $trait->toString() . ';' . PHP_EOL;
 			}
 			$addNewLine = true;
 		}
@@ -92,8 +81,8 @@ class PhpTrait extends PhpElement
 			if ($addNewLine) {
 				$ret .= PHP_EOL;
 			}
-			foreach ($this->constants as $constant) {
-				$ret .= $constant->getSource();
+			foreach ($this->constants as $identifier) {
+				$ret .= $this->constants[$identifier]->getSource();
 			}
 			$addNewLine = true;
 		}
@@ -103,8 +92,8 @@ class PhpTrait extends PhpElement
 				$ret .= PHP_EOL;
 			}
 			$varSources = [];
-			foreach ($this->variables as $variable) {
-				$varSources[] = $variable->getSource();
+			foreach ($this->variables as $identifier) {
+				$varSources[] = $this->variables[$identifier]->getSource();
 			}
 
 			$ret .= implode(PHP_EOL, $varSources);
@@ -116,8 +105,8 @@ class PhpTrait extends PhpElement
 				$ret .= PHP_EOL;
 			}
 			$methodSources = [];
-			foreach ($this->methods as $method) {
-				$methodSources[] = $method->getSource();
+			foreach ($this->methods as $identifier) {
+				$methodSources[] = $this->methods[$identifier]->getSource();
 			}
 
 			$ret .= implode(PHP_EOL, $methodSources);
@@ -131,20 +120,27 @@ class PhpTrait extends PhpElement
 	/**
 	 * Add use statement above class
 	 *
-	 * @param string $class
+	 * @param Identifier|string $class
 	 * @param string $alias
 	 * @return PhpClass
 	 */
-	public function addUse(string $class, string $alias = null): self
+	public function addUse($class, string $alias = null): self
 	{
-		if ($this->namespace . '\\' . $this->identifier === '\\' . $class) {
+		$class = Identifier::fromUnknown($class);
+		if (!$alias && $this->identifier->equal($class)) {
 			return $this;
 		}
-		$this->uses[$class] = $alias ?: $class;
+		if ($alias) {
+			$class->setAlias($alias);
+		}
+		$this->uses[] = $class;
 
 		return $this;
 	}
 
+	/**
+	 * @return Identifier[]
+	 */
 	public function getUses(): array
 	{
 		return $this->uses;
@@ -164,8 +160,8 @@ class PhpTrait extends PhpElement
 	 */
 	public function addConstant(PhpConstant $constant): self
 	{
-		if (array_key_exists($constant->getIdentifier(), $this->constants)) {
-			throw new DuplicateValue("A constant of the name ({$constant->getIdentifier()}) does already exist.");
+		if ($this->constants->contains($constant->getIdentifier())) {
+			throw new DuplicateValue("A constant of the name ({$constant->getIdentifier()->getName()}) does already exist.");
 		}
 
 		$this->constants[$constant->getIdentifier()] = $constant;
@@ -184,7 +180,7 @@ class PhpTrait extends PhpElement
 	 */
 	public function addVariable(PhpVariable $variable, bool $createGetterSetter = false): self
 	{
-		if ($this->variableExists($variable->getIdentifier())) {
+		if ($this->variableExists($variable->getIdentifier()->getName())) {
 			throw new DuplicateValue("A variable of the name ({$variable->getIdentifier()}) is already defined.");
 		}
 		$this->addUseFromType($variable->getType());
@@ -207,20 +203,26 @@ class PhpTrait extends PhpElement
 	 */
 	public function addMethod(PhpMethod $method): self
 	{
-		if ($this->methodExists($method->getIdentifier())) {
-			throw new DuplicateValue("A function of the name ({$method->getIdentifier()}) does already exist.");
+		if ($this->methods->contains($method->getIdentifier())) {
+			throw new DuplicateValue("A function of the name ({$method->getIdentifier()->getName()}) does already exist.");
 		}
 		return $this->replaceMethod($method->getIdentifier(), $method);
 	}
 
-	public function replaceMethod(string $identifier, PhpMethod $method): self
+	/**
+	 * @param Identifier|string $identifier
+	 */
+	public function replaceMethod($identifier, PhpMethod $method): self
 	{
+		if (is_string($identifier)) {
+			$identifier = Identifier::simple($identifier);
+		}
 		$this->addUseFromType($method->getReturnType());
 		foreach ($method->getParams() as $param) {
 			$this->addUseFromType($param->getType());
 		}
 
-		$this->methods[$method->getIdentifier()] = $method;
+		$this->methods[$identifier] = $method;
 
 		return $this;
 	}
@@ -228,35 +230,54 @@ class PhpTrait extends PhpElement
 	/**
 	 * Checks if a variable with the same name is already defined
 	 *
-	 * @param string $identifier
+	 * @param Identifier|string $identifier
 	 * @return bool
 	 */
 	public function variableExists(string $identifier): bool
 	{
-		return array_key_exists($identifier, $this->variables);
+		if (is_string($identifier)) {
+			$identifier = Identifier::simple($identifier);
+		}
+		return $this->variables->contains($identifier);
 	}
 
 	/**
 	 * Checks if a method with the same name is already defined
 	 *
-	 * @param string $identifier
+	 * @param Identifier|string $identifier
 	 * @return bool
 	 */
-	public function methodExists(string $identifier): bool
+	public function methodExists($identifier): bool
 	{
-		return array_key_exists($identifier, $this->methods);
+		if (is_string($identifier)) {
+			$identifier = Identifier::simple($identifier);
+		}
+
+		return $this->methods->contains($identifier);
 	}
 
-	public function getVariable(string $identifier): ?PhpVariable
+	/**
+	 * @param Identifier|string $identifier
+	 */
+	public function getVariable($identifier): ?PhpVariable
 	{
+		if (is_string($identifier)) {
+			$identifier = Identifier::simple($identifier);
+		}
 		if (!$this->variableExists($identifier)) {
 			return null;
 		}
 		return $this->variables[$identifier];
 	}
 
-	public function getMethod(string $identifier): ?PhpMethod
+	/**
+	 * @param Identifier|string $identifier
+	 */
+	public function getMethod($identifier): ?PhpMethod
 	{
+		if (is_string($identifier)) {
+			$identifier = Identifier::simple($identifier);
+		}
 		if (!$this->methodExists($identifier)) {
 			return null;
 		}
@@ -279,8 +300,7 @@ class PhpTrait extends PhpElement
 	private function addUseFromType(ValueObject\Type $type): void
 	{
 		if ($type->isTypeNamespaced() && !$type->isSimplified()) {
-			$typeClass = $type->isArray() ? $type->getArrayType() : $type->getType();
-			$this->addUse($typeClass);
+			$this->addUse($type->getIdentifier());
 			$type->simplifyName();
 		}
 	}

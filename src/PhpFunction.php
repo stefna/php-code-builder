@@ -2,6 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 /**
@@ -39,7 +40,7 @@ class PhpFunction extends PhpElement
 		PhpDocComment $comment = null
 	) {
 		$this->access = '';
-		$this->identifier = $identifier;
+		$this->identifier = Identifier::simple($identifier);
 		$this->source = $source;
 		$this->returnTypeHint = $returnTypeHint ?? Type::empty();
 		$this->comment = $comment ?? new PhpDocComment();
@@ -146,7 +147,7 @@ class PhpFunction extends PhpElement
 	{
 		$functionNameDefinition = $this->formatFunctionAccessors();
 		$functionNameDefinition .= 'function ';
-		$functionNameDefinition .= $this->identifier;
+		$functionNameDefinition .= $this->identifier->toString();
 
 		$paramStr = self::buildParametersString(strlen($functionNameDefinition), $this->params);
 

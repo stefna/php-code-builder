@@ -20,7 +20,7 @@ class PhpMethod extends PhpFunction
 	public static function setter(PhpVariable $var, bool $fluent = false): self
 	{
 		$source = [
-			'$this->' . $var->getIdentifier() . ' = $' . $var->getIdentifier() . ';',
+			'$this->' . $var->getIdentifier()->toString() . ' = $' . $var->getIdentifier()->toString() . ';',
 		];
 		if ($fluent) {
 			$source[] = 'return $this;';
@@ -30,11 +30,16 @@ class PhpMethod extends PhpFunction
 		$docBlock = null;
 		if ($type->needDockBlockTypeHint()) {
 			$docBlock = new PhpDocComment();
-			$docBlock->addParam(PhpDocElementFactory::getParam($type->getDocBlockTypeHint(), $var->getIdentifier()));
+			$docBlock->addParam(PhpDocElementFactory::getParam(
+				$type->getDocBlockTypeHint(),
+				$var->getIdentifier()->toString()
+			));
 		}
 
-		return new self(self::PUBLIC_ACCESS, 'set' . ucfirst($var->getIdentifier()), [
-			new PhpParam($var->getIdentifier(), $type)
+		$valueParam = PhpParam::fromVariable($var);
+		$valueParam->setType($type);
+		return new self(self::PUBLIC_ACCESS, 'set' . ucfirst($var->getIdentifier()->toString()), [
+			$valueParam,
 		], $source, Type::fromString('void'), $docBlock);
 	}
 
@@ -45,7 +50,7 @@ class PhpMethod extends PhpFunction
 		if ($type->is('bool')) {
 			$prefix = 'is';
 		}
-		$methodName = $identifier = $var->getIdentifier();
+		$methodName = $identifier = $var->getIdentifier()->toString();
 		if (strpos($identifier, $prefix) === 0) {
 			$methodName = substr($methodName, strlen($prefix));
 		}

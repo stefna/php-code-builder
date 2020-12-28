@@ -2,6 +2,8 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Identifier;
+
 class PhpConstant extends PhpElement
 {
 	public const CASE_UPPER = 0;
@@ -37,7 +39,7 @@ class PhpConstant extends PhpElement
 		int $case = 0
 	) {
 		$this->access = $access;
-		$this->identifier = $identifier;
+		$this->identifier = Identifier::simple($identifier);
 		if ($value === null) {
 			$value = $identifier;
 		}
@@ -64,7 +66,7 @@ class PhpConstant extends PhpElement
 
 	public function getName(): string
 	{
-		$name = $this->identifier;
+		$name = $this->identifier->getName();
 		$name = preg_replace('/^(\d)/', '_$0', $name);
 		$name = str_replace('-', '_', $name);
 

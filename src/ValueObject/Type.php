@@ -200,6 +200,11 @@ final class Type
 		return $returnTypes;
 	}
 
+	public function getIdentifier(): Identifier
+	{
+		return Identifier::fromString($this->isArray() ? $this->getArrayType() : $this->getType());
+	}
+
 	public function isArray(): bool
 	{
 		return (substr($this->type, -2) === '[]' || strpos($this->type, 'array<') === 0);

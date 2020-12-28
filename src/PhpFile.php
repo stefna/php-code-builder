@@ -3,6 +3,7 @@
 namespace Stefna\PhpCodeBuilder;
 
 use Stefna\PhpCodeBuilder\Exception\DuplicateValue;
+use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
 /**
  * Class that represents the source code for a php file
@@ -18,26 +19,27 @@ class PhpFile
 	private $name;
 	/** @var bool */
 	private $strict = false;
-	/** @var string */
+	/** @var string|null */
 	private $namespace;
-	/** @var PhpTrait[]|PhpClass[] */
-	private $classes = [];
+	/** @var \SplObjectStorage<Identifier, PhpClass|PhpTrait> */
+	private $classes;
 	/** @var PhpFunction[] */
 	private $functions = [];
 	/** @var string */
 	private $source;
-	/** @var string[] */
-	private $use = [];
+	/** @var \SplObjectStorage<Identifier>|Identifier[] */
+	private $use;
 
 	public static function createFromClass(PhpTrait $object): self
 	{
+		$identifier = $object->getIdentifier();
 		$path = '';
-		if ($object->getNamespace()) {
-			$path = ltrim(str_replace('\\', DIRECTORY_SEPARATOR, $object->getNamespace()), DIRECTORY_SEPARATOR);
+		if ($identifier->getNamespace()) {
+			$path = ltrim(str_replace('\\', DIRECTORY_SEPARATOR, $identifier->getNamespace()), DIRECTORY_SEPARATOR);
 			$path .= DIRECTORY_SEPARATOR;
 		}
 
-		$self = new self($path . $object->getIdentifier());
+		$self = new self($path . $identifier->getName());
 		$self->setStrict();
 		$self->classes[$object->getIdentifier()] = $object;
 		return $self;
@@ -45,6 +47,8 @@ class PhpFile
 
 	public function __construct($fileName)
 	{
+		$this->classes = new \SplObjectStorage();
+		$this->use = new \SplObjectStorage();
 		$this->name = $fileName;
 	}
 
@@ -68,7 +72,8 @@ class PhpFile
 		$ret .= PHP_EOL . PHP_EOL;
 
 		if (count($this->classes) === 1) {
-			$class = reset($this->classes);
+			$this->classes->rewind();
+			$class = $this->classes->current();
 			if ($class->getNamespace()) {
 				$this->namespace .= $class->getNamespace();
 				$this->namespace = trim($this->namespace, '\\');
@@ -80,16 +85,23 @@ class PhpFile
 		}
 
 		$classesCode = '';
-		foreach ($this->classes as $class) {
+		foreach ($this->classes as $identifier) {
+			/** @var PhpTrait|PhpClass $class */
+			$class = $this->classes[$identifier];
 			$classesCode .= $class->getSource();
-			$this->use = array_merge($this->use, $class->getUses());
+			foreach ($class->getUses() as $useIdentifier) {
+				if ($this->use->contains($useIdentifier)) {
+					continue;
+				}
+				$this->use->attach($useIdentifier);
+			}
 		}
 
 		if (count($this->use) > 0) {
-			foreach ($this->use as $class => $as) {
-				$ret .= 'use ' . $class;
-				if ($class !== $as) {
-					$ret .= ' as ' . $as;
+			foreach ($this->use as $identifier) {
+				$ret .= 'use ' . $identifier->getFqcn();
+				if ($identifier->getAlias()) {
+					$ret .= ' as ' . $identifier->getAlias();
 				}
 				$ret .= ';' . PHP_EOL;
 			}
@@ -167,8 +179,8 @@ class PhpFile
 	 */
 	public function addClass(PhpClass $class): self
 	{
-		if ($this->classExists($class->getIdentifier())) {
-			throw new DuplicateValue('A class of the name (' . $class->getIdentifier() . ') does already exist.');
+		if ($this->classes->contains($class->getIdentifier())) {
+			throw new DuplicateValue('A class of the name (' . $class->getIdentifier()->getName() . ') does already exist.');
 		}
 
 		$this->classes[$class->getIdentifier()] = $class;
@@ -184,8 +196,8 @@ class PhpFile
 	 */
 	public function addTrait(PhpTrait $trait): self
 	{
-		if ($this->classExists($trait->getIdentifier())) {
-			throw new DuplicateValue('A trait of the name (' . $trait->getIdentifier() . ') does already exist.');
+		if ($this->classes->contains($trait->getIdentifier())) {
+			throw new DuplicateValue('A trait of the name (' . $trait->getIdentifier()->getName() . ') does already exist.');
 		}
 
 		$this->classes[$trait->getIdentifier()] = $trait;
@@ -212,10 +224,10 @@ class PhpFile
 	public function addFunction(PhpFunction $function): self
 	{
 		if ($this->functionExists($function->getIdentifier())) {
-			throw new DuplicateValue('A function of the name (' . $function->getIdentifier() . ') does already exist.');
+			throw new DuplicateValue('A function of the name (' . $function->getIdentifier()->getName() . ') does already exist.');
 		}
 
-		$this->functions[$function->getIdentifier()] = $function;
+		$this->functions[$function->getIdentifier()->getName()] = $function;
 
 		return $this;
 	}
@@ -223,13 +235,19 @@ class PhpFile
 	/**
 	 * Add use statement after namespace declaration
 	 *
-	 * @param string $class fqcn
-	 * @param string $alias optional alias
-	 * @return PhpFile
+	 * @param Identifier|string $identifier
+	 * @param string $alias
+	 * @return PhpClass
 	 */
-	public function addUse(string $class, string $alias = null): self
+	public function addUse($identifier, string $alias = null): self
 	{
-		$this->use[$class] = $alias ?: $class;
+		$identifier = Identifier::fromUnknown($identifier);
+		if ($alias) {
+			$identifier->setAlias($alias);
+		}
+		if (!$this->use->contains($identifier)) {
+			$this->use->attach($identifier);
+		}
 
 		return $this;
 	}
@@ -237,12 +255,12 @@ class PhpFile
 	/**
 	 * Checks if a class with the same name does already exist
 	 *
-	 * @param string $identifier
+	 * @param Identifier|string $identifier
 	 * @return bool
 	 */
 	public function classExists($identifier): bool
 	{
-		return array_key_exists($identifier, $this->classes);
+		return $this->classes->contains(Identifier::fromUnknown($identifier));
 	}
 
 	/**

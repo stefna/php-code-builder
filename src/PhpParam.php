@@ -20,7 +20,7 @@ class PhpParam
 
 	public static function fromVariable(PhpVariable $var): self
 	{
-		return new self($var->getIdentifier(), $var->getType());
+		return new self($var->getIdentifier()->getName(), $var->getType());
 	}
 
 	public function __construct(string $name, Type $type, $value = self::NO_VALUE)

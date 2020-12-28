@@ -2,6 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 /**
@@ -53,7 +54,7 @@ class PhpVariable extends PhpElement
 		}
 		$this->comment = $comment;
 		$this->access = $access;
-		$this->identifier = $identifier;
+		$this->identifier = Identifier::simple($identifier);
 		$this->initializedValue = $value;
 		$this->type = $type ?? Type::empty();
 	}
@@ -83,7 +84,7 @@ class PhpVariable extends PhpElement
 			$dec .= ' ' . $this->type->getTypeHint();
 		}
 
-		$dec .= ' $' . $this->identifier;
+		$dec .= ' $' . $this->identifier->getName();
 		if ($this->initializedValue !== self::NO_VALUE) {
 			$dec .= ' = ' . ($this->raw ? $this->initializedValue : FormatValue::format($this->initializedValue));
 		}

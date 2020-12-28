@@ -2,6 +2,8 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Identifier;
+
 /**
  * Abstract base class for all PHP elements, variables, functions and classes etc.
  *
@@ -25,7 +27,7 @@ abstract class PhpElement
 	/**
 	 * The identifier of the element
 	 *
-	 * @var string
+	 * @var Identifier
 	 */
 	protected $identifier;
 
@@ -52,9 +54,9 @@ abstract class PhpElement
 	}
 
 	/**
-	 * @return string The identifier, name, of the element
+	 * @return Identifier The identifier, name, of the element
 	 */
-	public function getIdentifier(): string
+	public function getIdentifier(): Identifier
 	{
 		return $this->identifier;
 	}
@@ -93,10 +95,9 @@ abstract class PhpElement
 	}
 
 	/**
-	 * @param string $identifier
 	 * @return $this
 	 */
-	public function setIdentifier(string $identifier): self
+	public function setIdentifier(Identifier $identifier): self
 	{
 		$this->identifier = $identifier;
 		return $this;

@@ -154,7 +154,6 @@ class TypeTest extends TestCase
 		$this->assertSame('string|float', $type->getDocBlockTypeHint());
 	}
 
-
 	public function testUnionTypeWithEmptyBase(): void
 	{
 		$type = Type::empty();

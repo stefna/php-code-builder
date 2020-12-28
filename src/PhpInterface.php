@@ -2,22 +2,24 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Identifier;
+
 class PhpInterface extends PhpTrait
 {
 	protected const TYPE = 'interface';
 
-	/** @var string[] */
+	/** @var Identifier[] */
 	private $extends = [];
 
 	/**
 	 * Add interface to class
 	 *
-	 * @param string $interface
+	 * @param Identifier|string $interface
 	 * @return $this
 	 */
-	public function addExtend(string $interface): self
+	public function addExtend($interface): self
 	{
-		$this->extends[] = $interface;
+		$this->extends[] = Identifier::fromUnknown($interface);
 
 		return $this;
 	}
@@ -27,9 +29,11 @@ class PhpInterface extends PhpTrait
 		$ret = '';
 		if ($this->extends) {
 			$ret .= ' extends ';
-			$ret .= implode(', ', $this->extends);
+			foreach ($this->extends as $identifier) {
+				$ret .= $identifier->toString() . ', ';
+			}
 		}
-		return $ret;
+		return substr($ret, 0, -2);
 	}
 
 	public function addMethod(PhpMethod $method): PhpTrait

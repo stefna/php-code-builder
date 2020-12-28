@@ -2,6 +2,8 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Identifier;
+
 /**
  * Class that represents the source code for a class in php
  *
@@ -17,22 +19,19 @@ class PhpClass extends PhpTrait
 	private $abstract;
 	/** @var bool */
 	private $final;
-	/** @var string */
+	/** @var Identifier */
 	private $extends;
-	/** @var string[] */
+	/** @var Identifier[] */
 	private $implements;
 
 	/**
-	 * @param string $identifier
-	 * @param string $extends A string of the class that this class extends
-	 * @param PhpDocComment $comment
-	 * @param bool $final
-	 * @param bool $abstract
-	 * @param array $implements
+	 * @param Identifier|string $identifier
+	 * @param Identifier|string|null $extends A string of the class that this class extends
+	 * @param Identifier[] $implements
 	 */
 	public function __construct(
-		string $identifier,
-		?string $extends = null,
+		$identifier,
+		$extends = null,
 		?PhpDocComment $comment = null,
 		bool $final = false,
 		bool $abstract = false,
@@ -41,7 +40,7 @@ class PhpClass extends PhpTrait
 		parent::__construct($identifier, $comment);
 		$this->access = '';
 		$this->final = $final;
-		$this->extends = $extends;
+		$this->extends = Identifier::fromUnknown($extends);
 		$this->implements = $implements;
 		$this->abstract = $abstract;
 	}
@@ -61,17 +60,14 @@ class PhpClass extends PhpTrait
 	/**
 	 * Add interface to class
 	 *
-	 * @param string $interface
+	 * @param Identifier|string $interface
 	 * @return $this
 	 */
-	public function addInterface(string $interface): self
+	public function addInterface($interface): self
 	{
-		if (strpos($interface, '\\')) {
-			$this->addUse($interface);
-			$p = explode('\\', $interface);
-			$interface = array_pop($p);
-		}
-		$this->implements[] = $interface;
+		$identifier = Identifier::fromUnknown($interface);
+		$this->addUse($identifier);
+		$this->implements[] = $identifier;
 
 		return $this;
 	}
@@ -82,13 +78,13 @@ class PhpClass extends PhpTrait
 		return $this;
 	}
 
-	public function setExtends(string $extends): self
+	/**
+	 * @param Identifier|string $extends
+	 */
+	public function setExtends($extends): self
 	{
-		if (strpos($extends, '\\')) {
-			$this->addUse($extends);
-			$p = explode('\\', $extends);
-			$extends = array_pop($p);
-		}
+		$extends = Identifier::fromUnknown($extends);
+		$this->addUse($extends);
 		$this->extends = $extends;
 		return $this;
 	}
@@ -97,15 +93,15 @@ class PhpClass extends PhpTrait
 	{
 		$ret = '';
 		if ($this->extends) {
-			if (\strpos($this->extends, '\\') !== false) {
-				$this->extends = '\\' . ltrim($this->extends, '\\');
-			}
-			$ret .= ' extends ' . $this->extends;
+			$ret .= ' extends ' . $this->extends->toString();
 		}
 
 		if ($this->implements) {
 			$ret .= ' implements ';
-			$ret .= implode(', ', $this->implements);
+			foreach ($this->implements as $identifier) {
+				$ret .= $identifier->toString() . ', ';
+			}
+			$ret = substr($ret, 0, -2);
 		}
 		return $ret;
 	}
