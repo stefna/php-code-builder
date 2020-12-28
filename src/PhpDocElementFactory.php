@@ -2,6 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 /**
@@ -53,9 +54,12 @@ class PhpDocElementFactory
 		return new PhpDocElement('throws', $exception, '', $description);
 	}
 
-	public static function method(string $returnType, string $returnClass, string $methodName): PhpDocElement
+	/**
+	 * @param string|Identifier $returnClass
+	 */
+	public static function method(string $returnType, $returnClass, string $methodName): PhpDocElement
 	{
-		return new PhpDocElement('method', $returnType, '', $returnClass . ' ' . $methodName . '()');
+		return new PhpDocElement('method', $returnType, '', Identifier::fromUnknown($returnClass)->getName() . ' ' . $methodName . '()');
 	}
 
 	/**

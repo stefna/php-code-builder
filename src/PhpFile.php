@@ -99,7 +99,7 @@ class PhpFile
 
 		if (count($this->use) > 0) {
 			foreach ($this->use as $identifier) {
-				$ret .= 'use ' . $identifier->getFqcn();
+				$ret .= 'use ' . ltrim($identifier->getFqcn(), '\\');
 				if ($identifier->getAlias()) {
 					$ret .= ' as ' . $identifier->getAlias();
 				}
