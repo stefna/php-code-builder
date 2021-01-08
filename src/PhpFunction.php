@@ -138,6 +138,15 @@ class PhpFunction extends PhpElement
 		return $this;
 	}
 
+	public function removeParam(string $name): self
+	{
+		if (isset($this->params[$name])) {
+			unset($this->params[$name]);
+		}
+
+		return $this;
+	}
+
 	protected function formatFunctionAccessors(): string
 	{
 		return '';
