@@ -271,6 +271,14 @@ class PhpTrait extends PhpElement
 	}
 
 	/**
+	 * @return \SplObjectStorage<Identifier, PhpVariable>
+	 */
+	public function getVariables()
+	{
+		return $this->variables;
+	}
+
+	/**
 	 * @param Identifier|string $identifier
 	 */
 	public function getMethod($identifier): ?PhpMethod
