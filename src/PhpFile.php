@@ -99,6 +99,10 @@ class PhpFile
 
 		if (count($this->use) > 0) {
 			foreach ($this->use as $identifier) {
+				if ($identifier->getNamespace() === $this->namespace) {
+					// don't need to add use statements for same namespace as file
+					continue;
+				}
 				$ret .= 'use ' . ltrim($identifier->getFqcn(), '\\');
 				if ($identifier->getAlias()) {
 					$ret .= ' as ' . $identifier->getAlias();
