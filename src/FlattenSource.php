@@ -20,6 +20,9 @@ class FlattenSource
 						if (is_array($line)) {
 							$ret .= self::source($line, $level + 1);
 						}
+						elseif ($line === '') {
+							$ret .= PHP_EOL;
+						}
 						else {
 							$ret .= Indent::indent($level) . $line . PHP_EOL;
 						}
@@ -28,6 +31,9 @@ class FlattenSource
 			}
 			elseif (is_array($row)) {
 				$ret .= self::source($row, $level + 1);
+			}
+			elseif ($row === '') {
+				$ret .= PHP_EOL;
 			}
 			else {
 				$ret .= Indent::indent($level) . $row . PHP_EOL;
