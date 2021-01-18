@@ -16,6 +16,11 @@ final class ClassMethodCall implements CodeInterface
 
 	private $indentFirstLine = false;
 
+	public static function this(string $method, array $params = []): self
+	{
+		return new self(VariableReference::this(), $method, $params);
+	}
+
 	public function __construct(VariableReference $class, string $method, array $params = [])
 	{
 		$this->identifier = $class->getSource();
