@@ -100,6 +100,7 @@ class PhpTrait extends PhpElement implements CodeInterface
 			foreach ($this->variables as $identifier) {
 				$classBody[] = trim($this->variables[$identifier]->getSource());
 			}
+			$addNewLine = true;
 		}
 
 		if (count($this->methods) > 0) {
