@@ -3,11 +3,10 @@
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
 use Stefna\PhpCodeBuilder\FlattenSource;
-use Stefna\PhpCodeBuilder\FormatValue;
 use Stefna\PhpCodeBuilder\Indent;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
-final class StaticMethodCall implements CodeInterface
+final class ClassMethodCall implements CodeInterface
 {
 	use MethodParamsTrait;
 
@@ -17,10 +16,9 @@ final class StaticMethodCall implements CodeInterface
 
 	private $indentFirstLine = false;
 
-	public function __construct(Identifier $class, string $method, array $params = [])
+	public function __construct(VariableReference $class, string $method, array $params = [])
 	{
-		$this->identifier = $class->getName();
-		$this->callIdentifier = '::';
+		$this->identifier = $class->getSource();
 		$this->class = $class;
 		$this->method = $method;
 		$this->params = $params;
