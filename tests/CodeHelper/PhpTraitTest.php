@@ -19,7 +19,7 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 final class PhpTraitTest extends TestCase
 {
-	public function testXX()
+	public function testSimple()
 	{
 		$trait = new PhpTrait('Test');
 		$trait->addVariable(PhpVariable::protected('test', Type::fromString('string')));

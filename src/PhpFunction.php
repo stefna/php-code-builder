@@ -206,6 +206,9 @@ class PhpFunction extends PhpElement implements CodeInterface
 			elseif ($isAbstract) {
 				$endDeclaration .= ';';
 			}
+			else {
+				$endDeclaration .= ' {';
+			}
 			$ret[] = $endDeclaration;
 		}
 		if ($isAbstract) {
