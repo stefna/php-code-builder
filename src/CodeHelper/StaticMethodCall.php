@@ -59,6 +59,7 @@ final class StaticMethodCall implements CodeInterface
 				$return[] = $firstLine;
 				$params = count($paramSource);
 				$renderedValues = [];
+				$lastValueIsArray = is_array($paramSource[$params - 1]);
 				foreach ($paramSource as $key => $row) {
 					if (is_string($row)) {
 						$value = $row;
@@ -71,8 +72,13 @@ final class StaticMethodCall implements CodeInterface
 						$renderedValues[] = $row;
 					}
 				}
+				if ($lastValueIsArray) {
+					$renderedValues[count($renderedValues) - 1] = ')';
+				}
 				$return[] = $renderedValues;
-				$return[] = ')';
+				if (!$lastValueIsArray) {
+					$return[] = ')';
+				}
 				return $return;
 			}
 			foreach ($paramSource as $row) {
@@ -80,7 +86,12 @@ final class StaticMethodCall implements CodeInterface
 			}
 
 			$lastRow = $return[count($return) - 1];
-			if (is_string($lastRow) && strpos($lastRow, ',')) {
+			// if last param is an array append closing parentis
+			if ($lastRow === ']') {
+				$return[count($return) - 1] .= ')';
+			}
+			// if last param have multiple values append closing parentis
+			elseif (is_string($lastRow) && strpos($lastRow, ',')) {
 				$return[count($return) - 1] .= ')';
 			}
 			else {

@@ -93,4 +93,22 @@ final class StaticMethodCallTest extends TestCase
 	\'description\' => \'Valid for site specific endpoints\',
 ], $testVar)', trim($call->getSource()));
 	}
+
+	public function testWithLastParamIsArray()
+	{
+		$call = new StaticMethodCall(Identifier::fromString(StaticMethodCall::class), 'test', [
+			'site-bearer-token',
+			new ArrayCode([
+				'type' => 'http',
+				'scheme' => 'bearer',
+				'description' => 'Valid for site specific endpoints',
+			]),
+		]);
+
+		$this->assertSame('StaticMethodCall::test(\'site-bearer-token\', [
+	\'type\' => \'http\',
+	\'scheme\' => \'bearer\',
+	\'description\' => \'Valid for site specific endpoints\',
+])', trim($call->getSource()));
+	}
 }
