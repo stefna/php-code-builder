@@ -104,12 +104,15 @@ class PhpTrait extends PhpElement implements CodeInterface
 		}
 
 		if (count($this->methods) > 0) {
-			foreach ($this->methods as $identifier) {
-				if ($addNewLine) {
-					$classBody[] = '';
-				}
-				array_push($classBody, ...$this->methods[$identifier]->getSourceArray());
+			if ($addNewLine) {
+				$classBody[] = '';
 			}
+			$addNewLine = (bool)($addNewLine ?: count($this->methods));
+			foreach ($this->methods as $identifier) {
+				array_push($classBody, ...$this->methods[$identifier]->getSourceArray());
+				$classBody[] = '';
+			}
+			array_pop($classBody);
 		}
 		$ret[] = $classBody;
 		$ret[] = '}';
