@@ -86,9 +86,11 @@ class PhpVariable extends PhpElement
 
 		$dec .= ' $' . $this->identifier->getName();
 		if ($this->initializedValue !== self::NO_VALUE) {
-			$dec .= ' = ' . ($this->raw ? $this->initializedValue : FormatValue::format($this->initializedValue));
+			$dec .= ' = ' . rtrim($this->raw ? $this->initializedValue : FormatValue::format($this->initializedValue), PHP_EOL);
 		}
-		$dec .= ';';
+		if (substr($dec, -1) !== ';') {
+			$dec .= ';';
+		}
 
 		$sourceRow = $this->getSourceRow($dec);
 		// Strip unnecessary null as default value
