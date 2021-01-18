@@ -39,7 +39,6 @@ final class IfCodeTest extends TestCase
 
 	public function testIndent()
 	{
-
 		$if = IfCode::instanceOf(
 			VariableReference::this('serverConfiguration'),
 			Identifier::fromString(WriteableServerConfigurationInterface::class),
@@ -60,12 +59,12 @@ final class IfCodeTest extends TestCase
 			$if,
 		]);
 
-		$this->assertSame('	public function setValue(string $token)
-	{
-		if ($this->serverConfiguration instanceof WriteableServerConfigurationInterface) {
-			$this->serverConfiguration->setSecurityValue(\'test-scheme\', SecurityValue::apiKey($token));
-		}
+		$this->assertSame('public function setValue(string $token)
+{
+	if ($this->serverConfiguration instanceof WriteableServerConfigurationInterface) {
+		$this->serverConfiguration->setSecurityValue(\'test-scheme\', SecurityValue::apiKey($token));
 	}
+}
 ', $method->getSource());
 	}
 }

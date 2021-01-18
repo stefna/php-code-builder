@@ -33,7 +33,10 @@ class PhpInterface extends PhpTrait
 				$ret .= $identifier->toString() . ', ';
 			}
 		}
-		return substr($ret, 0, -2);
+		if ($ret) {
+			return substr($ret, 0, -2);
+		}
+		return $ret;
 	}
 
 	public function addMethod(PhpMethod $method): PhpTrait

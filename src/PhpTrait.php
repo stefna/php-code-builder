@@ -2,10 +2,11 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
 use Stefna\PhpCodeBuilder\Exception\DuplicateValue;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
-class PhpTrait extends PhpElement
+class PhpTrait extends PhpElement implements CodeInterface
 {
 	protected const TYPE = 'trait';
 
@@ -51,68 +52,64 @@ class PhpTrait extends PhpElement
 	/**
 	 * @return string Returns the compete source code for the class
 	 */
-	public function getSource(): string
+	public function getSource(int $currentIndent = 0): string
 	{
-		$ret = '';
+		return FlattenSource::source($this->getSourceArray());
+	}
 
+	public function getSourceArray(int $currentIndent = 0): array
+	{
+		$ret = [];
 		if ($this->comment) {
-			$ret .= ltrim($this->comment->getSource());
+			foreach ($this->comment->getSourceArray() as $line) {
+				$ret[] = $line;
+			}
 		}
 
-		$ret .= $this->formatAccessor();
+		$declaration = $this->formatAccessor();
+		$declaration .= static::TYPE;
+		$declaration .= ' ' . $this->identifier->getName();
+		$declaration .= $this->formatInheritance();
 
-		$ret .= static::TYPE;
-		$ret .= ' ' . $this->identifier->getName();
-
-		$ret .= $this->formatInheritance();
-
-		$ret .= PHP_EOL . '{' . PHP_EOL;
+		$ret[] = $declaration;
+		$ret[] = '{';
+		$classBody = [];
 
 		$addNewLine = false;
-
 		if (count($this->traits)) {
 			foreach ($this->traits as $trait) {
-				$ret .= Indent::indent(1) . 'use ' . $trait->toString() . ';' . PHP_EOL;
+				$classBody[] = 'use ' . $trait->toString() . ';';
 			}
 			$addNewLine = true;
 		}
 
 		if (count($this->constants) > 0) {
 			if ($addNewLine) {
-				$ret .= PHP_EOL;
+				$classBody[] = '';
 			}
 			foreach ($this->constants as $identifier) {
-				$ret .= $this->constants[$identifier]->getSource();
+				$classBody[] = trim($this->constants[$identifier]->getSource());
 			}
 			$addNewLine = true;
 		}
 
 		if (count($this->variables) > 0) {
 			if ($addNewLine) {
-				$ret .= PHP_EOL;
+				$classBody[] = '';
 			}
-			$varSources = [];
 			foreach ($this->variables as $identifier) {
-				$varSources[] = $this->variables[$identifier]->getSource();
+				$classBody[] = trim($this->variables[$identifier]->getSource());
 			}
-
-			$ret .= implode(PHP_EOL, $varSources);
-			$addNewLine = true;
 		}
 
 		if (count($this->methods) > 0) {
-			if ($addNewLine) {
-				$ret .= PHP_EOL;
-			}
-			$methodSources = [];
 			foreach ($this->methods as $identifier) {
-				$methodSources[] = $this->methods[$identifier]->getSource();
+				$classBody[] = '';
+				array_push($classBody, ...$this->methods[$identifier]->getSourceArray());
 			}
-
-			$ret .= implode(PHP_EOL, $methodSources);
 		}
-
-		$ret .= '}' . PHP_EOL;
+		$ret[] = $classBody;
+		$ret[] = '}';
 
 		return $ret;
 	}

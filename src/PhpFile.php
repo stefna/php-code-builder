@@ -2,6 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
 use Stefna\PhpCodeBuilder\Exception\DuplicateValue;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
@@ -13,7 +14,7 @@ use Stefna\PhpCodeBuilder\ValueObject\Identifier;
  * @author Andreas Sundqvist <andreas@stefna.is>
  * @license http://www.opensource.org/licenses/mit-license.php MIT License
  */
-class PhpFile
+class PhpFile implements CodeInterface
 {
 	/** @var string */
 	private $name;
@@ -63,13 +64,20 @@ class PhpFile
 	 *
 	 * @return string The source code for the file
 	 */
-	public function getSource(): string
+	public function getSource(int $currentIndent = 0): string
 	{
-		$ret = '<?php';
+		return FlattenSource::source($this->getSourceArray());
+	}
+
+	public function getSourceArray(int $currentIndent = 0): array
+	{
+		$declaration = '<?php';
 		if ($this->strict) {
-			$ret .= ' declare(strict_types=1);';
+			$declaration .= ' declare(strict_types=1);';
 		}
-		$ret .= PHP_EOL . PHP_EOL;
+		$ret = [];
+		$ret[] = $declaration;
+		$ret[] = '';
 
 		if (count($this->classes) === 1) {
 			$this->classes->rewind();
@@ -81,14 +89,15 @@ class PhpFile
 		}
 
 		if ($this->namespace) {
-			$ret .= 'namespace ' . $this->namespace . ';' . PHP_EOL . PHP_EOL;
+			$ret[] = 'namespace ' . $this->namespace . ';';
+			$ret[] = '';
 		}
 
-		$classesCode = '';
+		$classesCode = [];
 		foreach ($this->classes as $identifier) {
 			/** @var PhpTrait|PhpClass $class */
 			$class = $this->classes[$identifier];
-			$classesCode .= $class->getSource();
+			array_push($classesCode, ...$class->getSourceArray());
 			foreach ($class->getUses() as $useIdentifier) {
 				if ($this->use->contains($useIdentifier)) {
 					continue;
@@ -103,26 +112,26 @@ class PhpFile
 					// don't need to add use statements for same namespace as file
 					continue;
 				}
-				$ret .= 'use ' . ltrim($identifier->getFqcn(), '\\');
+				$useLine = 'use ' . ltrim($identifier->getFqcn(), '\\');
 				if ($identifier->getAlias()) {
-					$ret .= ' as ' . $identifier->getAlias();
+					$useLine .= ' as ' . $identifier->getAlias();
 				}
-				$ret .= ';' . PHP_EOL;
+				$useLine .= ';';
+				$ret[] = $useLine;
 			}
-			$ret .= PHP_EOL;
+			$ret[] = '';
 		}
 
-		$ret .= $classesCode;
+		array_push($ret, ...$classesCode);
 
 		if (count($this->functions) > 0) {
 			foreach ($this->functions as $function) {
-				$function->setIndentionLevel(0);
-				$ret .= $function->getSource();
+				array_push($ret, ...$function->getSourceArray());
 			}
 		}
 
 		if ($this->source) {
-			$ret .= PHP_EOL . $this->source;
+			$ret[] = $this->source;
 		}
 
 		return $ret;

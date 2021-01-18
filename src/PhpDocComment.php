@@ -2,6 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 /**
@@ -11,7 +12,7 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
  * @author Andreas Sundqvist <andreas@stefna.is>
  * @license http://www.opensource.org/licenses/mit-license.php MIT License
  */
-class PhpDocComment
+class PhpDocComment implements CodeInterface
 {
 	/** @var PhpDocElement */
 	private $var;
@@ -60,55 +61,14 @@ class PhpDocComment
 	 *
 	 * @return string The sourcecode of the comment
 	 */
-	public function getSource(): string
+	public function getSource(int $currentIndent = 0): string
 	{
-		$description = '';
-		if ($this->description) {
-			$preDescription = trim($this->description);
-			$lines = explode(PHP_EOL, $preDescription);
-			foreach ($lines as $line) {
-				$description .= ' ' . trim('* ' . $line) . PHP_EOL;
-			}
+		$lines = $this->getSourceArray();
+		if (!$lines) {
+			return '';
 		}
 
-		$tags = [];
-		if ($this->var !== null) {
-			if (!$description) {
-				return "/** @var {$this->var->getDataType()->getDocBlockTypeHint()} */" . PHP_EOL;
-			}
-			$tags[] = $this->var->getSource();
-		}
-		if (count($this->params) > 0) {
-			foreach ($this->params as $param) {
-				$tags[] = $param->getSource();
-			}
-		}
-		if (count($this->throws) > 0) {
-			foreach ($this->throws as $throws) {
-				$tags[] = $throws->getSource();
-			}
-		}
-		if ($this->author !== null) {
-			$tags[] = $this->author->getSource();
-		}
-		if ($this->return !== null) {
-			$tags[] = $this->return->getSource();
-		}
-		foreach ($this->methods as $method) {
-			$tags[] = $method->getSource();
-		}
-
-		if (!empty($description) && !empty($tags)) {
-			$description .= ' *' . PHP_EOL;
-		}
-
-		$ret = $description . implode($tags);
-
-		if (!empty($ret)) {
-			$ret = PHP_EOL . '/**' . PHP_EOL . $ret . ' */' . PHP_EOL;
-		}
-
-		return $ret;
+		return implode(PHP_EOL, $lines) . PHP_EOL;
 	}
 
 	public function addMethod(PhpDocElement $method)
@@ -161,5 +121,67 @@ class PhpDocComment
 	{
 		$this->description = $description;
 		return $this;
+	}
+
+	public function getSourceArray(int $currentIndent = 0): array
+	{
+		$returnArray = ['/**'];
+
+		$description = '';
+		if ($this->description) {
+			$preDescription = trim($this->description);
+			$lines = explode(PHP_EOL, $preDescription);
+			foreach ($lines as $line) {
+				$returnArray[] = ' ' . trim('* ' . $line);
+				$description .= trim('* ' . $line) . PHP_EOL;
+			}
+		}
+
+		if ($this->var !== null) {
+			if (!$description) {
+				return ["/** @var {$this->var->getDataType()->getDocBlockTypeHint()} */"];
+			}
+			$returnArray[] = rtrim($this->var->getSource(), PHP_EOL);
+		}
+
+		if ($description) {
+			$returnArray[] = ' *';
+		}
+
+		$haveTags = false;
+
+		if (count($this->params) > 0) {
+			$haveTags = true;
+			foreach ($this->params as $param) {
+				$returnArray[] = rtrim($param->getSource(), PHP_EOL);
+			}
+		}
+		if (count($this->throws) > 0) {
+			$haveTags = true;
+			foreach ($this->throws as $throws) {
+				$returnArray[] = rtrim($throws->getSource(), PHP_EOL);
+			}
+		}
+		if ($this->author !== null) {
+			$haveTags = true;
+			$returnArray[] = rtrim($this->author->getSource(), PHP_EOL);
+		}
+		if ($this->return !== null) {
+			$haveTags = true;
+			$returnArray[] = rtrim($this->return->getSource(), PHP_EOL);
+		}
+		foreach ($this->methods as $method) {
+			$haveTags = true;
+			$returnArray[] = rtrim($method->getSource(), PHP_EOL);
+		}
+
+		if (!$haveTags) {
+			array_pop($returnArray);
+		}
+		if ($returnArray) {
+			$returnArray[] = ' */';
+		}
+
+		return $returnArray;
 	}
 }

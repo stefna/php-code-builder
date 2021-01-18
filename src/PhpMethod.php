@@ -124,6 +124,7 @@ class PhpMethod extends PhpFunction
 	public function setAbstract(): self
 	{
 		$this->abstract = true;
+		$this->renderBody = false;
 		return $this;
 	}
 
@@ -142,14 +143,5 @@ class PhpMethod extends PhpFunction
 		$ret .= $this->static ? 'static ' : '';
 
 		return $ret;
-	}
-
-	protected function formatFunctionBody(string $ret): string
-	{
-		if (!$this->abstract) {
-			return parent::formatFunctionBody($ret);
-		}
-
-		return rtrim(str_replace(' {', '', $ret)) . ';' . PHP_EOL;
 	}
 }
