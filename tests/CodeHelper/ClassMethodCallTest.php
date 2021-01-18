@@ -40,4 +40,16 @@ final class ClassMethodCallTest extends TestCase
 
 		$this->assertSame('$this->setSecurityValue(\'site-bearer-token\', $siteBearerToken)', trim($call->getSource()));
 	}
+
+	public function testWithStaticMethodCall()
+	{
+		$x = new ClassMethodCall(VariableReference::this('serverConfiguration'), 'setSecurityValue', [
+			'test-scheme',
+			new StaticMethodCall(Identifier::fromString('SecurityValue'), 'apiKey', [
+				new VariableReference('token'),
+			]),
+		]);
+
+		$this->assertSame('$this->serverConfiguration->setSecurityValue(\'test-scheme\', SecurityValue::apiKey($token))', trim($x->getSource()));
+	}
 }

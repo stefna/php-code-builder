@@ -6,8 +6,11 @@ final class VariableReference implements CodeInterface
 {
 	private $name;
 
-	public static function this(): self
+	public static function this(string $variable = ''): self
 	{
+		if ($variable) {
+			return new self('this->' . $variable);
+		}
 		return new self('this');
 	}
 

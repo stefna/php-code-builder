@@ -95,7 +95,12 @@ trait MethodParamsTrait
 				}
 				else {
 					$value = $param->getSourceArray($currentIndent);
-					$isComplex = true;
+					if (count($value) === 1) {
+						$value = $value[0];
+					}
+					if (is_array($value)) {
+						$isComplex = true;
+					}
 				}
 				$currentLength += strlen($param->getSource());
 			}
@@ -106,7 +111,7 @@ trait MethodParamsTrait
 			$params[] = $value;
 		}
 
-		if (!$isComplex && $currentLength < 90) {
+		if (!$isComplex && $currentLength < 95) {
 			return [implode(', ', $params)];
 		}
 
@@ -148,6 +153,9 @@ trait MethodParamsTrait
 							$return[$currentIndex - 1] .= ', ' . $value;
 						}
 					}
+					elseif (count($value) === 1) {
+						$return[] = $value[0];
+					}
 					else {
 						$return[] = $value;
 					}
@@ -160,6 +168,8 @@ trait MethodParamsTrait
 				$currentIndex += 1;
 			}
 		}
+		var_dump(get_class($this));
+		var_dump($return);
 		return $return;
 	}
 }

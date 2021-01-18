@@ -21,7 +21,13 @@ final class LineCode implements CodeInterface
 	public function getSourceArray(int $currentIndent = 0): array
 	{
 		$code = $this->code->getSourceArray($currentIndent);
-		$code[count($code) - 1] .= ';';
+		$lastIndex = count($code) - 1;
+		if (is_array($code[$lastIndex])) {
+			$code[$lastIndex][count($code[$lastIndex]) - 1] .= ';';
+		}
+		else {
+			$code[$lastIndex] .= ';';
+		}
 		return $code;
 	}
 }
