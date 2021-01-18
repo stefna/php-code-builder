@@ -90,7 +90,18 @@ final class PhpFunctionTest extends TestCase
 		], Type::fromString('int'));
 		$func->setAbstract()->setStatic();
 
-		var_dump($func->getSource());
-		var_dump($func->getSourceArray());
+		$this->assertSame('/**
+ * @param string|int $barIpsumLong
+ */
+abstract protected static function test(
+	string $fooIpsumLong,
+	$barIpsumLong,
+	int $bazIpsumLong,
+	string $fozIpsumLong,
+	string $alzIpsumLong,
+	string $qweIpsumLong,
+	string $rtyIpsumLong
+): int;
+', $func->getSource());
 	}
 }

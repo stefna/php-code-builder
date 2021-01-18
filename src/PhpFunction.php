@@ -155,9 +155,11 @@ class PhpFunction extends PhpElement implements CodeInterface
 
 		$str = implode(', ', $parameterStrings);
 		if (strlen($str) + $baseLength > 100) {
+			for ($i = 0, $l = count($parameterStrings) - 1; $i < $l; $i++) {
+				$parameterStrings[$i] .= ',';
+			}
 			return $parameterStrings;
 		}
-
 		return [$str];
 	}
 
