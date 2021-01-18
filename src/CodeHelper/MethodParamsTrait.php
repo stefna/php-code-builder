@@ -168,8 +168,6 @@ trait MethodParamsTrait
 				$currentIndex += 1;
 			}
 		}
-		var_dump(get_class($this));
-		var_dump($return);
 		return $return;
 	}
 }
