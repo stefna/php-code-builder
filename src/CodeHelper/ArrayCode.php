@@ -3,6 +3,7 @@
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
 use Exception;
+use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\FormatValue;
 use Stefna\PhpCodeBuilder\Indent;
 use Traversable;
@@ -19,8 +20,14 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 
 	public function getSource(int $currentIndent = 0): string
 	{
+		$indent = ($this->indentFirstLine ? Indent::indent($currentIndent) : '');
+		return $indent . FlattenSource::source($this->getSourceArray($currentIndent));
+	}
+
+	public function getSourceArray(int $currentIndent = 0): array
+	{
 		$return = [];
-		$return[] = ($this->indentFirstLine ? Indent::indent($currentIndent) : '') . '[';
+		$return[] = '[';
 		$isAssoc = false;
 		foreach ($this->data as $key => $value) {
 			if (!$isAssoc && is_string($key)) {
@@ -28,33 +35,47 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 				break;
 			}
 		}
+		$rows = [];
 		foreach ($this->data as $key => $value) {
 			if (is_array($value)) {
 				$tmpValue = new ArrayCode($value);
 				$tmpValue->indentFirstLine = false;
-				$formattedValue = $tmpValue->getSource($currentIndent + 1);
+				if ($isAssoc) {
+					$rows[] = sprintf("'%s' => [", $key);
+				}
+				else {
+					$rows[] = '[';
+				}
+				$formattedValue = $tmpValue->getSourceArray();
+				array_shift($formattedValue);
+				$lastValue = array_pop($formattedValue);
+				foreach ($formattedValue as $z) {
+					$rows[] = $z;
+				}
+				$rows[] = $lastValue .',';
+				continue;
 			}
 			else {
 				$formattedValue = FormatValue::format($value);
 			}
 			if ($isAssoc) {
-				$return[] = sprintf(
-					"%s'%s' => %s,",
-					Indent::indent($currentIndent + 1),
+				$rows[] = sprintf(
+					"'%s' => %s,",
 					$key,
 					$formattedValue
 				);
 			}
 			else {
-				$return[] = sprintf(
-					"%s%s,",
-					Indent::indent($currentIndent + 1),
+				$rows[] = sprintf(
+					"%s,",
 					$formattedValue
 				);
 			}
 		}
-		$return[] = Indent::indent($currentIndent) . ']';
-		return implode(PHP_EOL, $return);
+		$return[] = $rows;
+		$return[] = ']';
+
+		return $return;
 	}
 
 	public function offsetExists($offset)
@@ -85,5 +106,13 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->data);
+	}
+
+	/**
+	 * @param bool $indentFirstLine
+	 */
+	public function setIndentFirstLine(bool $indentFirstLine): void
+	{
+		$this->indentFirstLine = $indentFirstLine;
 	}
 }

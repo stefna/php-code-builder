@@ -16,7 +16,7 @@ final class ArrayCodeTest extends \PHPUnit\Framework\TestCase
 	'test1' => 2,
 	'test2' => 'string',
 	'test3' => true,
-]", $array->getSource());
+]", trim($array->getSource()));
 	}
 
 	public function testCustomIndentLevel(): void
@@ -27,11 +27,15 @@ final class ArrayCodeTest extends \PHPUnit\Framework\TestCase
 			'test3' => true,
 		]);
 
-		$this->assertSame("	[
-		'test1' => 2,
-		'test2' => 'string',
-		'test3' => true,
-	]", $array->getSource(1));
+		$this->assertSame([
+			'[',
+			[
+				"'test1' => 2,",
+				"'test2' => 'string',",
+				"'test3' => true,",
+			],
+			']',
+		], $array->getSourceArray(1));
 	}
 
 	public function testNestedAssocArray(): void
@@ -52,7 +56,7 @@ final class ArrayCodeTest extends \PHPUnit\Framework\TestCase
 	'test4' => [
 		'sub1' => 'test',
 	],
-]", $array->getSource());
+]", trim($array->getSource()));
 	}
 
 	public function testSimpleArray(): void
@@ -73,6 +77,6 @@ final class ArrayCodeTest extends \PHPUnit\Framework\TestCase
 	[
 		'assoc' => true,
 	],
-]", $array->getSource());
+]", trim($array->getSource()));
 	}
 }
