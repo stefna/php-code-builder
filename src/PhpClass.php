@@ -74,7 +74,7 @@ class PhpClass extends PhpTrait
 
 	public function addTrait(string $trait): self
 	{
-		$this->traits[] = $trait;
+		$this->traits[] = Identifier::fromString($trait);
 		return $this;
 	}
 
