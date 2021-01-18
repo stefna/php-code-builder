@@ -40,9 +40,13 @@ class PhpClass extends PhpTrait
 		parent::__construct($identifier, $comment);
 		$this->access = '';
 		$this->final = $final;
-		$this->extends = $extends ? Identifier::fromUnknown($extends) : null;
-		$this->implements = $implements;
 		$this->abstract = $abstract;
+		if ($extends) {
+			$this->setExtends($extends);
+		}
+		foreach ($implements as $implement) {
+			$this->addInterface($implement);
+		}
 	}
 
 	public function setAbstract(): self
