@@ -30,4 +30,14 @@ final class ClassMethodCallTest extends TestCase
 	\'description\' => \'Valid for site specific endpoints\',
 ]))', trim($call->getSource()));
 	}
+
+	public function testWithVariableParam()
+	{
+		$call = new ClassMethodCall(VariableReference::this(), 'setSecurityValue', [
+			'site-bearer-token',
+			new VariableReference('siteBearerToken'),
+		]);
+
+		$this->assertSame('$this->setSecurityValue(\'site-bearer-token\', $siteBearerToken)', trim($call->getSource()));
+	}
 }

@@ -87,9 +87,16 @@ trait MethodParamsTrait
 	private function getSourceForParams(int $currentLength, int $currentIndent): array
 	{
 		$params = [];
+		$isComplex = false;
 		foreach ($this->params as $param) {
 			if ($param instanceof CodeInterface) {
-				$value = $param->getSourceArray($currentIndent);
+				if ($param instanceof VariableReference) {
+					$value = $param->getSource();
+				}
+				else {
+					$value = $param->getSourceArray($currentIndent);
+					$isComplex = true;
+				}
 				$currentLength += strlen($param->getSource());
 			}
 			else {
@@ -99,9 +106,10 @@ trait MethodParamsTrait
 			$params[] = $value;
 		}
 
-		if ($currentLength < 90) {
+		if (!$isComplex && $currentLength < 90) {
 			return [implode(', ', $params)];
 		}
+
 		$return = [];
 		$previousArray = false;
 		$currentIndex = 0;
@@ -124,12 +132,20 @@ trait MethodParamsTrait
 					$previousArray = true;
 				}
 				else {
+					if ($param instanceof VariableReference) {
+						$value = $param->getSource();
+					}
 					$value = $param->getSourceArray($currentIndent);
 					if ($previousArray) {
-						$return[$currentIndex - 1] .= ', ' . array_shift($value);
-						foreach ($value as $c) {
-							$return[] = $c;
-							$currentIndex += 1;
+						if (is_array($value)) {
+							$return[$currentIndex - 1] .= ', ' . array_shift($value);
+							foreach ($value as $c) {
+								$return[] = $c;
+								$currentIndex += 1;
+							}
+						}
+						else {
+							$return[$currentIndex - 1] .= ', ' . $value;
 						}
 					}
 					else {
@@ -144,7 +160,6 @@ trait MethodParamsTrait
 				$currentIndex += 1;
 			}
 		}
-
 		return $return;
 	}
 }
