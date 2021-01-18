@@ -26,6 +26,10 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 
 	public function getSourceArray(int $currentIndent = 0): array
 	{
+		if (!$this->data) {
+			return ['[]'];
+		}
+
 		$return = [];
 		$return[] = '[';
 		$isAssoc = false;
