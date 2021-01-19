@@ -123,6 +123,9 @@ class TypeTest extends TestCase
 	{
 		$type = Type::fromString($input);
 		$this->assertSame($expectedType, $type->getArrayType());
+		if ($expectedType) {
+			$this->assertSame('array', $type->getTypeHint());
+		}
 	}
 
 	public function arrayTypes()
@@ -132,6 +135,7 @@ class TypeTest extends TestCase
 			['array<int, string>', 'string'],
 			['array<string,int>', 'int'],
 			['array<int, DateTime>', 'DateTime'],
+			['array<string, string|array<string>>', 'string|array<string>'],
 			['Uuid[]', 'Uuid'],
 			['string', null],
 		];

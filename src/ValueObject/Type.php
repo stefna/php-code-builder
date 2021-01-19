@@ -38,12 +38,23 @@ final class Type
 		if (!trim($type)) {
 			throw new \InvalidArgumentException('No valid type hint found in string');
 		}
-
+		$arraySubTypeKey = '__ARRAY_SUB_TYPE__';
+		$arraySubType = null;
+		if (strpos($type, 'array<') !== false) {
+			preg_match('/array\<.*,(\s+)?(.*)\>/', $type, $match);
+			$arraySubType = $match[2] ?? '';
+			if (strpos($arraySubType, '|')) {
+				$type = str_replace($arraySubType, $arraySubTypeKey, $type);
+			}
+		}
 		if (strpos($type, '|')) {
 			$self = null;
 			$types = explode('|', $type);
 			foreach ($types as $typePart) {
 				if ($typePart !== 'null') {
+					if (strpos($typePart, $arraySubTypeKey)) {
+						$typePart = str_replace($arraySubTypeKey, $arraySubType, $typePart);
+					}
 					$self = new self($typePart);
 					break;
 				}
@@ -52,12 +63,19 @@ final class Type
 				throw new \InvalidArgumentException('No valid type hint found in string');
 			}
 			foreach ($types as $typePart) {
+				if (strpos($typePart, $arraySubTypeKey)) {
+					$typePart = str_replace($arraySubTypeKey, $arraySubType, $typePart);
+				}
 				$self->addUnion($typePart);
 			}
 			return $self;
 		}
 		if (strpos($type, '?') === 0) {
 			return new self(substr($type, 1), true);
+		}
+
+		if (strpos($type, $arraySubTypeKey)) {
+			$type = str_replace($arraySubTypeKey, $arraySubType, $type);
 		}
 		return new self($type);
 	}
@@ -119,6 +137,9 @@ final class Type
 	public function getTypeHint(): ?string
 	{
 		if (count($this->types) > 1) {
+			if ($this->isArray()) {
+				return 'array';
+			}
 			return null;
 		}
 		$type = self::ALIAS_MAP[$this->type] ?? $this->type;
