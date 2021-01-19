@@ -8,7 +8,9 @@ use Stefna\PhpCodeBuilder\CodeHelper\ClassMethodCall;
 use Stefna\PhpCodeBuilder\CodeHelper\ReturnCode;
 use Stefna\PhpCodeBuilder\CodeHelper\StaticMethodCall;
 use Stefna\PhpCodeBuilder\CodeHelper\VariableReference;
+use Stefna\PhpCodeBuilder\PhpMethod;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
+use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 final class ReturnCodeTest extends TestCase
 {
@@ -71,5 +73,21 @@ final class ReturnCodeTest extends TestCase
 	\'description\' => \'Valid for site specific endpoints\',
 ]));
 ', $return->getSource());
+	}
+
+	public function testIndentationInMethod()
+	{
+		$method = PhpMethod::public('getSecurity', [], [
+			new ReturnCode(new ArrayCode([])),
+		], Type::fromString('string[]'));
+
+		$this->assertSame('/**
+ * @return string[]
+ */
+public function getSecurity(): array
+{
+	return [];
+}
+', $method->getSource());
 	}
 }

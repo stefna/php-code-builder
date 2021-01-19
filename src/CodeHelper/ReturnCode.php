@@ -3,6 +3,7 @@
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
 use Stefna\PhpCodeBuilder\FlattenSource;
+use Stefna\PhpCodeBuilder\Indent;
 
 final class ReturnCode implements CodeInterface
 {
@@ -15,7 +16,7 @@ final class ReturnCode implements CodeInterface
 
 	public function getSource(int $currentIndent = 0): string
 	{
-		return FlattenSource::source($this->getSourceArray());
+		return Indent::indent($currentIndent) . FlattenSource::source($this->getSourceArray());
 	}
 
 	public function getSourceArray(int $currentIndent = 0): array
