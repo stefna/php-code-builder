@@ -121,9 +121,9 @@ class PhpMethod extends PhpFunction
 		return $this;
 	}
 
-	public function setAbstract(): self
+	public function setAbstract(bool $interface = false): self
 	{
-		$this->abstract = true;
+		$this->abstract = !$interface;
 		$this->renderBody = false;
 		return $this;
 	}

@@ -42,7 +42,7 @@ class PhpInterface extends PhpTrait
 	public function addMethod(PhpMethod $method): PhpTrait
 	{
 		$method = clone $method;
-		$method->setAbstract();
+		$method->setAbstract(true);
 		$method->setAccess('public');
 		return parent::addMethod($method);
 	}
