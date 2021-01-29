@@ -97,4 +97,9 @@ class PhpParam
 	{
 		$this->complexType = $complexType;
 	}
+
+	public function __clone()
+	{
+		$this->type = clone $this->type;
+	}
 }

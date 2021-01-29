@@ -144,4 +144,9 @@ class PhpMethod extends PhpFunction
 
 		return $ret;
 	}
+
+	public function __clone()
+	{
+		parent::__clone();
+	}
 }

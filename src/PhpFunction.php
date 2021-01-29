@@ -225,4 +225,14 @@ class PhpFunction extends PhpElement implements CodeInterface
 
 		return $ret;
 	}
+
+	public function __clone()
+	{
+		$params = [];
+		foreach ($this->params as $paramName => $param) {
+			$params[$paramName] = clone $param;
+		}
+
+		$this->params = $params;
+	}
 }

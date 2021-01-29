@@ -3,6 +3,7 @@
 namespace CodeHelper;
 
 use PHPUnit\Framework\TestCase;
+use Stefna\PhpCodeBuilder\CodeHelper\InstantiateClass;
 use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\PhpClass;
 use Stefna\PhpCodeBuilder\PhpConstant;
@@ -68,5 +69,21 @@ final class PhpTraitTest extends TestCase
 
 		var_dump($interface->getSource());
 		var_dump($interface->getSourceArray());
+	}
+
+	public function testAddingSameMethodToClassAndInterface()
+	{
+		$interface = new PhpInterface('TestInterface');
+		$class = new PhpClass('TestClass');
+
+		$method = PhpMethod::public('test', [
+			new PhpParam('param', Type::fromString(InstantiateClass::class)),
+		], []);
+
+		$interface->addMethod($method);
+		$class->addMethod($method);
+
+		var_dump(PhpFile::createFromClass($interface)->getSource());
+		var_dump(PhpFile::createFromClass($class)->getSource());
 	}
 }
