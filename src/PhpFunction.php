@@ -172,6 +172,9 @@ class PhpFunction extends PhpElement implements CodeInterface
 
 		foreach ($this->params as $param) {
 			if ($param->getType()->needDockBlockTypeHint()) {
+				if ($comment->hasParamWithName($param->getName())) {
+					$comment->removeParamWithName($param->getName());
+				}
 				$comment->addParam(PhpDocElementFactory::getParam($param->getType(), $param->getName()));
 			}
 		}
