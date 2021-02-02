@@ -99,6 +99,28 @@ class PhpDocComment implements CodeInterface
 		return $this;
 	}
 
+	public function hasParamWithName(string $name): bool
+	{
+		$name = ltrim($name, '$');
+		foreach ($this->params as $param) {
+			if (ltrim($param->getVariableName(), '$') === $name) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function removeParamWithName(string $name): void
+	{
+		$name = ltrim($name, '$');
+		foreach ($this->params as $key => $param) {
+			if (ltrim($param->getVariableName(), '$') === $name) {
+				unset($this->params[$key]);
+				break;
+			}
+		}
+	}
+
 	public function addParam(PhpDocElement $param): self
 	{
 		$this->params[$param->getHashCode()] = $param;
