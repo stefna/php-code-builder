@@ -95,6 +95,7 @@ class TypeTest extends TestCase
 		return [
 			['null|null'],
 			[''],
+			['?'],
 		];
 	}
 
@@ -139,6 +140,22 @@ class TypeTest extends TestCase
 			['Uuid[]', 'Uuid'],
 			['string', null],
 		];
+	}
+
+	public function testUnionWithMixedArray(): void
+	{
+		$type = Type::fromString('Test[]|Test2');
+		$this->assertNull($type->getTypeHint());
+
+		$this->assertSame('Test[]|Test2', $type->getDocBlockTypeHint());
+	}
+
+	public function testUnionWithArray(): void
+	{
+		$type = Type::fromString('Test[]|Test2[]');
+		$this->assertSame('array', $type->getTypeHint());
+
+		$this->assertSame('Test[]|Test2[]', $type->getDocBlockTypeHint());
 	}
 
 	public function testSimplifiedName(): void

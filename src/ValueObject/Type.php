@@ -35,7 +35,7 @@ final class Type
 
 	public static function fromString(string $type): self
 	{
-		if (!trim($type)) {
+		if (!trim($type, '? ')) {
 			throw new \InvalidArgumentException('No valid type hint found in string');
 		}
 		$arraySubTypeKey = '__ARRAY_SUB_TYPE__';
@@ -48,18 +48,19 @@ final class Type
 			}
 		}
 		if (strpos($type, '|')) {
-			$self = null;
+			$self = self::empty();
 			$types = explode('|', $type);
+			$noValidTypes = true;
 			foreach ($types as $typePart) {
 				if ($typePart !== 'null') {
-					if (strpos($typePart, $arraySubTypeKey)) {
-						$typePart = str_replace($arraySubTypeKey, $arraySubType, $typePart);
-					}
-					$self = new self($typePart);
+					$noValidTypes = false;
 					break;
 				}
 			}
-			if (!$self) {
+			if (count($types) === 2 && in_array('null', $types)) {
+				return self::fromString('?' . trim(str_replace('null', '', $type), '|'));
+			}
+			if ($noValidTypes) {
 				throw new \InvalidArgumentException('No valid type hint found in string');
 			}
 			foreach ($types as $typePart) {
@@ -228,6 +229,14 @@ final class Type
 
 	public function isArray(): bool
 	{
+		if ($this->isUnion()) {
+			foreach ($this->getUnionTypes() as $type) {
+				if (!$type->isArray()) {
+					return false;
+				}
+			}
+			return true;
+		}
 		return (substr($this->type, -2) === '[]' || strpos($this->type, 'array<') === 0);
 	}
 
