@@ -158,6 +158,15 @@ class TypeTest extends TestCase
 		$this->assertSame('Test[]|Test2[]', $type->getDocBlockTypeHint());
 	}
 
+	public function testIsArrayNotEndlessLoop(): void
+	{
+		$type = Type::fromString('Test[]');
+		$type->addUnion(Type::fromString('Test2'));
+		$this->assertNull($type->getTypeHint());
+
+		$this->assertSame('Test[]|Test2', $type->getDocBlockTypeHint());
+	}
+
 	public function testSimplifiedName(): void
 	{
 		$type = Type::fromString(self::class);

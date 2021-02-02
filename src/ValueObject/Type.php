@@ -227,14 +227,18 @@ final class Type
 		return Identifier::fromString($this->isArray() ? $this->getArrayType() : $this->getType());
 	}
 
+	private $inCheckLoop = false;
 	public function isArray(): bool
 	{
-		if ($this->isUnion()) {
+		if (!$this->inCheckLoop && $this->isUnion()) {
+			$this->inCheckLoop = true;
 			foreach ($this->getUnionTypes() as $type) {
 				if (!$type->isArray()) {
+					$this->inCheckLoop = false;
 					return false;
 				}
 			}
+			$this->inCheckLoop = false;
 			return true;
 		}
 		return (substr($this->type, -2) === '[]' || strpos($this->type, 'array<') === 0);
