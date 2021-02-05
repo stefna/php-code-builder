@@ -224,13 +224,13 @@ final class Type
 
 	public function getIdentifier(): Identifier
 	{
-		return Identifier::fromString($this->isArray() ? $this->getArrayType() : $this->getType());
+		return Identifier::fromString($this->isArray(false) ? $this->getArrayType() : $this->getType());
 	}
 
 	private $inCheckLoop = false;
-	public function isArray(): bool
+	public function isArray(bool $deepCheck = true): bool
 	{
-		if (!$this->inCheckLoop && $this->isUnion()) {
+		if ($deepCheck && !$this->inCheckLoop && $this->isUnion()) {
 			$this->inCheckLoop = true;
 			foreach ($this->getUnionTypes() as $type) {
 				if (!$type->isArray()) {
@@ -246,7 +246,7 @@ final class Type
 
 	public function getArrayType(): ?string
 	{
-		if (!$this->isArray()) {
+		if (!$this->isArray(false)) {
 			return null;
 		}
 		$type = self::ALIAS_MAP[$this->type] ?? $this->type;
