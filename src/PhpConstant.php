@@ -66,8 +66,8 @@ class PhpConstant extends PhpElement
 
 	public function getName(): string
 	{
-		$name = $this->identifier->getName();
-		$name = preg_replace('/^(\d)/', '_$0', $name);
+		$currentName = $this->identifier->getName();
+		$name = preg_replace('/^(\d)/', '_$0', $currentName);
 		$name = str_replace('-', '_', $name);
 
 		switch ($this->case) {
@@ -76,7 +76,12 @@ class PhpConstant extends PhpElement
 				$name = preg_replace('/(?<!^)[A-Z]/', '_$0', $name);
 			//Use this to make sure name are readable
 			case self::CASE_UPPER:
-				$name = strtoupper($name);
+				if ($currentName === strtoupper($currentName)) {
+					$name = $currentName;
+				}
+				else {
+					$name = strtoupper($name);
+				}
 				break;
 			case self::CASE_LOWER:
 				$name = strtolower($name);
