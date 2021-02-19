@@ -236,7 +236,7 @@ class PhpTrait extends PhpElement implements CodeInterface
 	 * @param Identifier|string $identifier
 	 * @return bool
 	 */
-	public function variableExists(string $identifier): bool
+	public function variableExists($identifier): bool
 	{
 		if (is_string($identifier)) {
 			$identifier = Identifier::simple($identifier);
