@@ -45,12 +45,17 @@ class PhpMethod extends PhpFunction
 
 	public static function getter(PhpVariable $var): self
 	{
+		$methodName = $identifier = $var->getIdentifier()->toString();
 		$type = $var->getType();
 		$prefix = 'get';
 		if ($type->is('bool')) {
-			$prefix = 'is';
+			if (strpos($methodName, 'has') === 0) {
+				$prefix = 'has';
+			}
+			else {
+				$prefix = 'is';
+			}
 		}
-		$methodName = $identifier = $var->getIdentifier()->toString();
 		if (strpos($identifier, $prefix) === 0) {
 			$methodName = substr($methodName, strlen($prefix));
 		}
