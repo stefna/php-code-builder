@@ -15,7 +15,7 @@ class PhpDocElement
 {
 	/*** @var string */
 	private $type;
-	/*** @var Type */
+	/*** @var Type|null */
 	private $datatype;
 	/*** @var string */
 	private $variableName;
@@ -23,7 +23,7 @@ class PhpDocElement
 	private $description;
 
 	/**
-	 * @param Type|string $dataType
+	 * @param Type|string|null $dataType
 	 */
 	public function __construct(string $type, $dataType, string $variableName, string $description)
 	{

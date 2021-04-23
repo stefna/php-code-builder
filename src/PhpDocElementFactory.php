@@ -110,7 +110,7 @@ class PhpDocElementFactory
 	 */
 	public static function getDeprecated(string $information = ''): PhpDocElement
 	{
-		return new PhpDocElement('deprecated', '', '', $information);
+		return new PhpDocElement('deprecated', null, '', $information);
 	}
 
 	/**
@@ -121,6 +121,6 @@ class PhpDocElementFactory
 	 */
 	public static function getLicence(string $information): PhpDocElement
 	{
-		return new PhpDocElement('licence', '', '', $information);
+		return new PhpDocElement('licence', null, '', $information);
 	}
 }
