@@ -25,6 +25,8 @@ class PhpFunction extends PhpElement implements CodeInterface
 	protected $returnTypeHint;
 	/** @var bool */
 	protected $renderBody = true;
+	/** @var null|array */
+	protected $compiledSource;
 
 	/**
 	 * @param string $identifier
@@ -117,6 +119,11 @@ class PhpFunction extends PhpElement implements CodeInterface
 		return FlattenSource::source($lines);
 	}
 
+	public function replaceCompiledSource(array $source): void
+	{
+		$this->compiledSource = $source;
+	}
+
 	public function addParam(PhpParam $param): self
 	{
 		$this->params[$param->getName()] = $param;
@@ -165,6 +172,10 @@ class PhpFunction extends PhpElement implements CodeInterface
 
 	public function getSourceArray(int $currentIndent = 0): array
 	{
+		if ($this->compiledSource) {
+			return $this->compiledSource;
+		}
+
 		$comment = $this->comment;
 		if ($this->returnTypeHint->needDockBlockTypeHint()) {
 			$comment->setReturn(PhpDocElementFactory::getReturn($this->returnTypeHint->getDocBlockTypeHint()));
@@ -226,7 +237,7 @@ class PhpFunction extends PhpElement implements CodeInterface
 		}
 		$ret[] = '}';
 
-		return $ret;
+		return $this->compiledSource = $ret;
 	}
 
 	public function __clone()
