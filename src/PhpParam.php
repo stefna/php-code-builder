@@ -18,9 +18,18 @@ class PhpParam
 
 	private $value;
 
+	/**
+	 * Optional variable connected to param
+	 *
+	 * @var PhpVariable|null
+	 */
+	private $variable;
+
 	public static function fromVariable(PhpVariable $var): self
 	{
-		return new self($var->getIdentifier()->getName(), $var->getType());
+		$self = new static($var->getIdentifier()->getName(), $var->getType());
+		$self->variable = $var;
+		return $self;
 	}
 
 	public function __construct(string $name, Type $type, $value = self::NO_VALUE)
@@ -31,6 +40,11 @@ class PhpParam
 		$this->name = $name;
 		$this->value = $value;
 		$this->type = $type;
+	}
+
+	public function getVariable(): ?PhpVariable
+	{
+		return $this->variable;
 	}
 
 	public function getSource(): string
