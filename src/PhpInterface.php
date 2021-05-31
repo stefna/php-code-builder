@@ -46,4 +46,12 @@ class PhpInterface extends PhpTrait
 		$method->setAccess('public');
 		return parent::addMethod($method);
 	}
+
+	public function replaceMethod($identifier, PhpMethod $method): PhpTrait
+	{
+		$method = clone $method;
+		$method->setAbstract(true);
+		$method->setAccess('public');
+		return parent::replaceMethod($identifier, $method);
+	}
 }
