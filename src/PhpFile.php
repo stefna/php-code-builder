@@ -14,22 +14,17 @@ use Stefna\PhpCodeBuilder\ValueObject\Identifier;
  * @author Andreas Sundqvist <andreas@stefna.is>
  * @license http://www.opensource.org/licenses/mit-license.php MIT License
  */
-class PhpFile implements CodeInterface
+class PhpFile
 {
-	/** @var string */
-	private $name;
-	/** @var bool */
-	private $strict = false;
-	/** @var string|null */
-	private $namespace;
+	private bool $strict = false;
+	private ?string $namespace = null;
 	/** @var \SplObjectStorage<Identifier, PhpClass|PhpTrait> */
-	private $classes;
+	private \SplObjectStorage $classes;
 	/** @var PhpFunction[] */
-	private $functions = [];
-	/** @var string */
-	private $source;
+	private array $functions = [];
 	/** @var \SplObjectStorage<Identifier>|Identifier[] */
-	private $use;
+	private array|\SplObjectStorage $use;
+	private array $source = [];
 
 	public static function createFromClass(PhpTrait $object): self
 	{
@@ -42,158 +37,46 @@ class PhpFile implements CodeInterface
 
 		$self = new self($path . $identifier->getName());
 		$self->setStrict();
-		$self->classes[$object->getIdentifier()] = $object;
+		$self->addObject($object, 'class');
 		return $self;
 	}
 
-	public function __construct($fileName)
-	{
+	public function __construct(
+		private string $name,
+	) {
 		$this->classes = new \SplObjectStorage();
 		$this->use = new \SplObjectStorage();
-		$this->name = $fileName;
 	}
 
-	public function setStrict(): self
+	public function setStrict(): static
 	{
 		$this->strict = true;
 		return $this;
 	}
 
-	/**
-	 * Generates the complete source code for the file
-	 *
-	 * @return string The source code for the file
-	 */
-	public function getSource(int $currentIndent = 0): string
-	{
-		return FlattenSource::source($this->getSourceArray());
-	}
-
-	public function getSourceArray(int $currentIndent = 0): array
-	{
-		$declaration = '<?php';
-		if ($this->strict) {
-			$declaration .= ' declare(strict_types=1);';
-		}
-		$ret = [];
-		$ret[] = $declaration;
-		$ret[] = '';
-
-		if (count($this->classes) === 1) {
-			$this->classes->rewind();
-			$class = $this->classes->current();
-			if ($class->getNamespace()) {
-				$this->namespace .= $class->getNamespace();
-				$this->namespace = trim($this->namespace, '\\');
-			}
-		}
-
-		if ($this->namespace) {
-			$ret[] = 'namespace ' . $this->namespace . ';';
-			$ret[] = '';
-		}
-
-		$classesCode = [];
-		foreach ($this->classes as $identifier) {
-			/** @var PhpTrait|PhpClass $class */
-			$class = $this->classes[$identifier];
-			array_push($classesCode, ...$class->getSourceArray());
-			foreach ($class->getUses() as $useIdentifier) {
-				if ($this->use->contains($useIdentifier)) {
-					continue;
-				}
-				$this->use->attach($useIdentifier);
-			}
-		}
-
-		if (count($this->use) > 0) {
-			foreach ($this->use as $identifier) {
-				if ($identifier->getNamespace() === $this->namespace) {
-					// don't need to add use statements for same namespace as file
-					continue;
-				}
-				$useLine = 'use ' . ltrim($identifier->getFqcn(), '\\');
-				if ($identifier->getAlias()) {
-					$useLine .= ' as ' . $identifier->getAlias();
-				}
-				$useLine .= ';';
-				$ret[] = $useLine;
-			}
-			$ret[] = '';
-		}
-
-		array_push($ret, ...$classesCode);
-
-		if (count($this->functions) > 0) {
-			foreach ($this->functions as $function) {
-				array_push($ret, ...$function->getSourceArray());
-			}
-		}
-
-		if ($this->source) {
-			$ret[] = $this->source;
-		}
-
-		return $ret;
-	}
-
-	/**
-	 * Set random code to be added at the bottom of file
-	 *
-	 * @param string $source
-	 * @return PhpFile
-	 */
-	public function setSource(string $source): self
-	{
-		$this->source = $source;
-		return $this;
-	}
-
-	/**
-	 * Saves the source code for the file in $directory
-	 *
-	 * @param string $directory
-	 * @return bool
-	 */
-	public function save(string $directory): bool
-	{
-		return (bool)file_put_contents($directory . DIRECTORY_SEPARATOR . $this->getName(), $this->getSource());
-	}
-
-	/**
-	 * Adds a namespace
-	 *
-	 * @param string $namespace The namespace to add
-	 * @return PhpFile
-	 */
-	public function setNamespace(string $namespace): self
+	public function setNamespace(string $namespace): static
 	{
 		$this->namespace = $namespace;
-
 		return $this;
 	}
 
-	/**
-	 * Checks if the file has a namespace
-	 *
-	 * @return bool
-	 */
 	public function hasNamespace(): bool
 	{
 		return (bool)$this->namespace;
 	}
 
 	/**
-	 * Adds a class to the file
-	 *
-	 * @param PhpClass $class
-	 * @return PhpFile
-	 * @throws DuplicateValue If the class already exists
+	 * Saves the source code for the file in $directory
 	 */
-	public function addClass(PhpClass $class): self
+	public function save(string $directory): bool
+	{
+		return (bool)file_put_contents($directory . DIRECTORY_SEPARATOR . $this->getName(), $this->getSource());
+	}
+
+	protected function addObject(PhpClass|PhpTrait|PhpInterface $class, string $type): static
 	{
 		if ($this->classes->contains($class->getIdentifier())) {
-			throw new DuplicateValue('A class of the name (' . $class->getIdentifier()->getName() . ') does already exist.');
+			throw new DuplicateValue('A ' . $type . ' of the name (' . $class->getIdentifier()->getName() . ') does already exist.');
 		}
 
 		$this->classes[$class->getIdentifier()] = $class;
@@ -201,58 +84,47 @@ class PhpFile implements CodeInterface
 	}
 
 	/**
-	 * Adds a trait to the file
+	 * Adds a class to the file
 	 *
-	 * @param PhpTrait $trait
-	 * @return PhpFile
+	 * @throws DuplicateValue If the class already exists
+	 */
+	public function addClass(PhpClass $class): self
+	{
+		return $this->addObject($class, 'class');
+	}
+
+	/**
 	 * @throws DuplicateValue If the class already exists
 	 */
 	public function addTrait(PhpTrait $trait): self
 	{
-		if ($this->classes->contains($trait->getIdentifier())) {
-			throw new DuplicateValue('A trait of the name (' . $trait->getIdentifier()->getName() . ') does already exist.');
-		}
-
-		$this->classes[$trait->getIdentifier()] = $trait;
-		return $this;
+		return $this->addObject($trait, 'trait');
 	}
 
 	public function addInterface(PhpInterface $interface): self
 	{
-		if ($this->classExists($interface->getIdentifier())) {
-			throw new DuplicateValue("A interface of the name ({$interface->getIdentifier()}) does already exist.");
-		}
-
-		$this->classes[$interface->getIdentifier()] = $interface;
-		return $this;
+		return $this->addObject($interface, 'interface');
 	}
 
 	/**
 	 * Adds a global function to the file, should not be used, classes rocks :)
 	 *
-	 * @param PhpFunction $function
-	 * @return PhpFile
 	 * @throws DuplicateValue If the function already exists
 	 */
 	public function addFunction(PhpFunction $function): self
 	{
-		if ($this->functionExists($function->getIdentifier())) {
+		if ($this->hasFunction($function->getIdentifier())) {
 			throw new DuplicateValue('A function of the name (' . $function->getIdentifier()->getName() . ') does already exist.');
 		}
 
 		$this->functions[$function->getIdentifier()->getName()] = $function;
-
 		return $this;
 	}
 
 	/**
 	 * Add use statement after namespace declaration
-	 *
-	 * @param Identifier|string $identifier
-	 * @param string $alias
-	 * @return PhpClass
 	 */
-	public function addUse($identifier, string $alias = null): self
+	public function addUse(Identifier|string $identifier, string $alias = null): self
 	{
 		$identifier = Identifier::fromUnknown($identifier);
 		if ($alias) {
@@ -265,26 +137,14 @@ class PhpFile implements CodeInterface
 		return $this;
 	}
 
-	/**
-	 * Checks if a class with the same name does already exist
-	 *
-	 * @param Identifier|string $identifier
-	 * @return bool
-	 */
-	public function classExists($identifier): bool
+	public function hasClass(Identifier|string $identifier): bool
 	{
 		return $this->classes->contains(Identifier::fromUnknown($identifier));
 	}
 
-	/**
-	 * Checks if a function with the same name does already exist
-	 *
-	 * @param string $identifier
-	 * @return bool
-	 */
-	public function functionExists($identifier): bool
+	public function hasFunction(Identifier|string $identifier): bool
 	{
-		return array_key_exists($identifier, $this->functions);
+		return array_key_exists(Identifier::fromUnknown($identifier)->getName(), $this->functions);
 	}
 
 	public function getName(): string
@@ -293,5 +153,47 @@ class PhpFile implements CodeInterface
 			return $this->name;
 		}
 		return $this->name . '.php';
+	}
+
+	public function getClasses(): \SplObjectStorage
+	{
+		return $this->classes;
+	}
+
+	/**
+	 * @return PhpFunction[]
+	 */
+	public function getFunctions(): array
+	{
+		return $this->functions;
+	}
+
+	public function getUse(): \SplObjectStorage
+	{
+		return $this->use;
+	}
+
+	public function getNamespace(): ?string
+	{
+		return $this->namespace;
+	}
+
+	public function getSource(): array
+	{
+		return $this->source;
+	}
+
+	/**
+	 * Set random code to be added at the bottom of file
+	 */
+	public function setSource(array $source): static
+	{
+		$this->source = $source;
+		return $this;
+	}
+
+	public function isStrict(): bool
+	{
+		return $this->strict;
 	}
 }

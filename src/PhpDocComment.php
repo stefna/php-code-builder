@@ -2,7 +2,6 @@
 
 namespace Stefna\PhpCodeBuilder;
 
-use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 /**
@@ -12,36 +11,25 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
  * @author Andreas Sundqvist <andreas@stefna.is>
  * @license http://www.opensource.org/licenses/mit-license.php MIT License
  */
-class PhpDocComment implements CodeInterface
+class PhpDocComment
 {
-	/** @var PhpDocElement */
-	private $var;
+	private ?PhpDocElement $var = null;
+	private ?PhpDocElement $author = null;
+	private ?PhpDocElement $return = null;
+
+	private null|PhpVariable|PhpFunction|PhpTrait $parent = null;
 
 	/** @var PhpDocElement[] */
-	private $params;
-
-	/** @var PhpDocElement */
-	private $return;
-
-	/** @var PhpDocElement */
-	private $author;
-
+	private array $params = [];
 	/** @var PhpDocElement[] */
-	private $throws;
-
-	/** @var string */
-	private $description;
-
+	private array $throws = [];
 	/** @var PhpDocElement[] */
-	private $methods = [];
+	private array $methods = [];
 
 	/**
 	 * Create single line var docblock
-	 *
-	 * @param string $type
-	 * @return PhpDocComment
 	 */
-	public static function var(Type $type): self
+	public static function var(Type $type): static
 	{
 		$doc = new static();
 		$doc->setVar(PhpDocElementFactory::getVar($type));
@@ -49,51 +37,45 @@ class PhpDocComment implements CodeInterface
 		return $doc;
 	}
 
-	public function __construct(string $description = '')
+	public function __construct(
+		private string $description = '',
+	) {}
+
+	public function getParent(): PhpTrait|PhpVariable|PhpFunction|null
 	{
-		$this->description = $description;
-		$this->params = [];
-		$this->throws = [];
+		return $this->parent;
 	}
 
-	/**
-	 * Returns the generated source
-	 *
-	 * @return string The sourcecode of the comment
-	 */
-	public function getSource(int $currentIndent = 0): string
+	public function setParent(PhpTrait|PhpVariable|PhpFunction|null $parent): void
 	{
-		$lines = $this->getSourceArray();
-		if (!$lines) {
-			return '';
-		}
-
-		return implode(PHP_EOL, $lines) . PHP_EOL;
+		$this->parent = $parent;
 	}
 
-	public function addMethod(PhpDocElement $method)
+	public function addMethod(PhpDocElement $method): static
 	{
 		$this->methods[] = $method;
+		return $this;
 	}
 
-	public function setVar(PhpDocElement $var): self
+	public function setVar(PhpDocElement $var): static
 	{
 		$this->var = $var;
 		return $this;
 	}
 
-	public function setAuthor(PhpDocElement $author): self
+	public function setAuthor(PhpDocElement $author): static
 	{
 		$this->author = $author;
 		return $this;
 	}
 
-	public function setLicence(PhpDocElement $licence): self
+	public function setLicence(PhpDocElement $licence): static
 	{
+		$this->methods[] = $licence;
 		return $this;
 	}
 
-	public function setReturn(PhpDocElement $return): self
+	public function setReturn(PhpDocElement $return): static
 	{
 		$this->return = $return;
 		return $this;
@@ -110,7 +92,7 @@ class PhpDocComment implements CodeInterface
 		return false;
 	}
 
-	public function removeParamWithName(string $name): void
+	public function removeParamWithName(string $name): static
 	{
 		$name = ltrim($name, '$');
 		foreach ($this->params as $key => $param) {
@@ -119,91 +101,76 @@ class PhpDocComment implements CodeInterface
 				break;
 			}
 		}
+		return $this;
 	}
 
-	public function addParam(PhpDocElement $param): self
+	public function addParam(PhpDocElement $param): static
 	{
 		$this->params[$param->getHashCode()] = $param;
 		return $this;
 	}
 
-	public function setParams(PhpDocElement ...$params): self
+	public function setParams(PhpDocElement ...$params): static
 	{
 		$this->params = $params;
 		return $this;
 	}
 
-	public function addThrows(PhpDocElement $throws): self
+	public function addThrows(PhpDocElement $throws): static
 	{
 		$this->throws[] = $throws;
 		return $this;
 	}
 
-	public function setDescription(string $description): self
+	public function setDescription(string $description): static
 	{
 		$this->description = $description;
 		return $this;
 	}
 
-	public function getSourceArray(int $currentIndent = 0): array
+	public function getMethods(): array
 	{
-		$returnArray = ['/**'];
+		return $this->methods;
+	}
 
-		$description = '';
-		if ($this->description) {
-			$preDescription = trim($this->description);
-			$lines = explode(PHP_EOL, $preDescription);
-			foreach ($lines as $line) {
-				$returnArray[] = ' ' . trim('* ' . $line);
-				$description .= trim('* ' . $line) . PHP_EOL;
-			}
-		}
+	public function getAuthor(): ?PhpDocElement
+	{
+		return $this->author;
+	}
 
-		if ($this->var !== null) {
-			if (!$description) {
-				return ["/** @var {$this->var->getDataType()->getDocBlockTypeHint()} */"];
-			}
-			$returnArray[] = rtrim($this->var->getSource(), PHP_EOL);
-		}
+	public function getDescription(): string
+	{
+		return $this->description;
+	}
 
-		if ($description) {
-			$returnArray[] = ' *';
-		}
+	public function getParams(): array
+	{
+		return $this->params;
+	}
 
-		$haveTags = false;
+	public function getReturn(): ?PhpDocElement
+	{
+		return $this->return;
+	}
 
-		if (count($this->params) > 0) {
-			$haveTags = true;
-			foreach ($this->params as $param) {
-				$returnArray[] = rtrim($param->getSource(), PHP_EOL);
-			}
-		}
-		if (count($this->throws) > 0) {
-			$haveTags = true;
-			foreach ($this->throws as $throws) {
-				$returnArray[] = rtrim($throws->getSource(), PHP_EOL);
-			}
-		}
-		if ($this->author !== null) {
-			$haveTags = true;
-			$returnArray[] = rtrim($this->author->getSource(), PHP_EOL);
-		}
-		if ($this->return !== null) {
-			$haveTags = true;
-			$returnArray[] = rtrim($this->return->getSource(), PHP_EOL);
-		}
-		foreach ($this->methods as $method) {
-			$haveTags = true;
-			$returnArray[] = rtrim($method->getSource(), PHP_EOL);
-		}
+	public function getThrows(): array
+	{
+		return $this->throws;
+	}
 
-		if (!$haveTags) {
-			array_pop($returnArray);
-		}
-		if ($returnArray) {
-			$returnArray[] = ' */';
-		}
+	public function getVar(): ?PhpDocElement
+	{
+		return $this->var;
+	}
 
-		return $returnArray;
+	public function removeVar()
+	{
+		$this->var = null;
+	}
+
+	public function addField(PhpDocElement $deprecated): static
+	{
+		$this->methods[] = $deprecated;
+		return $this;
 	}
 }

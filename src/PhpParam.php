@@ -6,63 +6,60 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 class PhpParam
 {
-	private const NO_VALUE = '__PhpParam_NoValue__';
-
-	/** @var string */
-	private $name;
-
-	/** @var Type */
-	private $type;
-
-	private $complexType;
-
-	private $value;
+	public const NO_VALUE = '__PhpParam_NoValue__';
 
 	/**
 	 * Optional variable connected to param
-	 *
-	 * @var PhpVariable|null
 	 */
-	private $variable;
+	private ?PhpVariable $variable = null;
+	/**
+	 * Optional connected method or function
+	 */
+	private null|PhpFunction|PhpMethod $parent = null;
 
 	public static function fromVariable(PhpVariable $var): self
 	{
-		$self = new static($var->getIdentifier()->getName(), $var->getType());
+		$self = new self($var->getIdentifier()->getName(), $var->getType());
 		$self->variable = $var;
 		return $self;
 	}
 
-	public function __construct(string $name, Type $type, $value = self::NO_VALUE)
-	{
-		if (strpos($name, '$') === 0) {
-			$name = substr($name, 1);
-		}
-		$this->name = $name;
-		$this->value = $value;
-		$this->type = $type;
-	}
+	public function __construct(
+		protected string $name,
+		protected Type $type,
+		protected mixed $value = self::NO_VALUE,
+		protected bool $autoCreateVariable = false,
+	) {}
 
 	public function getVariable(): ?PhpVariable
 	{
+		if ($this->autoCreateVariable) {
+			$this->variable = PhpVariable::protected($this->name, $this->type);
+		}
 		return $this->variable;
 	}
 
-	public function getSource(): string
+	public function getParent(): PhpFunction|PhpMethod|null
 	{
-		$ret = '';
-		if ($this->type->getTypeHint()) {
-			$ret .= $this->type->getTypeHint();
-		}
-		$ret .= ' $' . $this->name;
-		if ($this->value !== self::NO_VALUE) {
-			$ret .= ' = ' . FormatValue::format($this->value);
-		}
+		return $this->parent;
+	}
 
-		return trim($ret);
+	public function setParent(PhpFunction|PhpMethod $parent): void
+	{
+		$this->parent = $parent;
+		if ($this->variable &&
+			$parent instanceof PhpMethod &&
+			$parent->doConstructorAutoAssign()
+		) {
+			$this->variable->setPromoted();
+		}
 	}
 
 	public function getName(): string
 	{
+		if (str_starts_with($this->name, '$')) {
+			$this->name = substr($this->name, 1);
+		}
 		return $this->name;
 	}
 
@@ -71,7 +68,7 @@ class PhpParam
 		return $this->type;
 	}
 
-	public function getValue(): string
+	public function getValue(): mixed
 	{
 		return $this->value;
 	}
@@ -81,7 +78,7 @@ class PhpParam
 		$this->type = $type;
 	}
 
-	public function setValue($value): void
+	public function setValue(mixed $value): void
 	{
 		$this->value = $value;
 	}
@@ -94,22 +91,6 @@ class PhpParam
 	public function isNullable(): bool
 	{
 		return $this->type->isNullable();
-	}
-
-	/**
-	 * Get complex return type hinting like arrays and constants
-	 */
-	public function getComplexType(): ?string
-	{
-		return $this->complexType;
-	}
-
-	/**
-	 * Set complex return typehint information
-	 */
-	public function setComplexType(string $complexType): void
-	{
-		$this->complexType = $complexType;
 	}
 
 	public function __clone()

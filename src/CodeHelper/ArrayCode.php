@@ -10,21 +10,11 @@ use Traversable;
 
 final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 {
-	private $data;
-	private $indentFirstLine = true;
+	public function __construct(
+		private array $data = []
+	) {}
 
-	public function __construct(array $data = [])
-	{
-		$this->data = $data;
-	}
-
-	public function getSource(int $currentIndent = 0): string
-	{
-		$indent = ($this->indentFirstLine ? Indent::indent($currentIndent) : '');
-		return $indent . FlattenSource::source($this->getSourceArray($currentIndent));
-	}
-
-	public function getSourceArray(int $currentIndent = 0): array
+	public function getSourceArray(): array
 	{
 		if (!$this->data) {
 			return ['[]'];
@@ -43,7 +33,6 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 		foreach ($this->data as $key => $value) {
 			if (is_array($value)) {
 				$tmpValue = new ArrayCode($value);
-				$tmpValue->indentFirstLine = false;
 				if ($isAssoc) {
 					$rows[] = sprintf("'%s' => [", $key);
 				}

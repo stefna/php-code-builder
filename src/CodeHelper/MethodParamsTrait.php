@@ -6,17 +6,15 @@ use Stefna\PhpCodeBuilder\FormatValue;
 
 trait MethodParamsTrait
 {
-	/** @var string */
-	private $identifier;
-	private $callIdentifier = '->';
-	private $params = [];
+	private string $identifier;
+	private string $callIdentifier = '->';
 
-	private function buildSourceArray(int $currentIndent): array
+	private function buildSourceArray(): array
 	{
 		$return = [];
 		$firstLine = $this->identifier . $this->callIdentifier . $this->method . '(';
 		if (count($this->params)) {
-			$paramSource = $this->getSourceForParams(strlen($firstLine), $currentIndent);
+			$paramSource = $this->getSourceForParams();
 			if (count($paramSource) === 1) {
 				if (is_string($paramSource[0]) && strlen($paramSource[0]) < 100) {
 					return [$firstLine . $paramSource[0] . ')'];
@@ -84,17 +82,17 @@ trait MethodParamsTrait
 		return $return;
 	}
 
-	private function getSourceForParams(int $currentLength, int $currentIndent): array
+	private function getSourceForParams(): array
 	{
 		$params = [];
 		$isComplex = false;
 		foreach ($this->params as $param) {
 			if ($param instanceof CodeInterface) {
 				if ($param instanceof VariableReference) {
-					$value = $param->getSource();
+					$value = $param->toString();
 				}
 				else {
-					$value = $param->getSourceArray($currentIndent);
+					$value = $param->getSourceArray();
 					if (count($value) === 1) {
 						$value = $value[0];
 					}
@@ -102,16 +100,14 @@ trait MethodParamsTrait
 						$isComplex = true;
 					}
 				}
-				$currentLength += strlen($param->getSource());
 			}
 			else {
 				$value = FormatValue::format($param);
-				$currentLength += strlen($value);
 			}
 			$params[] = $value;
 		}
 
-		if (!$isComplex && $currentLength < 95) {
+		if (!$isComplex && count($params) < 3) {
 			return [implode(', ', $params)];
 		}
 
@@ -123,7 +119,7 @@ trait MethodParamsTrait
 				if ($param instanceof ArrayCode) {
 					if (isset($return[$currentIndex - 1]) && is_string($return[$key - 1])) {
 						$param->setIndentFirstLine(false);
-						$value = $param->getSourceArray($currentIndent);
+						$value = $param->getSourceArray();
 						$return[$currentIndex - 1] .= ', ' . array_shift($value);
 						foreach ($value as $x) {
 							$return[] = $x;
@@ -131,16 +127,16 @@ trait MethodParamsTrait
 						}
 					}
 					else {
-						$return[] = $param->getSourceArray($currentIndent);
+						$return[] = $param->getSourceArray();
 						$currentIndex += 1;
 					}
 					$previousArray = true;
 				}
 				else {
 					if ($param instanceof VariableReference) {
-						$value = $param->getSource();
+						$value = $param->toString();
 					}
-					$value = $param->getSourceArray($currentIndent);
+					$value = $param->getSourceArray();
 					if ($previousArray) {
 						if (is_array($value)) {
 							$return[$currentIndex - 1] .= ', ' . array_shift($value);

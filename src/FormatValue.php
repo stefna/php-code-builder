@@ -2,26 +2,29 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\CodeHelper\ArrayCode;
+
 class FormatValue
 {
-	public static function format($value): string
+	public static function formatArray(array $data): string|array
 	{
-		switch (gettype($value)) {
-			case 'boolean':
-				$value = $value ? 'true' : 'false';
-				break;
-			case 'NULL':
-				$value = 'null';
-				break;
-			case 'string':
-				//todo better escaping needed
-				$value = "'$value'";
-				break;
-			case 'array':
-				$value = '[]';
-				break;
+		$arrayCode = new ArrayCode($data);
+		return $arrayCode->getSourceArray();
+	}
+
+	public static function format($value): array|string
+	{
+		$type = gettype($value);
+		if ($type === 'array') {
+			return self::formatArray($value);
 		}
 
-		return (string)$value;
+		return match ($type) {
+			'boolean' => $value ? 'true' : 'false',
+			'NULL' => 'null',
+			'string' => "'$value'",
+			'array' => '[]',
+			'integer' => (string)$value,
+		};
 	}
 }

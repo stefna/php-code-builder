@@ -10,18 +10,15 @@ final class InstantiateClass implements CodeInterface
 {
 	use MethodParamsTrait;
 
-	private $class;
+	private string $method = '';
+	private bool $indentFirstLine = false;
 
-	private $method = '';
-
-	private $indentFirstLine = false;
-
-	public function __construct(Identifier $class, array $params = [])
+	public function __construct(
+		private Identifier $class,
+		private array $params = [])
 	{
 		$this->identifier = 'new ' . $class->getName();
 		$this->callIdentifier = '';
-		$this->class = $class;
-		$this->params = $params;
 	}
 
 	/**
@@ -35,11 +32,5 @@ final class InstantiateClass implements CodeInterface
 	public function getSourceArray(int $currentIndent = 0): array
 	{
 		return $this->buildSourceArray($currentIndent);
-	}
-
-	public function getSource(int $currentIndent = 0): string
-	{
-		$indent = ($this->indentFirstLine ? Indent::indent($currentIndent) : '');
-		return $indent . FlattenSource::source($this->getSourceArray(), $currentIndent);
 	}
 }

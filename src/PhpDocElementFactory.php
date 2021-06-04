@@ -17,13 +17,10 @@ class PhpDocElementFactory
 	/**
 	 * Creates a param element
 	 *
-	 * @param Type|string $dataType The name of the datatype of the variable
-	 * @param string $name
-	 * @param string $description
-	 * @return PhpDocElement
+	 * @param string|Type $dataType The name of the datatype of the variable
 	 * @throws \InvalidArgumentException Throws exception if no name is supplied
 	 */
-	public static function getParam($dataType, string $name, string $description = ''): PhpDocElement
+	public static function getParam(Type|string $dataType, string $name, string $description = ''): PhpDocElement
 	{
 		if ($name === '') {
 			throw new \InvalidArgumentException('A parameter must have a name!');
@@ -42,46 +39,26 @@ class PhpDocElementFactory
 		return new PhpDocElement('param', $dataType, $name, $description);
 	}
 
-	/**
-	 * Creates a throws element
-	 *
-	 * @param string $exception
-	 * @param string $description
-	 * @return PhpDocElement
-	 */
 	public static function getThrows(string $exception, string $description): PhpDocElement
 	{
 		return new PhpDocElement('throws', $exception, '', $description);
 	}
 
-	/**
-	 * @param string|Identifier $returnClass
-	 */
-	public static function method(string $returnType, $returnClass, string $methodName): PhpDocElement
+	public static function method(string $returnType, Identifier|string $returnClass, string $methodName): PhpDocElement
 	{
-		return new PhpDocElement('method', $returnType, '', Identifier::fromUnknown($returnClass)->getName() . ' ' . $methodName . '()');
+		return new PhpDocElement(
+			'method',
+			$returnType,
+			'',
+			Identifier::fromUnknown($returnClass)->getName() . ' ' . $methodName . '()'
+		);
 	}
 
-	/**
-	 * Creates a throws element
-	 *
-	 * @param Type|string $dataType The name of the datatype
-	 * @param string $name The name of the variable
-	 * @param string $description Description of the variable
-	 * @return PhpDocElement
-	 */
-	public static function getVar($dataType, string $name = '', string $description = ''): PhpDocElement
+	public static function getVar(Type|string $dataType, string $name = '', string $description = ''): PhpDocElement
 	{
 		return new PhpDocElement('var', $dataType, $name, $description);
 	}
 
-	/**
-	 * Creates a author element
-	 *
-	 * @param string $author The name of the author
-	 * @param string $email Optional email of author
-	 * @return PhpDocElement
-	 */
 	public static function getAuthor(string $author, string $email = ''): PhpDocElement
 	{
 		if ($email) {
@@ -90,37 +67,18 @@ class PhpDocElementFactory
 		return new PhpDocElement('author', $author, '', '');
 	}
 
-	/**
-	 * Creates a return element
-	 *
-	 * @param Type|string $dataType The name of the datatype
-	 * @param string $description The description of the return value
-	 * @return PhpDocElement
-	 */
-	public static function getReturn($dataType, string $description = ''): PhpDocElement
+	public static function getReturn(Type|string $dataType, string $description = ''): PhpDocElement
 	{
 		return new PhpDocElement('return', $dataType, '', $description);
 	}
 
-	/**
-	 * Creates a deprecated element
-	 *
-	 * @param string $information The description of why the element is deprecated etc.
-	 * @return PhpDocElement
-	 */
 	public static function getDeprecated(string $information = ''): PhpDocElement
 	{
-		return new PhpDocElement('deprecated', null, '', $information);
+		return new PhpDocElement('deprecated', Type::empty(), '', $information);
 	}
 
-	/**
-	 * Creates a licence element
-	 *
-	 * @param string $information Information about the licence
-	 * @return PhpDocElement
-	 */
 	public static function getLicence(string $information): PhpDocElement
 	{
-		return new PhpDocElement('licence', null, '', $information);
+		return new PhpDocElement('licence', Type::empty(), '', $information);
 	}
 }

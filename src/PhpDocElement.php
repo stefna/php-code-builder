@@ -13,52 +13,15 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
  */
 class PhpDocElement
 {
-	/*** @var string */
-	private $type;
-	/*** @var Type|null */
-	private $datatype;
-	/*** @var string */
-	private $variableName;
-	/*** @var string */
-	private $description;
+	private Type|null $datatype;
 
-	/**
-	 * @param Type|string|null $dataType
-	 */
-	public function __construct(string $type, $dataType, string $variableName, string $description)
-	{
-		$this->type = $type;
+	public function __construct(
+		private string $type,
+		string|Type $dataType,
+		private string $variableName,
+		private string $description
+	) {
 		$this->datatype = is_string($dataType) ? Type::fromString($dataType) : $dataType;
-		$this->variableName = $variableName;
-		$this->description = $description;
-	}
-
-	/**
-	 * Returns the whole row of generated comment source
-	 *
-	 * @return string
-	 */
-	public function getSource(): string
-	{
-		$ret = ' * ';
-
-		$ret .= '@' . $this->type;
-
-		if ($this->datatype) {
-			$ret .= ' ' . $this->datatype->getDocBlockTypeHint();
-		}
-
-		if ($this->variableName !== '') {
-			$ret .= ' $' . $this->variableName;
-		}
-
-		if ($this->description !== '') {
-			$ret .= ' ' . $this->description;
-		}
-
-		$ret .= PHP_EOL;
-
-		return $ret;
 	}
 
 	public function getType(): string
@@ -89,5 +52,33 @@ class PhpDocElement
 			$this->description,
 			($this->datatype ? $this->datatype->getDocBlockTypeHint() : ''),
 		]));
+	}
+
+	/**
+	 * Returns the whole row of generated comment source
+	 *
+	 * @return string
+	 */
+	public function getSource(): string
+	{
+		$ret = ' * ';
+
+		$ret .= '@' . $this->type;
+
+		if (!$this->datatype?->isEmpty()) {
+			$ret .= ' ' . $this->datatype->getDocBlockTypeHint();
+		}
+
+		if ($this->variableName !== '') {
+			$ret .= ' $' . $this->variableName;
+		}
+
+		if ($this->description !== '') {
+			$ret .= ' ' . $this->description;
+		}
+
+		$ret .= PHP_EOL;
+
+		return $ret;
 	}
 }

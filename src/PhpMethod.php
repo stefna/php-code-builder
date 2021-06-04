@@ -13,70 +13,37 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
  */
 class PhpMethod extends PhpFunction
 {
-	private $final = false;
-	private $static = false;
-	private $abstract = false;
+	public const PRIVATE_ACCESS = 'private';
+	public const PROTECTED_ACCESS = 'protected';
+	public const PUBLIC_ACCESS = 'public';
 
-	public static function setter(PhpVariable $var, bool $fluent = false): self
-	{
-		$source = [
-			'$this->' . $var->getIdentifier()->toString() . ' = $' . $var->getIdentifier()->toString() . ';',
-		];
-		if ($fluent) {
-			$source[] = 'return $this;';
-		}
+	protected bool $final = false;
+	protected bool $static = false;
+	protected bool $abstract = false;
 
-		$type = clone $var->getType();
-		$docBlock = null;
-		if ($type->needDockBlockTypeHint()) {
-			$docBlock = new PhpDocComment();
-			$docBlock->addParam(PhpDocElementFactory::getParam(
-				$type->getDocBlockTypeHint(),
-				$var->getIdentifier()->toString()
-			));
-		}
+	protected bool $constructor = false;
+	protected bool $constructorAutoAssign = false;
 
-		$valueParam = PhpParam::fromVariable($var);
-		$valueParam->setType($type);
-		return new self(self::PUBLIC_ACCESS, 'set' . ucfirst($var->getIdentifier()->toString()), [
-			$valueParam,
-		], $source, Type::fromString('void'), $docBlock);
-	}
-
-	public static function getter(PhpVariable $var): self
-	{
-		$methodName = $identifier = $var->getIdentifier()->toString();
-		$type = $var->getType();
-		$prefix = 'get';
-		if ($type->is('bool')) {
-			if (strpos($methodName, 'has') === 0) {
-				$prefix = 'has';
-			}
-			else {
-				$prefix = 'is';
-			}
-		}
-		if (strpos($identifier, $prefix) === 0) {
-			$methodName = substr($methodName, strlen($prefix));
-		}
-
-		return self::public($prefix . ucfirst($methodName), [], [
-			'return $this->' . $identifier . ';',
-		], $var->getType());
-	}
+	protected PhpTrait|PhpClass|PhpInterface|null $parent = null;
 
 	/**
 	 * @param PhpParam[] $params
 	 */
 	public static function constructor(array $params, array $source, bool $autoAssign = false): self
 	{
-		if ($autoAssign) {
-			foreach ($params as $param) {
-				$source[] = sprintf('$this->%s = $%s;', $param->getName(), $param->getName());
-			}
+		$self = new self(
+			self::PUBLIC_ACCESS,
+			'__construct',
+			[],
+			$source,
+			Type::empty(),
+		);
+		$self->constructor = true;
+		$self->constructorAutoAssign = $autoAssign;
+		foreach ($params as $param) {
+			$self->addParam($param);
 		}
-		$docBlock = null;
-		return new self(self::PUBLIC_ACCESS, '__construct', $params, $source, Type::empty(), $docBlock);
+		return $self;
 	}
 
 	public static function public(string $identifier, array $params, array $source, Type $type = null): self
@@ -86,68 +53,125 @@ class PhpMethod extends PhpFunction
 
 	public static function private(string $identifier, array $params, array $source, Type $type = null): self
 	{
-		return new self(self::PUBLIC_ACCESS, $identifier, $params, $source, $type ?? Type::empty());
+		return new self(self::PRIVATE_ACCESS, $identifier, $params, $source, $type ?? Type::empty());
 	}
 
 	public static function protected(string $identifier, array $params, array $source, Type $type = null): self
 	{
-		return new self(self::PUBLIC_ACCESS, $identifier, $params, $source, $type ?? Type::empty());
+		return new self(self::PROTECTED_ACCESS, $identifier, $params, $source, $type ?? Type::empty());
 	}
 
 	/**
-	 * @param string $access
-	 * @param string $identifier
-	 * @param array $params
-	 * @param array|string $source
-	 * @param Type|null $returnTypeHint
-	 * @param PhpDocComment|null $comment
+	 * @param PhpParam[]|array<string, Type|string> $params
+	 * @param array<array-key, string|string[]> $source
 	 */
 	public function __construct(
-		string $access,
+		protected string $access,
 		string $identifier,
 		array $params,
-		$source,
+		array $source,
 		?Type $returnTypeHint = null,
-		?PhpDocComment $comment = null
+		?PhpDocComment $comment = null,
 	) {
 		parent::__construct($identifier, $params, $source, $returnTypeHint ?? Type::empty(), $comment);
-		$this->access = $access;
 	}
 
-	public function setFinal(): self
+	public function setFinal(): static
 	{
+		if ($this->abstract) {
+			throw new \BadMethodCallException('Can\'t mark method "final" already marked "abstract"');
+		}
+		if ($this->access === self::PRIVATE_ACCESS) {
+			throw new \BadMethodCallException('Can\'t mark method "final" because it\'s marked as private');
+		}
+
 		$this->final = true;
 		return $this;
 	}
 
-	public function setStatic(): self
+	public function setStatic(): static
 	{
 		$this->static = true;
 		return $this;
 	}
 
-	public function setAbstract(bool $interface = false): self
+	public function setAbstract(bool $abstract = true): static
 	{
-		$this->abstract = !$interface;
-		$this->renderBody = false;
+		if ($abstract && $this->access === self::PRIVATE_ACCESS) {
+			throw new \BadMethodCallException('Can\'t mark "private" methods as abstract');
+		}
+		$this->abstract = $abstract;
 		return $this;
 	}
 
-	public function setAccess(string $access): self
+	public function setAccess(string $access): static
 	{
 		$this->access = $access;
 		return $this;
 	}
 
-	protected function formatFunctionAccessors(): string
-	{
-		$ret = '';
-		$ret .= $this->abstract ? 'abstract ' : '';
-		$ret .= $this->final ? 'final ' : '';
-		$ret .= $this->access ? $this->access . ' ' : '';
-		$ret .= $this->static ? 'static ' : '';
 
-		return $ret;
+	public function getAccess(): string
+	{
+		return $this->access;
+	}
+
+	public function isAbstract(): bool
+	{
+		return $this->abstract;
+	}
+
+	public function isFinal(): bool
+	{
+		return $this->final;
+	}
+
+	public function isStatic(): bool
+	{
+		return $this->static;
+	}
+
+	public function setParent(PhpTrait|PhpInterface|PhpClass $parent): static
+	{
+		$this->parent = $parent;
+
+		if ($this->constructorAutoAssign) {
+			foreach ($this->params as $param) {
+				$var = $param->getVariable();
+				if ($var &&
+					!$parent instanceof PhpInterface &&
+					!$parent->hasVariable($var->getIdentifier())
+				) {
+					$parent->addVariable($var);
+				}
+			}
+		}
+
+		return $this;
+	}
+
+	public function getParent(): PhpTrait|PhpInterface|PhpClass|null
+	{
+		return $this->parent;
+	}
+
+	public function isConstructor(): bool
+	{
+		return $this->constructor;
+	}
+
+	public function doConstructorAutoAssign(): bool
+	{
+		return $this->constructorAutoAssign;
+	}
+
+	public function addParam(PhpParam $param): static
+	{
+		$var = $param->getVariable();
+		if ($var && $this->parent && !$this->parent->hasVariable($var->getIdentifier())) {
+			$this->parent->addVariable($var);
+		}
+		return parent::addParam($param); // TODO: Change the autogenerated stub
 	}
 
 	public function __clone()

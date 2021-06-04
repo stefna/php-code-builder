@@ -11,37 +11,17 @@ final class StaticMethodCall implements CodeInterface
 {
 	use MethodParamsTrait;
 
-	private $class;
-
-	private $method;
-
-	private $indentFirstLine = false;
-
-	public function __construct(Identifier $class, string $method, array $params = [])
-	{
+	public function __construct(
+		private Identifier $class,
+		private string $method,
+		private array $params = []
+	) {
 		$this->identifier = $class->getName();
 		$this->callIdentifier = '::';
-		$this->class = $class;
-		$this->method = $method;
-		$this->params = $params;
 	}
 
-	/**
-	 * @param bool $indentFirstLine
-	 */
-	public function setIndentFirstLine(bool $indentFirstLine): void
+	public function getSourceArray(): array
 	{
-		$this->indentFirstLine = $indentFirstLine;
-	}
-
-	public function getSourceArray(int $currentIndent = 0): array
-	{
-		return $this->buildSourceArray($currentIndent);
-	}
-
-	public function getSource(int $currentIndent = 0): string
-	{
-		$indent = ($this->indentFirstLine ? Indent::indent($currentIndent) : '');
-		return $indent . FlattenSource::source($this->getSourceArray(), $currentIndent);
+		return $this->buildSourceArray();
 	}
 }

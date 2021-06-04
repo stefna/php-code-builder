@@ -7,19 +7,11 @@ use Stefna\PhpCodeBuilder\Indent;
 
 final class ReturnCode implements CodeInterface
 {
-	private $code;
+	public function __construct(
+		private CodeInterface $code,
+	) {}
 
-	public function __construct(CodeInterface $code)
-	{
-		$this->code = $code;
-	}
-
-	public function getSource(int $currentIndent = 0): string
-	{
-		return Indent::indent($currentIndent) . FlattenSource::source($this->getSourceArray());
-	}
-
-	public function getSourceArray(int $currentIndent = 0): array
+	public function getSourceArray(): array
 	{
 		$code = $this->code->getSourceArray();
 		$code[0] = 'return ' . $code[0];

@@ -17,16 +17,11 @@ final class Type
 		'static',
 		'object',
 	];
-	/** @var bool */
-	private $namespaced;
-	/** @var bool */
-	private $simplified = false;
-	/** @var bool */
-	private $nullable;
-	/** @var string */
-	private $type;
+	private bool $namespaced;
+	private bool $simplified = false;
+	private bool $inCheckLoop = false;
 	/** @var Type[] */
-	private $types = [];
+	private array $types = [];
 
 	public static function empty(): self
 	{
@@ -40,7 +35,7 @@ final class Type
 		}
 		$arraySubTypeKey = '__ARRAY_SUB_TYPE__';
 		$arraySubType = null;
-		if (strpos($type, 'array<') !== false) {
+		if (str_contains($type, 'array<')) {
 			preg_match('/array\<.*,(\s+)?(.*)\>/', $type, $match);
 			$arraySubType = $match[2] ?? '';
 			if (strpos($arraySubType, '|')) {
@@ -71,7 +66,7 @@ final class Type
 			}
 			return $self;
 		}
-		if (strpos($type, '?') === 0) {
+		if (str_starts_with($type, '?')) {
 			return new self(substr($type, 1), true);
 		}
 
@@ -81,11 +76,11 @@ final class Type
 		return new self($type);
 	}
 
-	public function __construct(string $type, bool $nullable = false)
-	{
-		$this->type = $type;
-		$this->namespaced = strpos($type, '\\') !== false;
-		$this->nullable = $nullable;
+	public function __construct(
+		private string $type,
+		private bool $nullable = false,
+	) {
+		$this->namespaced = str_contains($type, '\\');
 	}
 
 	public function simplifyName(): void
@@ -108,14 +103,11 @@ final class Type
 	public function setType(string $type): void
 	{
 		$this->type = $type;
-		$this->namespaced = strpos($type, '\\') !== false;
+		$this->namespaced = str_contains($type, '\\');
 		$this->simplified = false;
 	}
 
-	/**
-	 * @param string|Type $type
-	 */
-	public function addUnion($type): void
+	public function addUnion(Type|string $type): void
 	{
 		if ($type === 'null') {
 			$this->nullable = true;
@@ -184,6 +176,17 @@ final class Type
 
 	public function isNullable(): bool
 	{
+		if ($this->nullable === false && $this->type === '') {
+			foreach ($this->types as $type) {
+				if ($type === $this) {
+					continue;
+				}
+				if ($type->isNullable() || $type->type === 'null') {
+					return true;
+				}
+			}
+			return false;
+		}
 		return $this->nullable;
 	}
 
@@ -193,7 +196,7 @@ final class Type
 			return $this;
 		}
 		foreach ($this->types as $index => $type) {
-			if ($type === 'null') {
+			if ($type->type === 'null') {
 				$self = clone $this;
 				unset($self->types[$index]);
 				return $self;
@@ -227,7 +230,6 @@ final class Type
 		return Identifier::fromString($this->isArray(false) ? $this->getArrayType() : $this->getType());
 	}
 
-	private $inCheckLoop = false;
 	public function isArray(bool $deepCheck = true): bool
 	{
 		if ($deepCheck && !$this->inCheckLoop && $this->isUnion()) {
@@ -241,7 +243,7 @@ final class Type
 			$this->inCheckLoop = false;
 			return true;
 		}
-		return (substr($this->type, -2) === '[]' || strpos($this->type, 'array<') === 0);
+		return (substr($this->type, -2) === '[]' || str_starts_with($this->type, 'array<'));
 	}
 
 	public function getArrayType(): ?string
@@ -250,7 +252,7 @@ final class Type
 			return null;
 		}
 		$type = self::ALIAS_MAP[$this->type] ?? $this->type;
-		if (strpos($type, 'array<') !== false) {
+		if (str_contains($type, 'array<')) {
 			preg_match('/array\<.*,(\s+)?(.*)\>/', $type, $match);
 			return $match[2] ?? null;
 		}
@@ -284,5 +286,10 @@ final class Type
 	public function is(string $type): bool
 	{
 		return (self::ALIAS_MAP[$this->type] ?? $this->type) === $type;
+	}
+
+	public function isEmpty(): bool
+	{
+		return $this->type === '' && count($this->types) === 0;
 	}
 }

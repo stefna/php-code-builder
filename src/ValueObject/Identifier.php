@@ -4,19 +4,15 @@ namespace Stefna\PhpCodeBuilder\ValueObject;
 
 final class Identifier
 {
-	private static $instances = [];
+	/** @var array<string, Identifier> */
+	private static array $instances = [];
 
-	/** @var string */
-	private $name;
-	/** @var string */
-	private $namespace;
-	/** @var string|null */
-	private $alias;
+	private ?string $alias = null;
 
 	public static function fromString($identifier): self
 	{
 		$namespace = '';
-		if (strpos($identifier, '\\') !== false) {
+		if (str_contains($identifier, '\\')) {
 			$ns = explode('\\', $identifier);
 			$identifier = array_pop($ns);
 			$namespace  = implode('\\', $ns);
@@ -37,7 +33,7 @@ final class Identifier
 		return self::$instances[$name] = new self($name, '');
 	}
 
-	public static function fromUnknown($identifier): self
+	public static function fromUnknown(mixed $identifier): self
 	{
 		if ($identifier instanceof Identifier) {
 			return $identifier;
@@ -46,14 +42,13 @@ final class Identifier
 			return self::fromString($identifier);
 		}
 
-		return new self(random_bytes('6'), '');
+		return new self(random_bytes(6), '');
 	}
 
-	private function __construct(string $name, string $namespace)
-	{
-		$this->name = $name;
-		$this->namespace = $namespace;
-	}
+	private function __construct(
+		private string $name,
+		private string $namespace,
+	) {}
 
 	public function getName(): string
 	{

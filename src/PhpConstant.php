@@ -4,18 +4,15 @@ namespace Stefna\PhpCodeBuilder;
 
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
-class PhpConstant extends PhpElement
+class PhpConstant
 {
+	public const PRIVATE_ACCESS = 'private';
+	public const PROTECTED_ACCESS = 'protected';
+	public const PUBLIC_ACCESS = 'public';
+
 	public const CASE_UPPER = 0;
 	public const CASE_LOWER = 1;
 	public const CASE_NONE = 2;
-
-	/** @var string */
-	private $value;
-	/** @var bool */
-	private $rawValue = false;
-	/** @var int */
-	private $case;
 
 	public static function public(string $identifier, $value = null): self
 	{
@@ -33,91 +30,66 @@ class PhpConstant extends PhpElement
 	}
 
 	public function __construct(
-		string $access,
-		string $identifier,
-		?string $value = null,
-		int $case = 0
-	) {
-		$this->access = $access;
-		$this->identifier = Identifier::simple($identifier);
-		if ($value === null) {
-			$value = $identifier;
-		}
-		$this->value = $value;
-		$this->case = $case;
-	}
-
-	/**
-	 * Returns the complete source code for the variable
-	 *
-	 * @return string
-	 */
-	public function getSource(): string
-	{
-		$ret = '';
-		$ret .= $this->access ? $this->access . ' ' : '';
-
-		$name = $this->getName();
-		$value = $this->getFormattedValue();
-		$ret .= "const $name = {$value};";
-
-		return $this->getSourceRow($ret);
-	}
+		protected string $access,
+		protected string $identifier,
+		protected mixed $value = null,
+		protected int $case = self::CASE_UPPER,
+	) {}
 
 	public function getName(): string
 	{
-		$currentName = $this->identifier->getName();
+		$currentName = $this->identifier;
 		$name = preg_replace('/^(\d)/', '_$0', $currentName);
 		$name = str_replace('-', '_', $name);
 
-		switch ($this->case) {
-			case self::CASE_UPPER:
-			case self::CASE_LOWER:
-				$name = preg_replace('/(?<!^)[A-Z]/', '_$0', $name);
-			//Use this to make sure name are readable
-			case self::CASE_UPPER:
-				if ($currentName === strtoupper($currentName)) {
-					$name = $currentName;
-				}
-				else {
-					$name = strtoupper($name);
-				}
-				break;
-			case self::CASE_LOWER:
-				$name = strtolower($name);
-				break;
+		if ($this->case === self::CASE_NONE) {
+			return $name;
 		}
 
-		return $name;
+		$name = preg_replace('/(?<!^)[A-Z]/', '_$0', $name);
+		if ($this->case === self::CASE_LOWER) {
+			return strtolower($name);
+		}
+
+		if ($currentName === strtoupper($currentName)) {
+			return $currentName;
+		}
+		return strtoupper($name);
 	}
 
-	public function setValue(string $value): self
+	public function setValue(string $value): static
 	{
-		$this->rawValue = false;
 		$this->value = $value;
 		return $this;
 	}
 
-	public function setRawValue(string $value): self
+	public function getValue(): mixed
 	{
-		$this->rawValue = true;
-		$this->value = $value;
-		return $this;
+		return $this->value === null ? $this->identifier : $this->value;
 	}
 
-	public function getValue(): string
+	public function setCase(int $case): static
 	{
-		return $this->value;
-	}
-
-	public function getFormattedValue(): string
-	{
-		return $this->rawValue ? $this->value : FormatValue::format($this->value);
-	}
-
-	public function setCase(int $case)
-	{
+		if (!in_array($case, [self::CASE_LOWER, self::CASE_UPPER, self::CASE_NONE], true)) {
+			throw new \InvalidArgumentException('Invalid case');
+		}
 		$this->case = $case;
 		return $this;
+	}
+
+	public function getAccess(): string
+	{
+		return $this->access;
+	}
+
+	public function setAccess(string $access): static
+	{
+		$this->access = $access;
+		return $this;
+	}
+
+	public function getIdentifier(): Identifier
+	{
+		return Identifier::fromUnknown($this->identifier);
 	}
 }

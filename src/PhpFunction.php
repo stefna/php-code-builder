@@ -13,87 +13,58 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
  * @author Andreas Sundqvist <andreas@stefna.is>
  * @license http://www.opensource.org/licenses/mit-license.php MIT License
  */
-class PhpFunction extends PhpElement implements CodeInterface
+class PhpFunction
 {
 	/** @var PhpParam[] */
-	private $params = [];
-	/** @var string|array */
-	private $source;
-	/** @var PhpDocComment */
-	protected $comment;
-	/** @var Type */
-	protected $returnTypeHint;
-	/** @var bool */
-	protected $renderBody = true;
-	/** @var null|array */
-	protected $compiledSource;
+	protected array $params = [];
+	/** @var array<string, string|string[]> */
+
+	private Identifier $identifier;
 
 	/**
-	 * @param string $identifier
-	 * @param array $params
-	 * @param array|string $source
-	 * @param Type $returnTypeHint
-	 * @param PhpDocComment|null $comment
+	 * @param PhpParam[] $params
+	 * @param array<array-key, string|string[]> $source
 	 */
 	public function __construct(
-		string $identifier,
+		Identifier|string $identifier,
 		array $params,
-		$source,
-		Type $returnTypeHint = null,
-		PhpDocComment $comment = null
+		protected array|CodeInterface $body,
+		protected ?Type $returnTypeHint = null,
+		protected ?PhpDocComment $comment = null
 	) {
-		$this->access = '';
-		$this->identifier = Identifier::simple($identifier);
-		$this->source = $source;
-		$this->returnTypeHint = $returnTypeHint ?? Type::empty();
-		$this->comment = $comment ?? new PhpDocComment();
-		foreach ($params as $name => $type) {
-			if ($type instanceof PhpParam) {
-				$this->addParam($type);
-			}
-			elseif (is_string($name)) {
-				$type = is_string($type) ? Type::fromString($type) : $type;
-				$this->addParam(new PhpParam($name, $type));
-			}
-			else {
-				$this->addParam(new PhpParam($type, Type::empty()));
-			}
+		$this->identifier = Identifier::fromUnknown($identifier);
+		foreach ($params as $param) {
+			$this->addParam($param);
 		}
 	}
 
 	/**
 	 * Set function body
-	 *
-	 * @param array|string $source
 	 */
-	public function setSource($source): void
+	public function setBody(array $source): void
 	{
-		$this->source = $source;
+		$this->body = $source;
 	}
 
-	/**
-	 * Set function docblock
-	 *
-	 * @param PhpDocComment $comment
-	 */
 	public function setComment(PhpDocComment $comment): void
 	{
 		$this->comment = $comment;
 	}
 
-	public function getComment(): PhpDocComment
+	public function getComment(): ?PhpDocComment
 	{
 		return $this->comment;
 	}
 
 	public function getReturnType(): Type
 	{
-		return $this->returnTypeHint;
+		return $this->returnTypeHint ?? Type::empty();
 	}
 
-	public function setReturnTypeHint(Type $returnTypeHint): void
+	public function setReturnTypeHint(Type $returnTypeHint): static
 	{
 		$this->returnTypeHint = $returnTypeHint;
+		return $this;
 	}
 
 	/**
@@ -104,34 +75,19 @@ class PhpFunction extends PhpElement implements CodeInterface
 		return $this->params;
 	}
 
-	/**
-	 * Returns the complete source code for the function
-	 *
-	 * @return string
-	 */
-	public function getSource(int $currentIndent = 0): string
+	public function getParam(string $name): ?PhpParam
 	{
-		$lines = $this->getSourceArray();
-		if (!$lines) {
-			return '';
-		}
-
-		return FlattenSource::source($lines);
+		return $this->params[$name] ?? null;
 	}
 
-	public function replaceCompiledSource(array $source): void
+	public function addParam(PhpParam $param): static
 	{
-		$this->compiledSource = $source;
-	}
-
-	public function addParam(PhpParam $param): self
-	{
+		$param->setParent($this);
 		$this->params[$param->getName()] = $param;
-
 		return $this;
 	}
 
-	public function removeParam(string $name): self
+	public function removeParam(string $name): static
 	{
 		if (isset($this->params[$name])) {
 			unset($this->params[$name]);
@@ -140,113 +96,24 @@ class PhpFunction extends PhpElement implements CodeInterface
 		return $this;
 	}
 
-	protected function formatFunctionAccessors(): string
-	{
-		return '';
-	}
-
-	private function formatFunctionName(): string
-	{
-		$functionNameDefinition = $this->formatFunctionAccessors();
-		$functionNameDefinition .= 'function ';
-		$functionNameDefinition .= $this->identifier->toString();
-		return $functionNameDefinition;
-	}
-
-	private function buildParamsArray(int $baseLength, array $parameters): array
-	{
-		$parameterStrings = [];
-		foreach ($parameters as $param) {
-			$parameterStrings[] = $param->getSource();
-		}
-
-		$str = implode(', ', $parameterStrings);
-		if (strlen($str) + $baseLength > 100) {
-			for ($i = 0, $l = count($parameterStrings) - 1; $i < $l; $i++) {
-				$parameterStrings[$i] .= ',';
-			}
-			return $parameterStrings;
-		}
-		return [$str];
-	}
-
-	public function getSourceArray(int $currentIndent = 0): array
-	{
-		if ($this->compiledSource) {
-			return $this->compiledSource;
-		}
-
-		$comment = $this->comment;
-		if ($this->returnTypeHint->needDockBlockTypeHint()) {
-			$comment->setReturn(PhpDocElementFactory::getReturn($this->returnTypeHint->getDocBlockTypeHint()));
-		}
-
-		foreach ($this->params as $param) {
-			if ($param->getType()->needDockBlockTypeHint()) {
-				if ($comment->hasParamWithName($param->getName())) {
-					$comment->removeParamWithName($param->getName());
-				}
-				$comment->addParam(PhpDocElementFactory::getParam($param->getType(), $param->getName()));
-			}
-		}
-
-		$ret = [];
-		foreach ($comment->getSourceArray() as $line) {
-			$ret[] = $line;
-		}
-
-		$functionName = $this->formatFunctionName();
-		$parameters = $this->buildParamsArray(strlen($functionName), $this->params);
-		$isAbstract = !$this->renderBody;
-		if (count($parameters) === 1) {
-			$declaration = $functionName . '(' . $parameters[0] .')';
-			$typeHint = $this->returnTypeHint->getTypeHint();
-			if ($typeHint) {
-				$declaration .= ': ' . $typeHint;
-			}
-			$ret[] = $declaration . ($isAbstract ? ';' : '');
-			if (!$isAbstract) {
-				$ret[] = '{';
-			}
-		}
-		else {
-			$ret[] = $functionName . '(';
-			$ret[] = $parameters;
-			$endDeclaration = ')';
-			$typeHint = $this->returnTypeHint->getTypeHint();
-			if ($typeHint) {
-				$endDeclaration .= ': ' . $typeHint . ($isAbstract ? ';' : ' {');
-			}
-			elseif ($isAbstract) {
-				$endDeclaration .= ';';
-			}
-			else {
-				$endDeclaration .= ' {';
-			}
-			$ret[] = $endDeclaration;
-		}
-		if ($isAbstract) {
-			return $ret;
-		}
-
-		if (is_array($this->source) || $this->source instanceof CodeInterface) {
-			$ret[] = $this->source;
-		}
-		else {
-			$ret[] = [$this->source];
-		}
-		$ret[] = '}';
-
-		return $this->compiledSource = $ret;
-	}
-
 	public function __clone()
 	{
 		$params = [];
 		foreach ($this->params as $paramName => $param) {
 			$params[$paramName] = clone $param;
+			$params[$paramName]->setParent($this);
 		}
 
 		$this->params = $params;
+	}
+
+	public function getIdentifier(): Identifier
+	{
+		return $this->identifier;
+	}
+
+	public function getBody(): array|CodeInterface
+	{
+		return $this->body;
 	}
 }

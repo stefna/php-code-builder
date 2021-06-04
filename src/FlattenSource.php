@@ -6,14 +6,30 @@ use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
 
 class FlattenSource
 {
-	public static function source(array $source, int $level = 0): string
+	public static function applySourceOn(string|array $source, array $on): array
 	{
+		if (is_string($source)) {
+			$on[] = $source;
+			return $on;
+		}
+
+		foreach ($source as $line) {
+			$on[] = $line;
+		}
+		return $on;
+	}
+
+	public static function source(array|string $source, int $level = 0): string
+	{
+		if (is_string($source)) {
+			return $source;
+		}
 		$ret = '';
 		foreach ($source as $row) {
 			if ($row instanceof CodeInterface) {
-				$lines = $row->getSourceArray($level);
+				$lines = $row->getSourceArray();
 				if (count($lines) === 1 && is_string($lines[0])) {
-					$ret .= $row->getSource($level);
+					$ret .= Indent::indent($level) . $lines[0] . PHP_EOL;
 				}
 				else {
 					foreach ($lines as $line) {

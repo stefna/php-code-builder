@@ -10,41 +10,21 @@ final class ClassMethodCall implements CodeInterface
 {
 	use MethodParamsTrait;
 
-	private $class;
-
-	private $method;
-
-	private $indentFirstLine = false;
-
 	public static function this(string $method, array $params = []): self
 	{
 		return new self(VariableReference::this(), $method, $params);
 	}
 
-	public function __construct(VariableReference $class, string $method, array $params = [])
-	{
-		$this->identifier = $class->getSource();
-		$this->class = $class;
-		$this->method = $method;
-		$this->params = $params;
-	}
-
-	/**
-	 * @param bool $indentFirstLine
-	 */
-	public function setIndentFirstLine(bool $indentFirstLine): void
-	{
-		$this->indentFirstLine = $indentFirstLine;
+	public function __construct(
+		private VariableReference $class,
+		private string $method,
+		private array $params = []
+	) {
+		$this->identifier = $class->toString();
 	}
 
 	public function getSourceArray(int $currentIndent = 0): array
 	{
 		return $this->buildSourceArray($currentIndent);
-	}
-
-	public function getSource(int $currentIndent = 0): string
-	{
-		$indent = ($this->indentFirstLine ? Indent::indent($currentIndent) : '');
-		return $indent . FlattenSource::source($this->getSourceArray(), $currentIndent);
 	}
 }

@@ -4,8 +4,6 @@ namespace Stefna\PhpCodeBuilder\CodeHelper;
 
 final class VariableReference implements CodeInterface
 {
-	private $name;
-
 	public static function this(string $variable = ''): self
 	{
 		if ($variable) {
@@ -14,17 +12,16 @@ final class VariableReference implements CodeInterface
 		return new self('this');
 	}
 
-	public function __construct(string $name)
-	{
-		$this->name = $name;
-	}
+	public function __construct(
+		private string $name
+	) {}
 
-	public function getSource(int $currentIndent = 0): string
+	public function toString(): string
 	{
 		return '$' . $this->name;
 	}
 
-	public function getSourceArray(int $currentIndent = 0): array
+	public function getSourceArray(): array
 	{
 		return ['$' . $this->name];
 	}

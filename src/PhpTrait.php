@@ -6,31 +6,25 @@ use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
 use Stefna\PhpCodeBuilder\Exception\DuplicateValue;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
-class PhpTrait extends PhpElement implements CodeInterface
+class PhpTrait
 {
 	protected const TYPE = 'trait';
 
 	/** @var Identifier[] */
-	protected $uses = [];
+	protected array $uses = [];
 	/** @var Identifier[] */
-	protected $traits = [];
-	/** @var PhpConstant[]|\SplObjectStorage<Identifier, PhpConstant> */
-	private $constants;
-	/** @var PhpVariable[]|\SplObjectStorage<Identifier, PhpVariable> */
-	private $variables;
-	/** @var PhpMethod[]|\SplObjectStorage<Identifier, PhpMethod> */
-	private $methods;
-	/** @var PhpDocComment */
-	private $comment;
+	protected array $traits = [];
+	/** @var \SplObjectStorage<Identifier, PhpConstant> */
+	protected \SplObjectStorage $constants;
+	/** @var \SplObjectStorage<Identifier, PhpVariable> */
+	protected \SplObjectStorage $variables;
+	/** @var \SplObjectStorage<Identifier, PhpMethod> */
+	protected \SplObjectStorage $methods;
 
-	/**
-	 * @param Identifier|string
-	 */
-	public function __construct($identifier, PhpDocComment $comment = null)
-	{
-		$this->access = '';
-		$this->comment = $comment;
-		$this->identifier = Identifier::fromUnknown($identifier);
+	public function __construct(
+		protected Identifier $identifier,
+		protected ?PhpDocComment $comment = null,
+	) {
 		$this->methods = new \SplObjectStorage();
 		$this->variables = new \SplObjectStorage();
 		$this->constants = new \SplObjectStorage();
@@ -49,85 +43,7 @@ class PhpTrait extends PhpElement implements CodeInterface
 		return $this->comment;
 	}
 
-	/**
-	 * @return string Returns the compete source code for the class
-	 */
-	public function getSource(int $currentIndent = 0): string
-	{
-		return FlattenSource::source($this->getSourceArray());
-	}
-
-	public function getSourceArray(int $currentIndent = 0): array
-	{
-		$ret = [];
-		if ($this->comment) {
-			foreach ($this->comment->getSourceArray() as $line) {
-				$ret[] = $line;
-			}
-		}
-
-		$declaration = $this->formatAccessor();
-		$declaration .= static::TYPE;
-		$declaration .= ' ' . $this->identifier->getName();
-		$declaration .= $this->formatInheritance();
-
-		$ret[] = $declaration;
-		$ret[] = '{';
-		$classBody = [];
-
-		$addNewLine = false;
-		if (count($this->traits)) {
-			foreach ($this->traits as $trait) {
-				$classBody[] = 'use ' . $trait->toString() . ';';
-			}
-			$addNewLine = true;
-		}
-
-		if (count($this->constants) > 0) {
-			if ($addNewLine) {
-				$classBody[] = '';
-			}
-			foreach ($this->constants as $identifier) {
-				$classBody[] = trim($this->constants[$identifier]->getSource());
-			}
-			$addNewLine = true;
-		}
-
-		if (count($this->variables) > 0) {
-			if ($addNewLine) {
-				$classBody[] = '';
-			}
-			foreach ($this->variables as $identifier) {
-				$classBody[] = trim($this->variables[$identifier]->getSource());
-			}
-			$addNewLine = true;
-		}
-
-		if (count($this->methods) > 0) {
-			if ($addNewLine) {
-				$classBody[] = '';
-			}
-			$addNewLine = (bool)($addNewLine ?: count($this->methods));
-			foreach ($this->methods as $identifier) {
-				array_push($classBody, ...$this->methods[$identifier]->getSourceArray());
-				$classBody[] = '';
-			}
-			array_pop($classBody);
-		}
-		$ret[] = $classBody;
-		$ret[] = '}';
-
-		return $ret;
-	}
-
-	/**
-	 * Add use statement above class
-	 *
-	 * @param Identifier|string $class
-	 * @param string $alias
-	 * @return PhpClass
-	 */
-	public function addUse($class, string $alias = null): self
+	public function addUse(Identifier|string $class, string $alias = null): static
 	{
 		$class = Identifier::fromUnknown($class);
 		if (!$alias && $this->identifier->equal($class)) {
@@ -152,16 +68,10 @@ class PhpTrait extends PhpElement implements CodeInterface
 	/**
 	 * Adds a constant to the class
 	 *
-	 * If no name is supplied and the value is a string the value is used as
-	 * name otherwise exception is raised
-	 *
-	 * @param mixed $value
-	 * @param string $name
 	 * @throws \InvalidArgumentException
 	 * @throws DuplicateValue
-	 * @return $this
 	 */
-	public function addConstant(PhpConstant $constant): self
+	public function addConstant(PhpConstant $constant): static
 	{
 		if ($this->constants->contains($constant->getIdentifier())) {
 			throw new DuplicateValue("A constant of the name ({$constant->getIdentifier()->getName()}) does already exist.");
@@ -183,15 +93,16 @@ class PhpTrait extends PhpElement implements CodeInterface
 	 */
 	public function addVariable(PhpVariable $variable, bool $createGetterSetter = false): self
 	{
-		if ($this->variableExists($variable->getIdentifier()->getName())) {
+		if ($this->hasVariable($variable->getIdentifier())) {
 			throw new DuplicateValue("A variable of the name ({$variable->getIdentifier()}) is already defined.");
 		}
 		$this->addUseFromType($variable->getType());
 		$this->variables[$variable->getIdentifier()] = $variable;
 
 		if ($createGetterSetter) {
-			$this->addMethod(PhpMethod::getter($variable));
-			$this->addMethod(PhpMethod::setter($variable));
+			// todo fix
+#			$this->addMethod(PhpMethod::getter($variable));
+#			$this->addMethod(PhpMethod::setter($variable));
 		}
 
 		return $this;
@@ -200,11 +111,9 @@ class PhpTrait extends PhpElement implements CodeInterface
 	/**
 	 * Adds a method to the class
 	 *
-	 * @param PhpMethod $method The function object to add
-	 * @return $this
 	 * @throws DuplicateValue If the method name is already defined
 	 */
-	public function addMethod(PhpMethod $method): self
+	public function addMethod(PhpMethod $method): static
 	{
 		if ($this->methods->contains($method->getIdentifier())) {
 			throw new DuplicateValue("A function of the name ({$method->getIdentifier()->getName()}) does already exist.");
@@ -212,19 +121,15 @@ class PhpTrait extends PhpElement implements CodeInterface
 		return $this->replaceMethod($method->getIdentifier(), $method);
 	}
 
-	/**
-	 * @param Identifier|string $identifier
-	 */
-	public function replaceMethod($identifier, PhpMethod $method): self
+	public function replaceMethod(Identifier|string $identifier, PhpMethod $method): static
 	{
-		if (is_string($identifier)) {
-			$identifier = Identifier::simple($identifier);
-		}
+		$identifier = Identifier::fromUnknown($identifier);
 		$this->addUseFromType($method->getReturnType());
 		foreach ($method->getParams() as $param) {
 			$this->addUseFromType($param->getType());
 		}
 
+		$method->setParent($this);
 		$this->methods[$identifier] = $method;
 
 		return $this;
@@ -232,42 +137,35 @@ class PhpTrait extends PhpElement implements CodeInterface
 
 	/**
 	 * Checks if a variable with the same name is already defined
-	 *
-	 * @param Identifier|string $identifier
-	 * @return bool
 	 */
-	public function variableExists($identifier): bool
+	public function hasVariable(Identifier|string $identifier): bool
 	{
-		if (is_string($identifier)) {
-			$identifier = Identifier::simple($identifier);
-		}
+		$identifier = Identifier::fromUnknown($identifier);
 		return $this->variables->contains($identifier);
 	}
 
 	/**
 	 * Checks if a method with the same name is already defined
-	 *
-	 * @param Identifier|string $identifier
-	 * @return bool
 	 */
-	public function methodExists($identifier): bool
+	public function hasMethod(Identifier|string $identifier): bool
 	{
-		if (is_string($identifier)) {
-			$identifier = Identifier::simple($identifier);
-		}
-
+		$identifier = Identifier::fromUnknown($identifier);
 		return $this->methods->contains($identifier);
 	}
 
 	/**
-	 * @param Identifier|string $identifier
+	 * Checks if a constant with the same name is already defined
 	 */
-	public function getVariable($identifier): ?PhpVariable
+	public function hasConstant(Identifier|string $identifier): bool
 	{
-		if (is_string($identifier)) {
-			$identifier = Identifier::simple($identifier);
-		}
-		if (!$this->variableExists($identifier)) {
+		$identifier = Identifier::fromUnknown($identifier);
+		return $this->constants->contains($identifier);
+	}
+
+	public function getVariable(Identifier|string $identifier): ?PhpVariable
+	{
+		$identifier = Identifier::fromUnknown($identifier);
+		if (!$this->hasVariable($identifier)) {
 			return null;
 		}
 		return $this->variables[$identifier];
@@ -276,33 +174,31 @@ class PhpTrait extends PhpElement implements CodeInterface
 	/**
 	 * @return \SplObjectStorage<Identifier, PhpVariable>
 	 */
-	public function getVariables()
+	public function getVariables(): \SplObjectStorage
 	{
 		return $this->variables;
 	}
 
 	/**
-	 * @param Identifier|string $identifier
+	 * @param string|Identifier $identifier
 	 */
-	public function getMethod($identifier): ?PhpMethod
+	public function getMethod(Identifier|string $identifier): ?PhpMethod
 	{
-		if (is_string($identifier)) {
-			$identifier = Identifier::simple($identifier);
-		}
-		if (!$this->methodExists($identifier)) {
+		$identifier = Identifier::fromUnknown($identifier);
+		if (!$this->hasMethod($identifier)) {
 			return null;
 		}
 		return $this->methods[$identifier];
 	}
 
-	protected function formatInheritance(): string
+	public function getConstant(Identifier|string $identifier): ?PhpConstant
 	{
-		return '';
-	}
+		$identifier = Identifier::fromUnknown($identifier);
+		if (!$this->hasConstant($identifier)) {
+			return null;
+		}
+		return $this->constants[$identifier];
 
-	protected function formatAccessor(): string
-	{
-		return '';
 	}
 
 	/**
@@ -314,5 +210,28 @@ class PhpTrait extends PhpElement implements CodeInterface
 			$this->addUse($type->getIdentifier());
 			$type->simplifyName();
 		}
+	}
+
+	/**
+	 * @return \SplObjectStorage<Identifier, PhpConstant>
+	 */
+	public function getConstants(): \SplObjectStorage
+	{
+		return $this->constants;
+	}
+
+	public function getMethods(): \SplObjectStorage
+	{
+		return $this->methods;
+	}
+
+	public function getIdentifier(): Identifier
+	{
+		return $this->identifier;
+	}
+
+	public function getTraits(): array
+	{
+		return $this->traits;
 	}
 }
