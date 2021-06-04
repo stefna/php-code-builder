@@ -15,8 +15,8 @@ final class InstantiateClass implements CodeInterface
 
 	public function __construct(
 		private Identifier $class,
-		private array $params = [])
-	{
+		private array $params = [],
+	) {
 		$this->identifier = 'new ' . $class->getName();
 		$this->callIdentifier = '';
 	}

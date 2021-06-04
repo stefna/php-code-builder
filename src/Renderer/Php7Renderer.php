@@ -102,7 +102,7 @@ class Php7Renderer implements RendererInterface
 
 	public function renderClass(PhpClass $class): array
 	{
-		$ret = FlattenSource::applySourceOn($this->renderComment($class->getComment()),[]);
+		$ret = FlattenSource::applySourceOn($this->renderComment($class->getComment()), []);
 
 		$declaration = [];
 		if ($class->isFinal()) {
@@ -159,7 +159,7 @@ class Php7Renderer implements RendererInterface
 
 	public function renderInterface(PhpInterface $interface): array
 	{
-		$ret = FlattenSource::applySourceOn($this->renderComment($interface->getComment()),[]);
+		$ret = FlattenSource::applySourceOn($this->renderComment($interface->getComment()), []);
 
 		$declaration = 'interface ' . $interface->getIdentifier()->getName();
 		$extends = $interface->getExtends();
@@ -201,7 +201,7 @@ class Php7Renderer implements RendererInterface
 
 	public function renderTrait(PhpTrait $trait): array
 	{
-		$ret = FlattenSource::applySourceOn($this->renderComment($trait->getComment()),[]);
+		$ret = FlattenSource::applySourceOn($this->renderComment($trait->getComment()), []);
 
 		$ret[] = 'trait ' . $trait->getIdentifier()->getName();
 		$ret[] = '{';
@@ -286,7 +286,8 @@ class Php7Renderer implements RendererInterface
 		}
 
 		if ($function->getReturnType()->needDockBlockTypeHint()) {
-			$function->getComment()->setReturn(PhpDocElementFactory::getReturn($function->getReturnType()->getDocBlockTypeHint()));
+			$function->getComment()
+				->setReturn(PhpDocElementFactory::getReturn($function->getReturnType()->getDocBlockTypeHint()));
 		}
 
 		$ret = FlattenSource::applySourceOn($this->renderFunctionSignature($function), $ret);
@@ -458,7 +459,7 @@ class Php7Renderer implements RendererInterface
 		$line[] = $function->getIdentifier()->toString();
 		$lineStr = implode(' ', $line);
 		$paramSource = $this->renderParams($function, ...$function->getParams());
-		$ret = FlattenSource::applySourceOn($this->renderComment($function->getComment()),[]);
+		$ret = FlattenSource::applySourceOn($this->renderComment($function->getComment()), []);
 
 		$singleLine = false;
 		if (is_string($paramSource)) {

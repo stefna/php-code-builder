@@ -60,7 +60,9 @@ final class PhpInterfaceTest extends TestCase
 		$interface->addExtend(Identifier::fromString(\Traversable::class));
 		$interface->addExtend(Identifier::fromString(\IteratorAggregate::class));
 
-		$interface->addVariable(PhpVariable::public('publicVar', Type::fromString('string'))->setInitializedValue('testValue'));
+		$var = PhpVariable::public('publicVar', Type::fromString('string'));
+		$var->setInitializedValue('testValue');
+		$interface->addVariable($var);
 		$interface->addConstant(PhpConstant::public('publicConst'));
 
 		$renderer = new Php7Renderer();

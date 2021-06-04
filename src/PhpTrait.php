@@ -74,7 +74,10 @@ class PhpTrait
 	public function addConstant(PhpConstant $constant): static
 	{
 		if ($this->constants->contains($constant->getIdentifier())) {
-			throw new DuplicateValue("A constant of the name ({$constant->getIdentifier()->getName()}) does already exist.");
+			throw new DuplicateValue(sprintf(
+				'A constant of the name (%s) does already exist.',
+				$constant->getIdentifier()->getName(),
+			));
 		}
 
 		$this->constants[$constant->getIdentifier()] = $constant;
@@ -94,7 +97,10 @@ class PhpTrait
 	public function addVariable(PhpVariable $variable, bool $createGetterSetter = false): self
 	{
 		if ($this->hasVariable($variable->getIdentifier())) {
-			throw new DuplicateValue("A variable of the name ({$variable->getIdentifier()}) is already defined.");
+			throw new DuplicateValue(sprintf(
+				'A variable of the name (%s) is already defined.',
+				$variable->getIdentifier()->getName(),
+			));
 		}
 		$this->addUseFromType($variable->getType());
 		$this->variables[$variable->getIdentifier()] = $variable;
@@ -116,7 +122,10 @@ class PhpTrait
 	public function addMethod(PhpMethod $method): static
 	{
 		if ($this->methods->contains($method->getIdentifier())) {
-			throw new DuplicateValue("A function of the name ({$method->getIdentifier()->getName()}) does already exist.");
+			throw new DuplicateValue(sprintf(
+				'A method of the name (%s) is already defined.',
+				$method->getIdentifier()->getName(),
+			));
 		}
 		return $this->replaceMethod($method->getIdentifier(), $method);
 	}
@@ -198,7 +207,6 @@ class PhpTrait
 			return null;
 		}
 		return $this->constants[$identifier];
-
 	}
 
 	/**

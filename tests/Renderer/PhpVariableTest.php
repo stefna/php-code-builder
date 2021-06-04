@@ -181,7 +181,7 @@ final class PhpVariableTest extends TestCase
 						'\'test 1\',',
 						'\'test 2\',',
 					],
-					']'
+					']',
 				],
 			],
 		];

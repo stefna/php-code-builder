@@ -42,5 +42,4 @@ final class PhpFileTest extends TestCase
 			'PhpFileTest.' . __FUNCTION__,
 		);
 	}
-
 }

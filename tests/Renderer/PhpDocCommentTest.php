@@ -68,7 +68,8 @@ final class PhpDocCommentTest extends TestCase
 
 	public function testLicense()
 	{
-		$licence = PhpDocElementFactory::getLicence('https://github.com/stefnadev/log/blob/develop/LICENSE.md MIT Licence');
+		$info = 'https://github.com/stefnadev/log/blob/develop/LICENSE.md MIT Licence';
+		$licence = PhpDocElementFactory::getLicence($info);
 		$comment = new PhpDocComment();
 		$comment->setLicence($licence);
 		$renderer = new Php7Renderer();

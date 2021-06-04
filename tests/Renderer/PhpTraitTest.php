@@ -18,7 +18,9 @@ final class PhpTraitTest extends TestCase
 	{
 		$trait = new PhpTrait(Identifier::fromString(Test\TestTrait::class));
 		$trait->addMethod(PhpMethod::protected('testTraitMethod', [], [], Type::fromString('void')));
-		$trait->addMethod(PhpMethod::public('testAbstractTraitMethod', [], [], Type::fromString('int'))->setAbstract());
+		$abstractMethod = PhpMethod::public('testAbstractTraitMethod', [], [], Type::fromString('int'));
+		$abstractMethod->setAbstract();
+		$trait->addMethod($abstractMethod);
 
 		$trait->addConstant(PhpConstant::private('traitConstant'));
 

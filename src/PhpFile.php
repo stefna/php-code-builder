@@ -31,7 +31,11 @@ class PhpFile
 		$identifier = $object->getIdentifier();
 		$path = '';
 		if ($identifier->getNamespace()) {
-			$path = ltrim(str_replace('\\', DIRECTORY_SEPARATOR, $identifier->getNamespace()), DIRECTORY_SEPARATOR);
+			$path = ltrim(str_replace(
+				'\\',
+				DIRECTORY_SEPARATOR,
+				$identifier->getNamespace()
+			), DIRECTORY_SEPARATOR);
 			$path .= DIRECTORY_SEPARATOR;
 		}
 
@@ -70,13 +74,20 @@ class PhpFile
 	 */
 	public function save(string $directory): bool
 	{
-		return (bool)file_put_contents($directory . DIRECTORY_SEPARATOR . $this->getName(), $this->getSource());
+		return (bool)file_put_contents(
+			$directory . DIRECTORY_SEPARATOR . $this->getName(),
+			$this->getSource(),
+		);
 	}
 
 	protected function addObject(PhpClass|PhpTrait|PhpInterface $class, string $type): static
 	{
 		if ($this->classes->contains($class->getIdentifier())) {
-			throw new DuplicateValue('A ' . $type . ' of the name (' . $class->getIdentifier()->getName() . ') does already exist.');
+			throw new DuplicateValue(sprintf(
+				'A %s of the name (%s) does already exist.',
+				$type,
+				$class->getIdentifier()->getName(),
+			));
 		}
 
 		$this->classes[$class->getIdentifier()] = $class;
@@ -114,7 +125,10 @@ class PhpFile
 	public function addFunction(PhpFunction $function): self
 	{
 		if ($this->hasFunction($function->getIdentifier())) {
-			throw new DuplicateValue('A function of the name (' . $function->getIdentifier()->getName() . ') does already exist.');
+			throw new DuplicateValue(sprintf(
+				'A function of the name (%s) does already exist.',
+				$function->getIdentifier()->getName(),
+			));
 		}
 
 		$this->functions[$function->getIdentifier()->getName()] = $function;
