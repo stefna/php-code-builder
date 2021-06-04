@@ -3,6 +3,7 @@
 namespace Stefna\PhpCodeBuilder;
 
 use Stefna\PhpCodeBuilder\CodeHelper\ArrayCode;
+use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
 
 class FormatValue
 {
@@ -14,6 +15,9 @@ class FormatValue
 
 	public static function format($value): array|string
 	{
+		if ($value instanceof CodeInterface) {
+			return $value->getSourceArray();
+		}
 		$type = gettype($value);
 		if ($type === 'array') {
 			return self::formatArray($value);
