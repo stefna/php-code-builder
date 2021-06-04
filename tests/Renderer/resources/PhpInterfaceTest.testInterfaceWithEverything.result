@@ -1,0 +1,12 @@
+interface TestInterface extends
+	JsonSerializable,
+	Traversable,
+	IteratorAggregate
+{
+	public const PUBLIC_CONST = 'publicConst';
+
+	/** @var string */
+	public $publicVar = 'testValue';
+
+	public function testMethod();
+}

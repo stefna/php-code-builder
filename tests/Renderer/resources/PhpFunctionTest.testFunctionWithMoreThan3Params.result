@@ -1,0 +1,10 @@
+/**
+ * @param string[] $test2
+ */
+function testFunction(
+	string $test,
+	array $test2,
+	string $test3 = 'testValue'
+): int {
+	return 42;
+}

@@ -1,0 +1,7 @@
+interface TestInterface extends
+	JsonSerializable,
+	Traversable,
+	IteratorAggregate
+{
+	public function testMethod();
+}

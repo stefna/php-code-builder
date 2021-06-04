@@ -8,6 +8,7 @@ use Stefna\PhpCodeBuilder\CodeHelper\ClassMethodCall;
 use Stefna\PhpCodeBuilder\CodeHelper\ReturnCode;
 use Stefna\PhpCodeBuilder\CodeHelper\StaticMethodCall;
 use Stefna\PhpCodeBuilder\CodeHelper\VariableReference;
+use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\PhpMethod;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
@@ -50,7 +51,10 @@ final class ReturnCodeTest extends TestCase
 		]));
 
 		$this->assertCount(1, $call->getSourceArray());
-		$this->assertSame("return \$this->setSecurityValue('site-bearer-token', \$siteBearerToken);\n", $call->getSource());
+		$this->assertSame(
+			"return \$this->setSecurityValue('site-bearer-token', \$siteBearerToken);\n",
+			FlattenSource::source($call->getSourceArray()),
+		);
 	}
 
 	public function testComplex()
@@ -72,22 +76,6 @@ final class ReturnCodeTest extends TestCase
 	\'scheme\' => \'bearer\',
 	\'description\' => \'Valid for site specific endpoints\',
 ]));
-', $return->getSource());
-	}
-
-	public function testIndentationInMethod()
-	{
-		$method = PhpMethod::public('getSecurity', [], [
-			new ReturnCode(new ArrayCode([])),
-		], Type::fromString('string[]'));
-
-		$this->assertSame('/**
- * @return string[]
- */
-public function getSecurity(): array
-{
-	return [];
-}
-', $method->getSource());
+', FlattenSource::source($return->getSourceArray()));
 	}
 }

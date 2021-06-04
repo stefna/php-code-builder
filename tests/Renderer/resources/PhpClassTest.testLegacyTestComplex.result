@@ -1,0 +1,15 @@
+/**
+ * Test Description
+ *
+ * @author test <test@stefna.is>
+ * @method DateTime TestClass getDate()
+ */
+final class TestClass extends ArrayObject implements IteratorAggregate
+{
+	use NonExistingTrait;
+
+	private const SEED = '12';
+
+	/** @var int */
+	private $random;
+}

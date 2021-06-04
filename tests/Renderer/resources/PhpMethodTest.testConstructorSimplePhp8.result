@@ -1,0 +1,4 @@
+public function __construct(int $test1)
+{
+	// nothing
+}

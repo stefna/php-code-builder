@@ -1,0 +1,9 @@
+interface TestInterface
+{
+	public const IN_INTERFACE = 'inInterface';
+
+	/** @var string|int|null */
+	public $var1;
+
+	public function testPublicMethod();
+}

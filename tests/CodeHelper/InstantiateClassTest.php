@@ -7,6 +7,7 @@ use Stefna\PhpCodeBuilder\CodeHelper\ArrayCode;
 use Stefna\PhpCodeBuilder\CodeHelper\InstantiateClass;
 use Stefna\PhpCodeBuilder\CodeHelper\StaticMethodCall;
 use Stefna\PhpCodeBuilder\CodeHelper\VariableReference;
+use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
 final class InstantiateClassTest extends TestCase
@@ -15,7 +16,10 @@ final class InstantiateClassTest extends TestCase
 	{
 		$call = new InstantiateClass(Identifier::fromString(StaticMethodCall::class), []);
 
-		$this->assertSame('new StaticMethodCall()', trim($call->getSource()));
+		$this->assertSame(
+			'new StaticMethodCall()',
+			trim(FlattenSource::source($call->getSourceArray())),
+		);
 	}
 
 	public function testComplex()
@@ -34,6 +38,6 @@ final class InstantiateClassTest extends TestCase
 	\'type\' => \'http\',
 	\'scheme\' => \'bearer\',
 	\'description\' => \'Valid for site specific endpoints\',
-], $testVar)', trim($call->getSource()));
+], $testVar)', trim(FlattenSource::source($call->getSourceArray())));
 	}
 }

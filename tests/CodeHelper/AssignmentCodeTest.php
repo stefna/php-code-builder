@@ -18,7 +18,13 @@ final class AssignmentCodeTest extends TestCase
 		$var = new VariableReference('variable');
 
 		$assignment = new AssignmentCode($var, $code);
-		var_dump($assignment->getSourceArray());
+		$this->assertSame([
+			'$variable = [',
+			[
+				'\'test\','
+			],
+			'];',
+		], $assignment->getSourceArray());
 	}
 
 	public function testAssignClass()
@@ -35,6 +41,14 @@ final class AssignmentCodeTest extends TestCase
 		$var = new VariableReference('variable');
 
 		$assignment = new AssignmentCode($var, $code);
-		var_dump($assignment->getSourceArray());
+		$this->assertSame([
+			'$variable = new StaticMethodCall(\'site-bearer-token\', [',
+			[
+				'\'type\' => \'http\',',
+				'\'scheme\' => \'bearer\',',
+				'\'description\' => \'Valid for site specific endpoints\',',
+			],
+			'], $testVar);',
+		], $assignment->getSourceArray());
 	}
 }

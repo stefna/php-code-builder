@@ -1,0 +1,8 @@
+abstract class TestClass
+{
+	protected function testNonProtectedMethod()
+	{
+	}
+
+	abstract protected function testAbstractProtectedMethod();
+}

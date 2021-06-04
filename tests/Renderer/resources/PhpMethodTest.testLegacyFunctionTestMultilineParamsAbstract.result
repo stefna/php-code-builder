@@ -1,0 +1,12 @@
+/**
+ * @param string|int $barIpsumLong
+ */
+abstract protected static function test(
+	string $fooIpsumLong,
+	$barIpsumLong,
+	int $bazIpsumLong,
+	string $fozIpsumLong,
+	string $alzIpsumLong,
+	string $qweIpsumLong,
+	string $rtyIpsumLong
+): int;

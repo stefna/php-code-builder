@@ -192,4 +192,76 @@ class TypeTest extends TestCase
 
 		$this->assertCount(2, $type->getUnionTypes());
 	}
+
+	public function testRemoveNull()
+	{
+		$type = Type::empty();
+		$type->addUnion(Type::fromString('string'));
+		$type->addUnion(Type::fromString('float'));
+		$type->addUnion(Type::fromString('null'));
+
+		$this->assertSame('string|float|null', $type->getDocBlockTypeHint());
+		$this->assertSame('string|float', $type->notNull()->getDocBlockTypeHint());
+	}
+
+	public function testNullabilityCheck()
+	{
+		$type = Type::fromString('string|int|null');
+
+		$this->assertTrue($type->isNullable());
+	}
+
+	/**
+	 * @dataProvider nativeTypeProvider
+	 */
+	public function testIsNativeCheck($type)
+	{
+		$type = Type::fromString($type);
+
+		$this->assertTrue($type->isNative());
+	}
+
+	/**
+	 * @dataProvider notNativeTypeProvider
+	 */
+	public function testIsNotNativeCheck($type)
+	{
+		$type = Type::fromString($type);
+
+		$this->assertFalse($type->isNative());
+	}
+
+	public function nativeTypeProvider()
+	{
+		return [
+			['string'],
+			['float'],
+			['bool'],
+			['int'],
+			['resource'],
+			['callable'],
+			['object'],
+			['string[]'],
+			['array<string, callable>'],
+		];
+	}
+
+	public function notNativeTypeProvider()
+	{
+		return [
+			[TestCase::class],
+			['TestCase[]'],
+			['array<string, TestCase>'],
+		];
+	}
+
+	public function testIsAliasForDouble()
+	{
+		$type = Type::fromString('double');
+		$this->assertTrue($type->is('float'));
+
+		$type->setType('number');
+		$this->assertSame('number', $type->getType());
+		$this->assertTrue($type->is('float'));
+	}
 }

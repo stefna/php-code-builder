@@ -1,0 +1,7 @@
+function testFunction(string $test): void
+{
+	if ($test) {
+		return 42;
+	}
+	return -1;
+}

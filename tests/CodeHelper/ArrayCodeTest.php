@@ -2,6 +2,8 @@
 
 namespace CodeHelper;
 
+use Stefna\PhpCodeBuilder\FlattenSource;
+
 final class ArrayCodeTest extends \PHPUnit\Framework\TestCase
 {
 	public function testSimpleAssocArray(): void
@@ -16,7 +18,7 @@ final class ArrayCodeTest extends \PHPUnit\Framework\TestCase
 	'test1' => 2,
 	'test2' => 'string',
 	'test3' => true,
-]", trim($array->getSource()));
+]", trim(FlattenSource::source($array->getSourceArray())));
 	}
 
 	public function testCustomIndentLevel(): void
@@ -56,7 +58,7 @@ final class ArrayCodeTest extends \PHPUnit\Framework\TestCase
 	'test4' => [
 		'sub1' => 'test',
 	],
-]", trim($array->getSource()));
+]", trim(FlattenSource::source($array->getSourceArray())));
 	}
 
 	public function testSimpleArray(): void
@@ -77,6 +79,6 @@ final class ArrayCodeTest extends \PHPUnit\Framework\TestCase
 	[
 		'assoc' => true,
 	],
-]", trim($array->getSource()));
+]", trim(FlattenSource::source($array->getSourceArray())));
 	}
 }

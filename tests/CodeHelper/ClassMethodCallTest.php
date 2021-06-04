@@ -7,6 +7,7 @@ use Stefna\PhpCodeBuilder\CodeHelper\ArrayCode;
 use Stefna\PhpCodeBuilder\CodeHelper\ClassMethodCall;
 use Stefna\PhpCodeBuilder\CodeHelper\StaticMethodCall;
 use Stefna\PhpCodeBuilder\CodeHelper\VariableReference;
+use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
 final class ClassMethodCallTest extends TestCase
@@ -28,7 +29,7 @@ final class ClassMethodCallTest extends TestCase
 	\'type\' => \'http\',
 	\'scheme\' => \'bearer\',
 	\'description\' => \'Valid for site specific endpoints\',
-]))', trim($call->getSource()));
+]))', trim(FlattenSource::source($call->getSourceArray())));
 	}
 
 	public function testWithVariableParam()
@@ -38,7 +39,10 @@ final class ClassMethodCallTest extends TestCase
 			new VariableReference('siteBearerToken'),
 		]);
 
-		$this->assertSame('$this->setSecurityValue(\'site-bearer-token\', $siteBearerToken)', trim($call->getSource()));
+		$this->assertSame(
+			'$this->setSecurityValue(\'site-bearer-token\', $siteBearerToken)',
+			trim(FlattenSource::source($call->getSourceArray())),
+		);
 	}
 
 	public function testWithStaticMethodCall()
@@ -50,6 +54,9 @@ final class ClassMethodCallTest extends TestCase
 			]),
 		]);
 
-		$this->assertSame('$this->serverConfiguration->setSecurityValue(\'test-scheme\', SecurityValue::apiKey($token))', trim($x->getSource()));
+		$this->assertSame(
+			'$this->serverConfiguration->setSecurityValue(\'test-scheme\', SecurityValue::apiKey($token))',
+			trim(FlattenSource::source($x->getSourceArray())),
+		);
 	}
 }

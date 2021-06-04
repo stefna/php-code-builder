@@ -1,0 +1,10 @@
+trait TestTrait
+{
+	private const TRAIT_CONSTANT = 'traitConstant';
+
+	protected function testTraitMethod(): void
+	{
+	}
+
+	abstract public function testAbstractTraitMethod(): int;
+}

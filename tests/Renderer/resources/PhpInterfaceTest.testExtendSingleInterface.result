@@ -1,0 +1,4 @@
+interface TestInterface extends JsonSerializable
+{
+	public function testMethod();
+}

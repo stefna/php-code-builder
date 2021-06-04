@@ -1,0 +1,4 @@
+/**
+ * @return resource
+ */
+abstract public function testMethod(string $param1);

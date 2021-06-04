@@ -1,0 +1,10 @@
+/**
+ * @param string[] $test3
+ */
+function testFunction(
+	string $test,
+	int $test2,
+	array $test3
+): int {
+	// nothing
+}

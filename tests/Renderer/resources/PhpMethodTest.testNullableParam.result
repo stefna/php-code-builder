@@ -1,0 +1,5 @@
+public function testMethod(?string $param1): self
+{
+	$this->param = $param1;
+	return $this;
+}
