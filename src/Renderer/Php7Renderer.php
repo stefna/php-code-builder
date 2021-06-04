@@ -242,10 +242,12 @@ class Php7Renderer implements RendererInterface
 			$lineStr .= ' = ';
 			$value = FormatValue::format($variable->getInitializedValue());
 			if (is_array($value)) {
-				if (count($value) > 1) {
-					$lineStr .= array_shift($value);
-					$ret[] = $lineStr;
+				if (count($value) === 1) {
+					$ret[] = $lineStr . $value[0] . ';';
+					return $ret;
 				}
+				$lineStr .= array_shift($value);
+				$ret[] = $lineStr;
 				$ret = FlattenSource::applySourceOn($value, $ret);
 				$ret[array_key_last($ret)] .= ';';
 			}

@@ -3,6 +3,7 @@
 namespace Stefna\PhpCodeBuilder\Tests\Renderer;
 
 use PHPUnit\Framework\TestCase;
+use Stefna\OpenApiRuntime\ServerConfiguration\SecurityScheme;
 use Stefna\PhpCodeBuilder\PhpDocComment;
 use Stefna\PhpCodeBuilder\PhpVariable;
 use Stefna\PhpCodeBuilder\Renderer\Php74Renderer;
@@ -185,5 +186,21 @@ final class PhpVariableTest extends TestCase
 				],
 			],
 		];
+	}
+
+	public function testArrayAsDefaultValue()
+	{
+		$var = new PhpVariable(
+			PhpVariable::PROTECTED_ACCESS,
+			Identifier::simple('securitySchemes'),
+			Type::fromString(SecurityScheme::class . '[]'),
+			[],
+		);
+
+		$renderer = new Php7Renderer();
+		$this->assertSame([
+			'/** @var \Stefna\OpenApiRuntime\ServerConfiguration\SecurityScheme[] */',
+			'protected $securitySchemes = [];',
+		], $renderer->renderVariable($var));
 	}
 }
