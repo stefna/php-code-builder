@@ -90,6 +90,6 @@ final class PhpConstantTest extends TestCase
 		$const->setValue('test_value');
 		$render = new Php7Renderer();
 
-		$this->assertSame(['public const TEST_CASE = \'test_value\';'], $render->renderConstant($const));
+		$this->assertSame('public const TEST_CASE = \'test_value\';', trim($render->render($const)));
 	}
 }

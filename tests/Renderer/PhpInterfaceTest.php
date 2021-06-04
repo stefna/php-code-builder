@@ -67,7 +67,7 @@ final class PhpInterfaceTest extends TestCase
 
 		$renderer = new Php7Renderer();
 
-		$this->assertSourceResult($renderer->renderInterface($interface), 'PhpInterfaceTest.' . __FUNCTION__);
+		$this->assertSourceResult($renderer->render($interface), 'PhpInterfaceTest.' . __FUNCTION__);
 	}
 
 	/**

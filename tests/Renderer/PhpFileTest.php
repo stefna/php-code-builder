@@ -38,7 +38,7 @@ final class PhpFileTest extends TestCase
 		$renderer = new Php7Renderer();
 
 		$this->assertSourceResult(
-			$renderer->renderFile(PhpFile::createFromClass($class)),
+			$renderer->render(PhpFile::createFromClass($class)),
 			'PhpFileTest.' . __FUNCTION__,
 		);
 	}

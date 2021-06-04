@@ -26,6 +26,6 @@ final class PhpTraitTest extends TestCase
 
 		$renderer = new Php7Renderer();
 
-		$this->assertSourceResult($renderer->renderTrait($trait), 'PhpTraitTest.' . __FUNCTION__);
+		$this->assertSourceResult($renderer->render($trait), 'PhpTraitTest.' . __FUNCTION__);
 	}
 }

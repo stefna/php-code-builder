@@ -6,10 +6,10 @@ use Stefna\PhpCodeBuilder\FlattenSource;
 
 trait AssertResultTrait
 {
-	public function assertSourceResult(array $source, string $result)
+	public function assertSourceResult(array|string $source, string $result)
 	{
 		$file = __DIR__ . '/resources/' . $result .'.result';
-		$flattenSource = FlattenSource::source($source);
+		$flattenSource = is_array($source) ? FlattenSource::source($source) : $source;
 		if (!file_exists($file)) {
 			echo $flattenSource . PHP_EOL;
 		}

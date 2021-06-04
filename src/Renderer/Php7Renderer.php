@@ -2,7 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder\Renderer;
 
-use PhpParser\Builder\Interface_;
+use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
 use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\FormatValue;
 use Stefna\PhpCodeBuilder\PhpClass;
@@ -17,7 +17,7 @@ use Stefna\PhpCodeBuilder\PhpParam;
 use Stefna\PhpCodeBuilder\PhpTrait;
 use Stefna\PhpCodeBuilder\PhpVariable;
 
-class Php7Renderer implements RendererInterface
+class Php7Renderer implements FullRendererInterface
 {
 	public function renderFile(PhpFile $file): array
 	{
@@ -543,5 +543,49 @@ class Php7Renderer implements RendererInterface
 			array_pop($classBody);
 		}
 		return $classBody;
+	}
+
+	public function render(object|array $obj): string
+	{
+		$source = null;
+		if (is_array($obj)) {
+			$source = $obj;
+		}
+		elseif ($obj instanceof CodeInterface) {
+			$source = $obj->getSourceArray();
+		}
+		elseif ($obj instanceof PhpInterface) {
+			$source = $this->renderInterface($obj);
+		}
+		elseif ($obj instanceof PhpClass) {
+			$source = $this->renderClass($obj);
+		}
+		elseif ($obj instanceof PhpTrait) {
+			$source = $this->renderTrait($obj);
+		}
+		elseif ($obj instanceof PhpConstant) {
+			$source = $this->renderConstant($obj);
+		}
+		elseif ($obj instanceof PhpVariable) {
+			$source = $this->renderVariable($obj);
+		}
+		elseif ($obj instanceof PhpMethod) {
+			$source = $this->renderMethod($obj);
+		}
+		elseif ($obj instanceof PhpFunction) {
+			$source = $this->renderFunction($obj);
+		}
+		elseif ($obj instanceof PhpParam) {
+			$source = $this->renderParam($obj);
+		}
+		elseif ($obj instanceof PhpFile) {
+			$source = $this->renderFile($obj);
+		}
+
+		if ($source !== null) {
+			return FlattenSource::source($source);
+		}
+
+		throw new \BadMethodCallException('Unknown object type. Don\'t know how to render');
 	}
 }

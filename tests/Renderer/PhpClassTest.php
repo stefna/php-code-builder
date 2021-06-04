@@ -48,7 +48,7 @@ final class PhpClassTest extends TestCase
 	{
 		$renderer = new Php7Renderer();
 
-		$this->assertSourceResult($renderer->renderClass($this->getTestClass()), 'PhpClassTest.' . __FUNCTION__);
+		$this->assertSourceResult($renderer->render($this->getTestClass()), 'PhpClassTest.' . __FUNCTION__);
 	}
 
 	public function testClassRenderedWithPhp74()

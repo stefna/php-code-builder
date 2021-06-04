@@ -13,7 +13,7 @@ use Stefna\PhpCodeBuilder\PhpParam;
 use Stefna\PhpCodeBuilder\PhpTrait;
 use Stefna\PhpCodeBuilder\PhpVariable;
 
-interface RendererInterface
+interface FullRendererInterface extends RenderInterface
 {
 	public function renderFile(PhpFile $file): array;
 

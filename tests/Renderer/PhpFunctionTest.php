@@ -58,7 +58,7 @@ final class PhpFunctionTest extends TestCase
 
 		$renderer = new Php7Renderer();
 
-		$this->assertSourceResult($renderer->renderFunction($func), 'PhpFunctionTest.' . __FUNCTION__);
+		$this->assertSourceResult($renderer->render($func), 'PhpFunctionTest.' . __FUNCTION__);
 	}
 
 	public function testFunctionModifyParam()

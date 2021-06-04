@@ -103,7 +103,7 @@ final class PhpMethodTest extends TestCase
 		], [], true);
 
 		$renderer = new Php8Renderer();
-		$this->assertSourceResult($renderer->renderMethod($ctor), 'PhpMethodTest.' . __FUNCTION__);
+		$this->assertSourceResult($renderer->render($ctor), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
 	public function testConstructorPromotingNotRenderingVariablePhp8()
