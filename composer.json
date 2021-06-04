@@ -1,31 +1,36 @@
 {
-    "name": "stefna/php-code-builder",
-    "type": "library",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Andreas Sundqvist",
-            "email": "andreas@stefna.is"
-        }
-    ],
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "require": {
-        "php": ">=7.2.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^7.0",
-        "stefna/codestyle": "^1.2",
-        "stefna/release-tools": "^1.3"
-    },
-    "description": "",
-    "autoload": {
-        "psr-4": {
-            "Stefna\\PhpCodeBuilder\\": "src/"
-        }
-    },
-    "scripts": {
-        "check": "./vendor/bin/phpcs --standard=vendor/stefna/codestyle/library.xml src/ tests/",
-        "fix": "./vendor/bin/phpcbf --standard=vendor/stefna/codestyle/library.xml src/ tests/"
-    }
+	"name": "stefna/php-code-builder",
+	"type": "library",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Andreas Sundqvist",
+			"email": "andreas@stefna.is"
+		}
+	],
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"require": {
+		"php": "^8.0"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^9.0",
+		"stefna/codestyle": "^1.2",
+		"stefna/release-tools": "^1.3"
+	},
+	"description": "",
+	"autoload": {
+		"psr-4": {
+			"Stefna\\PhpCodeBuilder\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Stefna\\PhpCodeBuilder\\Tests\\": "tests/"
+		}
+	},
+	"scripts": {
+		"check": "./vendor/bin/phpcs --standard=vendor/stefna/codestyle/library.xml src/ tests/",
+		"fix": "./vendor/bin/phpcbf --standard=vendor/stefna/codestyle/library.xml src/ tests/"
+	}
 }
