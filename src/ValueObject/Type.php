@@ -227,7 +227,11 @@ final class Type
 
 	public function getIdentifier(): Identifier
 	{
-		return Identifier::fromString($this->isArray(false) ? $this->getArrayType() : $this->getType());
+		return Identifier::fromString(
+			$this->isArray(false) ?
+				(string)$this->getArrayType() :
+				$this->getType()
+		);
 	}
 
 	public function isArray(bool $deepCheck = true): bool

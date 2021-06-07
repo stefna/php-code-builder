@@ -2,20 +2,21 @@
 
 namespace Stefna\PhpCodeBuilder\Renderer;
 
+use Stefna\PhpCodeBuilder\Exception\InvalidCode;
 use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\FormatValue;
-use Stefna\PhpCodeBuilder\PhpClass;
 use Stefna\PhpCodeBuilder\PhpDocComment;
 use Stefna\PhpCodeBuilder\PhpDocElementFactory;
 use Stefna\PhpCodeBuilder\PhpFunction;
-use Stefna\PhpCodeBuilder\PhpInterface;
 use Stefna\PhpCodeBuilder\PhpMethod;
 use Stefna\PhpCodeBuilder\PhpParam;
-use Stefna\PhpCodeBuilder\PhpTrait;
 use Stefna\PhpCodeBuilder\PhpVariable;
 
 class Php8Renderer extends Php74Renderer
 {
+	/**
+	 * @return array<int, mixed>|null
+	 */
 	public function renderVariable(PhpVariable $variable): array|null
 	{
 		if ($variable->isPromoted()) {
@@ -41,8 +42,8 @@ class Php8Renderer extends Php74Renderer
 			}
 
 			$comment = $variable->getComment();
-			$comment->removeVar();
 			if ($comment) {
+				$comment->removeVar();
 				$ret = FlattenSource::applySourceOn($this->renderComment($comment), $ret);
 			}
 
@@ -59,7 +60,10 @@ class Php8Renderer extends Php74Renderer
 						$ret[] = $lineStr;
 					}
 					$ret = FlattenSource::applySourceOn($value, $ret);
-					$ret[array_key_last($ret)] .= ';';
+					$lastKey = (int)array_key_last($ret);
+					if (is_string($ret[$lastKey])) {
+						$ret[$lastKey] .= ';';
+					}
 				}
 				else {
 					$lineStr .= $value;
@@ -76,6 +80,9 @@ class Php8Renderer extends Php74Renderer
 		return parent::renderVariable($variable);
 	}
 
+	/**
+	 * @return array<int, mixed>
+	 */
 	public function renderParams(PhpFunction $function, PhpParam ...$params): array|string
 	{
 		$propertyPromotion = false;
@@ -128,21 +135,34 @@ class Php8Renderer extends Php74Renderer
 		}
 		$ret .= ' $' . $param->getName();
 		if ($param->getValue() !== PhpParam::NO_VALUE) {
-			$ret .= ' = ' . FormatValue::format($param->getValue());
+			$value = FormatValue::format($param->getValue());
+			if (is_array($value)) {
+				throw new \RuntimeException('Don\'t support multiline values in params');
+			}
+			$ret .= ' = ' . $value;
 		}
 
 		return trim($ret);
 	}
 
+	/**
+	 * @return array<int, string|array<int, string>>
+	 */
 	public function renderMethod(PhpMethod $method): array
 	{
 		$ret = $this->renderFunction($method);
 
 		if ($method->isConstructor()) {
-			if (is_array($ret[array_key_last($ret) - 1]) && count($ret[array_key_last($ret) - 1]) === 0) {
+			if (is_array($ret[array_key_last($ret) - 1]) &&
+				count($ret[array_key_last($ret) - 1]) === 0
+			) {
 				unset($ret[array_key_last($ret) - 1]);
 				unset($ret[array_key_last($ret)]);
-				$ret[array_key_last($ret)] .= '}';
+				$lastKey = (int)array_key_last($ret);
+				if (!is_string($ret[$lastKey])) {
+					throw InvalidCode::invalidType();
+				}
+				$ret[$lastKey] .= '}';
 			}
 		}
 

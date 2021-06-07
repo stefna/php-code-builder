@@ -14,17 +14,17 @@ class PhpConstant
 	public const CASE_LOWER = 1;
 	public const CASE_NONE = 2;
 
-	public static function public(string $identifier, $value = null): self
+	public static function public(string $identifier, mixed $value = null): self
 	{
 		return new self(self::PUBLIC_ACCESS, $identifier, $value);
 	}
 
-	public static function private(string $identifier, $value = null): self
+	public static function private(string $identifier, mixed $value = null): self
 	{
 		return new self(self::PRIVATE_ACCESS, $identifier, $value);
 	}
 
-	public static function protected(string $identifier, $value = null): self
+	public static function protected(string $identifier, mixed $value = null): self
 	{
 		return new self(self::PROTECTED_ACCESS, $identifier, $value);
 	}
@@ -39,14 +39,14 @@ class PhpConstant
 	public function getName(): string
 	{
 		$currentName = $this->identifier;
-		$name = preg_replace('/^(\d)/', '_$0', $currentName);
+		$name = (string)preg_replace('/^(\d)/', '_$0', $currentName);
 		$name = str_replace('-', '_', $name);
 
 		if ($this->case === self::CASE_NONE) {
 			return $name;
 		}
 
-		$name = preg_replace('/(?<!^)[A-Z]/', '_$0', $name);
+		$name = (string)preg_replace('/(?<!^)[A-Z]/', '_$0', $name);
 		if ($this->case === self::CASE_LOWER) {
 			return strtolower($name);
 		}

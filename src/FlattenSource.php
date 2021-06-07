@@ -6,6 +6,11 @@ use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
 
 class FlattenSource
 {
+	/**
+	 * @param string|array<int, array<int, string>|string> $source
+	 * @param array<int, array<int, string>|string> $on
+	 * @return array<int, array<int, string>|string>
+	 */
 	public static function applySourceOn(string|array $source, array $on): array
 	{
 		if (is_string($source)) {
@@ -19,6 +24,11 @@ class FlattenSource
 		return $on;
 	}
 
+	/**
+	 * @param array<int, array<int, string>|string|CodeInterface>|string $source
+	 * @param int $level
+	 * @return string
+	 */
 	public static function source(array|string $source, int $level = 0): string
 	{
 		if (is_string($source)) {

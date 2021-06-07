@@ -18,12 +18,13 @@ class PhpFile
 {
 	private bool $strict = false;
 	private ?string $namespace = null;
-	/** @var \SplObjectStorage<Identifier, PhpClass|PhpTrait> */
+	/** @var \SplObjectStorage<Identifier, PhpClass|PhpTrait|PhpInterface> */
 	private \SplObjectStorage $classes;
 	/** @var PhpFunction[] */
 	private array $functions = [];
-	/** @var \SplObjectStorage<Identifier>|Identifier[] */
-	private array|\SplObjectStorage $use;
+	/** @var \SplObjectStorage<Identifier, null> */
+	private \SplObjectStorage $use;
+	/** @var array<int, string|string[]> */
 	private array $source = [];
 
 	public static function createFromClass(PhpTrait $object): self
@@ -169,6 +170,9 @@ class PhpFile
 		return $this->name . '.php';
 	}
 
+	/**
+	 * @return \SplObjectStorage<Identifier, PhpClass|PhpTrait|PhpInterface>
+	 */
 	public function getClasses(): \SplObjectStorage
 	{
 		return $this->classes;
@@ -182,6 +186,9 @@ class PhpFile
 		return $this->functions;
 	}
 
+	/**
+	 * @return \SplObjectStorage<Identifier, null>
+	 */
 	public function getUse(): \SplObjectStorage
 	{
 		return $this->use;
@@ -192,6 +199,9 @@ class PhpFile
 		return $this->namespace;
 	}
 
+	/**
+	 * @return array<int, string|string[]>
+	 */
 	public function getSource(): array
 	{
 		return $this->source;
@@ -199,6 +209,8 @@ class PhpFile
 
 	/**
 	 * Set random code to be added at the bottom of file
+	 *
+	 * @param array<int, string|string[]> $source
 	 */
 	public function setSource(array $source): static
 	{

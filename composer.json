@@ -15,7 +15,8 @@
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^9.0",
-		"stefna/codestyle": "^1.2"
+		"stefna/codestyle": "^1.2",
+		"phpstan/phpstan": "^0.12.88"
 	},
 	"description": "",
 	"autoload": {

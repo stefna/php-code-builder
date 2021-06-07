@@ -21,6 +21,9 @@ final class VariableReference implements CodeInterface
 		return '$' . $this->name;
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function getSourceArray(): array
 	{
 		return ['$' . $this->name];

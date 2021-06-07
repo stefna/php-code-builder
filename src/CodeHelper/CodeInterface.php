@@ -4,5 +4,8 @@ namespace Stefna\PhpCodeBuilder\CodeHelper;
 
 interface CodeInterface
 {
+	/**
+	 * @return array<int,string|string[]>
+	 */
 	public function getSourceArray(): array;
 }

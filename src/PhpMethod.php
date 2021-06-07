@@ -28,6 +28,7 @@ class PhpMethod extends PhpFunction
 
 	/**
 	 * @param PhpParam[] $params
+	 * @param array<array-key, string|string[]> $source
 	 */
 	public static function constructor(array $params, array $source, bool $autoAssign = false): self
 	{
@@ -46,6 +47,9 @@ class PhpMethod extends PhpFunction
 		return $self;
 	}
 
+	/**
+	 * @param array<array-key, string|string[]> $source
+	 */
 	public static function setter(PhpVariable $var, array $source = [], bool $fluent = false): self
 	{
 		$source[] = '$this->' . $var->getIdentifier()->toString() . ' = $' . $var->getIdentifier()->toString() . ';';
@@ -62,6 +66,9 @@ class PhpMethod extends PhpFunction
 		return $self;
 	}
 
+	/**
+	 * @param array<array-key, string|string[]> $source
+	 */
 	public static function getter(PhpVariable $var, array $source = []): self
 	{
 		$type = $var->getType();
@@ -86,23 +93,35 @@ class PhpMethod extends PhpFunction
 		return $self;
 	}
 
+	/**
+	 * @param PhpParam[] $params
+	 * @param array<array-key, string|string[]> $source
+	 */
 	public static function public(string $identifier, array $params, array $source, Type $type = null): self
 	{
 		return new self(self::PUBLIC_ACCESS, $identifier, $params, $source, $type ?? Type::empty());
 	}
 
+	/**
+	 * @param PhpParam[] $params
+	 * @param array<array-key, string|string[]> $source
+	 */
 	public static function private(string $identifier, array $params, array $source, Type $type = null): self
 	{
 		return new self(self::PRIVATE_ACCESS, $identifier, $params, $source, $type ?? Type::empty());
 	}
 
+	/**
+	 * @param PhpParam[] $params
+	 * @param array<array-key, string|string[]> $source
+	 */
 	public static function protected(string $identifier, array $params, array $source, Type $type = null): self
 	{
 		return new self(self::PROTECTED_ACCESS, $identifier, $params, $source, $type ?? Type::empty());
 	}
 
 	/**
-	 * @param PhpParam[]|array<string, Type|string> $params
+	 * @param PhpParam[] $params
 	 * @param array<array-key, string|string[]> $source
 	 */
 	public function __construct(
@@ -113,7 +132,13 @@ class PhpMethod extends PhpFunction
 		?Type $returnTypeHint = null,
 		?PhpDocComment $comment = null,
 	) {
-		parent::__construct($identifier, $params, $source, $returnTypeHint ?? Type::empty(), $comment);
+		parent::__construct(
+			$identifier,
+			$params,
+			$source,
+			$returnTypeHint ?? Type::empty(),
+			$comment,
+		);
 	}
 
 	public function setFinal(): static

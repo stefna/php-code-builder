@@ -2,8 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
-use Stefna\PhpCodeBuilder\FlattenSource;
-use Stefna\PhpCodeBuilder\Indent;
+use Stefna\PhpCodeBuilder\Exception\InvalidCode;
 
 final class ReturnCode implements CodeInterface
 {
@@ -11,12 +10,21 @@ final class ReturnCode implements CodeInterface
 		private CodeInterface $code,
 	) {}
 
+	/**
+	 * @return array<int,string|string[]>
+	 */
 	public function getSourceArray(): array
 	{
 		$code = $this->code->getSourceArray();
+		if (!is_string($code[0])) {
+			throw InvalidCode::invalidType();
+		}
 		$code[0] = 'return ' . $code[0];
-		$code[count($code) - 1] .= ';';
-
+		$lastKey = (int)array_key_last($code);
+		if (!is_string($code[$lastKey])) {
+			throw InvalidCode::invalidType();
+		}
+		$code[$lastKey] .= ';';
 		return $code;
 	}
 }

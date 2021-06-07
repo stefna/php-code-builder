@@ -17,13 +17,11 @@ class PhpFunction
 {
 	/** @var PhpParam[] */
 	protected array $params = [];
-	/** @var array<string, string|string[]> */
-
 	private Identifier $identifier;
 
 	/**
 	 * @param PhpParam[] $params
-	 * @param array<array-key, string|string[]> $source
+	 * @param array<int, string|string[]>|CodeInterface $body
 	 */
 	public function __construct(
 		Identifier|string $identifier,
@@ -39,9 +37,9 @@ class PhpFunction
 	}
 
 	/**
-	 * Set function body
+	 * @param array<int, string|string[]>|CodeInterface $source
 	 */
-	public function setBody(array $source): void
+	public function setBody(array|CodeInterface $source): void
 	{
 		$this->body = $source;
 	}
@@ -112,6 +110,9 @@ class PhpFunction
 		return $this->identifier;
 	}
 
+	/**
+	 * @return array<int, string|string[]>|CodeInterface
+	 */
 	public function getBody(): array|CodeInterface
 	{
 		return $this->body;

@@ -29,9 +29,9 @@ class PhpDocComment
 	/**
 	 * Create single line var docblock
 	 */
-	public static function var(Type $type): static
+	public static function var(Type $type): self
 	{
-		$doc = new static();
+		$doc = new self();
 		$doc->setVar(PhpDocElementFactory::getVar($type));
 
 		return $doc;
@@ -128,6 +128,9 @@ class PhpDocComment
 		return $this;
 	}
 
+	/**
+	 * @return PhpDocElement[]
+	 */
 	public function getMethods(): array
 	{
 		return $this->methods;
@@ -143,6 +146,9 @@ class PhpDocComment
 		return $this->description;
 	}
 
+	/**
+	 * @return PhpDocElement[]
+	 */
 	public function getParams(): array
 	{
 		return $this->params;
@@ -153,6 +159,9 @@ class PhpDocComment
 		return $this->return;
 	}
 
+	/**
+	 * @return PhpDocElement[]
+	 */
 	public function getThrows(): array
 	{
 		return $this->throws;
@@ -163,7 +172,7 @@ class PhpDocComment
 		return $this->var;
 	}
 
-	public function removeVar()
+	public function removeVar(): void
 	{
 		$this->var = null;
 	}

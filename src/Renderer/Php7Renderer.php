@@ -3,6 +3,7 @@
 namespace Stefna\PhpCodeBuilder\Renderer;
 
 use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
+use Stefna\PhpCodeBuilder\Exception\InvalidCode;
 use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\FormatValue;
 use Stefna\PhpCodeBuilder\PhpClass;
@@ -16,9 +17,13 @@ use Stefna\PhpCodeBuilder\PhpMethod;
 use Stefna\PhpCodeBuilder\PhpParam;
 use Stefna\PhpCodeBuilder\PhpTrait;
 use Stefna\PhpCodeBuilder\PhpVariable;
+use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
 class Php7Renderer implements FullRendererInterface
 {
+	/**
+	 * @return array<int, string|array<int, string>>
+	 */
 	public function renderFile(PhpFile $file): array
 	{
 		$declaration = '<?php';
@@ -34,6 +39,7 @@ class Php7Renderer implements FullRendererInterface
 		$classes = $file->getClasses();
 		if (count($classes) === 1) {
 			$classes->rewind();
+			/** @var Identifier $class */
 			$class = $classes->current();
 			if ($class->getNamespace()) {
 				$namespace .= $class->getNamespace();
@@ -56,6 +62,7 @@ class Php7Renderer implements FullRendererInterface
 
 		$uses = $file->getUse();
 		if (count($uses) > 0) {
+			/** @var Identifier $identifier */
 			foreach ($uses as $identifier) {
 				if ($identifier->getNamespace() === $namespace) {
 					// don't need to add use statements for same namespace as file
@@ -100,6 +107,9 @@ class Php7Renderer implements FullRendererInterface
 		return $ret;
 	}
 
+	/**
+	 * @return array<int, string|array<int, string>>
+	 */
 	public function renderClass(PhpClass $class): array
 	{
 		$ret = FlattenSource::applySourceOn($this->renderComment($class->getComment()), []);
@@ -157,6 +167,9 @@ class Php7Renderer implements FullRendererInterface
 		return $ret;
 	}
 
+	/**
+	 * @return array<int, string|array<int, string>>
+	 */
 	public function renderInterface(PhpInterface $interface): array
 	{
 		$ret = FlattenSource::applySourceOn($this->renderComment($interface->getComment()), []);
@@ -199,6 +212,9 @@ class Php7Renderer implements FullRendererInterface
 		return $ret;
 	}
 
+	/**
+	 * @return array<int, string|array<int, string>>
+	 */
 	public function renderTrait(PhpTrait $trait): array
 	{
 		$ret = FlattenSource::applySourceOn($this->renderComment($trait->getComment()), []);
@@ -211,8 +227,12 @@ class Php7Renderer implements FullRendererInterface
 		return $ret;
 	}
 
+	/**
+	 * @return array<int, mixed>
+	 */
 	public function renderVariable(PhpVariable $variable): array|null
 	{
+		/** @var array<int, mixed> $ret */
 		$ret = [];
 
 		$comment = $variable->getComment();
@@ -249,7 +269,10 @@ class Php7Renderer implements FullRendererInterface
 				$lineStr .= array_shift($value);
 				$ret[] = $lineStr;
 				$ret = FlattenSource::applySourceOn($value, $ret);
-				$ret[array_key_last($ret)] .= ';';
+				$lastKey = (int)array_key_last($ret);
+				if (is_string($ret[$lastKey])) {
+					$ret[$lastKey] .= ';';
+				}
 			}
 			else {
 				$lineStr .= $value;
@@ -263,10 +286,16 @@ class Php7Renderer implements FullRendererInterface
 		return $ret;
 	}
 
+	/**
+	 * @return array<int, mixed>
+	 */
 	public function renderMethod(PhpMethod $method): array
 	{
 		if ($method->isConstructor() && $method->doConstructorAutoAssign()) {
 			$body = $method->getBody();
+			if ($body instanceof CodeInterface) {
+				$body = $body->getSourceArray();
+			}
 
 			foreach ($method->getParams() as $param) {
 				$var = $param->getVariable();
@@ -280,6 +309,9 @@ class Php7Renderer implements FullRendererInterface
 		return $this->renderFunction($method);
 	}
 
+	/**
+	 * @return array<int, mixed>
+	 */
 	public function renderFunction(PhpFunction $function): array
 	{
 		$ret = [];
@@ -289,8 +321,9 @@ class Php7Renderer implements FullRendererInterface
 		}
 
 		if ($function->getReturnType()->needDockBlockTypeHint()) {
-			$function->getComment()
-				->setReturn(PhpDocElementFactory::getReturn($function->getReturnType()->getDocBlockTypeHint()));
+			$function->getComment()?->setReturn(
+				PhpDocElementFactory::getReturn($function->getReturnType()->getDocBlockTypeHint() ?? '')
+			);
 		}
 
 		$ret = FlattenSource::applySourceOn($this->renderFunctionSignature($function), $ret);
@@ -309,6 +342,9 @@ class Php7Renderer implements FullRendererInterface
 		return $ret;
 	}
 
+	/**
+	 * @return array<int, mixed>
+	 */
 	public function renderConstant(PhpConstant $constant): array
 	{
 		$ret = [];
@@ -330,7 +366,10 @@ class Php7Renderer implements FullRendererInterface
 				$ret[] = $lineStr;
 			}
 			$ret = FlattenSource::applySourceOn($value, $ret);
-			$ret[array_key_last($ret)] .= ';';
+			$lastKey = (int)array_key_last($ret);
+			if (is_string($ret[$lastKey])) {
+				$ret[$lastKey] .= ';';
+			}
 		}
 		else {
 			$lineStr .= ' ' . $value;
@@ -340,6 +379,9 @@ class Php7Renderer implements FullRendererInterface
 		return $ret;
 	}
 
+	/**
+	 * @return array<int, string|array<int, string>>|string
+	 */
 	public function renderParams(PhpFunction $function, PhpParam ...$params): array|string
 	{
 		$docBlock = $function->getComment() ?? new PhpDocComment();
@@ -370,14 +412,24 @@ class Php7Renderer implements FullRendererInterface
 		}
 		$ret .= ' $' . $param->getName();
 		if ($param->getValue() !== PhpParam::NO_VALUE) {
-			$ret .= ' = ' . FormatValue::format($param->getValue());
+			$value = FormatValue::format($param->getValue());
+			if (is_array($value)) {
+				throw new \RuntimeException('Don\'t support multiline values in params');
+			}
+			$ret .= ' = ' . $value;
 		}
 
 		return trim($ret);
 	}
 
-	public function renderComment(PhpDocComment $comment): array
+	/**
+	 * @return array<int, string|array<int, string>>
+	 */
+	public function renderComment(?PhpDocComment $comment): array
 	{
+		if (!$comment) {
+			return [];
+		}
 		$returnArray = ['/**'];
 
 		$description = '';
@@ -439,6 +491,9 @@ class Php7Renderer implements FullRendererInterface
 		return $returnArray;
 	}
 
+	/**
+	 * @return array<int, mixed>
+	 */
 	public function renderFunctionSignature(PhpFunction $function): array
 	{
 		$isAbstract = false;
@@ -478,22 +533,33 @@ class Php7Renderer implements FullRendererInterface
 		}
 
 		if ($function->getReturnType()->getTypeHint()) {
-			$ret[array_key_last($ret)] .= ': ' . $function->getReturnType()->getTypeHint();
+			$lastKey = (int)array_key_last($ret);
+			if (!is_string($ret[$lastKey])) {
+				throw InvalidCode::invalidType();
+			}
+			$ret[$lastKey] .= ': ' . $function->getReturnType()->getTypeHint();
 		}
 
+		$lastKey = (int)array_key_last($ret);
+		if (!is_string($ret[$lastKey])) {
+			throw InvalidCode::invalidType();
+		}
 		if ($isAbstract) {
-			$ret[array_key_last($ret)] .= ';';
+			$ret[$lastKey] .= ';';
 		}
 		elseif ($singleLine) {
 			$ret[] = '{';
 		}
 		else {
-			$ret[array_key_last($ret)] .= ' {';
+			$ret[$lastKey] .= ' {';
 		}
 
 		return $ret;
 	}
 
+	/**
+	 * @return array<int, string|array<int, string>>
+	 */
 	public function renderObjectBody(PhpTrait|PhpClass|PhpInterface $obj): array
 	{
 		$classBody = [];

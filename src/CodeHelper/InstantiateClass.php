@@ -2,8 +2,6 @@
 
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
-use Stefna\PhpCodeBuilder\FlattenSource;
-use Stefna\PhpCodeBuilder\Indent;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
 final class InstantiateClass implements CodeInterface
@@ -13,6 +11,9 @@ final class InstantiateClass implements CodeInterface
 	private string $method = '';
 	private bool $indentFirstLine = false;
 
+	/**
+	 * @param array<int, VariableReference|ArrayCode|string> $params
+	 */
 	public function __construct(
 		private Identifier $class,
 		private array $params = [],
@@ -29,8 +30,11 @@ final class InstantiateClass implements CodeInterface
 		$this->indentFirstLine = $indentFirstLine;
 	}
 
-	public function getSourceArray(int $currentIndent = 0): array
+	/**
+	 * @return array<int, mixed>
+	 */
+	public function getSourceArray(): array
 	{
-		return $this->buildSourceArray($currentIndent);
+		return $this->buildSourceArray();
 	}
 }

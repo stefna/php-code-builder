@@ -2,6 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
+use Stefna\PhpCodeBuilder\Exception\InvalidCode;
 use Stefna\PhpCodeBuilder\FormatValue;
 
 trait MethodParamsTrait
@@ -9,6 +10,9 @@ trait MethodParamsTrait
 	private string $identifier;
 	private string $callIdentifier = '->';
 
+	/**
+	 * @return array<int, mixed>
+	 */
 	private function buildSourceArray(): array
 	{
 		$return = [];
@@ -20,16 +24,28 @@ trait MethodParamsTrait
 					return [$firstLine . $paramSource[0] . ')'];
 				}
 				elseif (is_array($paramSource[0])) {
-					$return = [$firstLine . array_shift($paramSource[0])];
+					$firstParamSource = array_shift($paramSource[0]);
+					if (!is_string($firstParamSource)) {
+						throw InvalidCode::invalidType();
+					}
+					$return = [$firstLine . $firstParamSource];
 					foreach ($paramSource[0] as $row) {
 						$return[] = $row;
 					}
-					$return[count($return) - 1] .= ')';
+					$lastRowKey = (int)array_key_last($return);
+					if (!is_string($return[$lastRowKey])) {
+						throw InvalidCode::invalidType();
+					}
+					$return[$lastRowKey] .= ')';
 					return $return;
 				}
 			}
 			if (is_string($paramSource[0]) && strpos($paramSource[0], ',')) {
-				$return[] = $firstLine . array_shift($paramSource);
+				$firstParamSource = array_shift($paramSource);
+				if (!is_string($firstParamSource)) {
+					throw InvalidCode::invalidType();
+				}
+				$return[] = $firstLine . $firstParamSource;
 			}
 			else {
 				$return[] = $firstLine;
@@ -61,14 +77,15 @@ trait MethodParamsTrait
 				$return[] = $row;
 			}
 
-			$lastRow = $return[count($return) - 1];
+			$lastRowKey = (int)array_key_last($return);
+			$lastRow = $return[$lastRowKey];
 			// if last param is an array append closing parentis
-			if ($lastRow === ']') {
-				$return[count($return) - 1] .= ')';
+			if (is_string($return[$lastRowKey]) && $return[$lastRowKey] === ']') {
+				$return[$lastRowKey] .= ')';
 			}
 			// if last param have multiple values append closing parentis
-			elseif (is_string($lastRow) && strpos($lastRow, ',')) {
-				$return[count($return) - 1] .= ')';
+			elseif (is_string($return[$lastRowKey]) && strpos($return[$lastRowKey], ',')) {
+				$return[$lastRowKey] .= ')';
 			}
 			else {
 				$return[] = ')';
@@ -82,6 +99,9 @@ trait MethodParamsTrait
 		return $return;
 	}
 
+	/**
+	 * @return array<int, mixed>
+	 */
 	private function getSourceForParams(): array
 	{
 		$params = [];
@@ -118,7 +138,6 @@ trait MethodParamsTrait
 			if ($param instanceof CodeInterface) {
 				if ($param instanceof ArrayCode) {
 					if (isset($return[$currentIndex - 1]) && is_string($return[$key - 1])) {
-						$param->setIndentFirstLine(false);
 						$value = $param->getSourceArray();
 						$return[$currentIndex - 1] .= ', ' . array_shift($value);
 						foreach ($value as $x) {
@@ -138,15 +157,14 @@ trait MethodParamsTrait
 					}
 					$value = $param->getSourceArray();
 					if ($previousArray) {
-						if (is_array($value)) {
-							$return[$currentIndex - 1] .= ', ' . array_shift($value);
-							foreach ($value as $c) {
-								$return[] = $c;
-								$currentIndex += 1;
-							}
+						$tmpValue = array_shift($value);
+						if (!is_scalar($tmpValue)) {
+							throw InvalidCode::invalidType();
 						}
-						else {
-							$return[$currentIndex - 1] .= ', ' . $value;
+						$return[$currentIndex - 1] .= ', ' . $tmpValue;
+						foreach ($value as $c) {
+							$return[] = $c;
+							$currentIndex += 1;
 						}
 					}
 					elseif (count($value) === 1) {

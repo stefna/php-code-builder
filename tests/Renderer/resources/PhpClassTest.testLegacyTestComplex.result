@@ -12,4 +12,14 @@ final class TestClass extends ArrayObject implements IteratorAggregate
 
 	/** @var int */
 	private $random;
+
+	public function getRandom(): int
+	{
+		return $this->random;
+	}
+
+	public function setRandom(int $random): void
+	{
+		$this->random = $random;
+	}
 }

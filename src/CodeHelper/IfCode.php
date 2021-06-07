@@ -2,11 +2,13 @@
 
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
-use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
 final class IfCode implements CodeInterface
 {
+	/**
+	 * @param array<int, mixed> $code
+	 */
 	public static function instanceOf(VariableReference $var, Identifier $identifier, array $code): self
 	{
 		return new self(
@@ -15,11 +17,17 @@ final class IfCode implements CodeInterface
 		);
 	}
 
+	/**
+	 * @param array<int, mixed> $code
+	 */
 	public function __construct(
 		private string $if,
 		private array $code,
 	) {}
 
+	/**
+	 * @return array<int,string|string[]>
+	 */
 	public function getSourceArray(int $currentIndent = 0): array
 	{
 		return [

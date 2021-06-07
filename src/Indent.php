@@ -6,7 +6,7 @@ class Indent
 {
 	private static string $indent = "\t";
 
-	public static function setIndent(string $indent)
+	public static function setIndent(string $indent): void
 	{
 		self::$indent = $indent;
 	}

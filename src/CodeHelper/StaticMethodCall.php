@@ -2,15 +2,16 @@
 
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
-use Stefna\PhpCodeBuilder\FlattenSource;
-use Stefna\PhpCodeBuilder\FormatValue;
-use Stefna\PhpCodeBuilder\Indent;
+use Stefna\PhpCodeBuilder\PhpParam;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
 final class StaticMethodCall implements CodeInterface
 {
 	use MethodParamsTrait;
 
+	/**
+	 * @param array<int,string|string[]|PhpParam|VariableReference|CodeInterface> $params
+	 */
 	public function __construct(
 		private Identifier $class,
 		private string $method,
@@ -20,6 +21,9 @@ final class StaticMethodCall implements CodeInterface
 		$this->callIdentifier = '::';
 	}
 
+	/**
+	 * @return array<int,string|string[]>
+	 */
 	public function getSourceArray(): array
 	{
 		return $this->buildSourceArray();

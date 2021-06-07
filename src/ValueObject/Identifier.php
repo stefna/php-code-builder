@@ -9,7 +9,7 @@ final class Identifier
 
 	private ?string $alias = null;
 
-	public static function fromString($identifier): self
+	public static function fromString(string $identifier): self
 	{
 		$namespace = '';
 		if (str_contains($identifier, '\\')) {

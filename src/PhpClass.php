@@ -30,7 +30,7 @@ class PhpClass extends PhpTrait
 		private bool $abstract = false,
 		array $implements = [],
 	) {
-		parent::__construct($identifier, $comment);
+		parent::__construct(Identifier::fromUnknown($identifier), $comment);
 		if ($extends) {
 			$this->setExtends($extends);
 		}

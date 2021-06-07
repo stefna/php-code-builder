@@ -2,7 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
-use Stefna\PhpCodeBuilder\FlattenSource;
+use Stefna\PhpCodeBuilder\Exception\InvalidCode;
 
 final class AssignmentCode implements CodeInterface
 {
@@ -11,16 +11,27 @@ final class AssignmentCode implements CodeInterface
 		private CodeInterface $assignment,
 	) {}
 
+	/**
+	 * @return array<int,string|string[]>
+	 */
 	public function getSourceArray(): array
 	{
 		$firstLine = $this->variable->toString() . ' = ';
 		$assignmentLines = $this->assignment->getSourceArray();
 		$assignmentFirstLine = array_shift($assignmentLines);
+		if (!is_string($assignmentFirstLine)) {
+			throw InvalidCode::invalidType();
+		}
 		$return = [$firstLine . $assignmentFirstLine];
 		foreach ($assignmentLines as $line) {
 			$return[] = $line;
 		}
-		$return[count($return) - 1] .= ';';
+
+		$lastKey = (int)array_key_last($return);
+		if (!is_string($return[$lastKey])) {
+			throw InvalidCode::invalidType();
+		}
+		$return[$lastKey] .= ';';
 		return $return;
 	}
 }

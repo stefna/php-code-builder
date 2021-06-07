@@ -2,14 +2,15 @@
 
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
-use Stefna\PhpCodeBuilder\FlattenSource;
-
 final class LineCode implements CodeInterface
 {
 	public function __construct(
 		private CodeInterface $code,
 	) {}
 
+	/**
+	 * @return array<int,string|string[]>
+	 */
 	public function getSourceArray(): array
 	{
 		$code = $this->code->getSourceArray();

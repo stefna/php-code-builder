@@ -2,18 +2,24 @@
 
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
-use Exception;
-use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\FormatValue;
-use Stefna\PhpCodeBuilder\Indent;
-use Traversable;
 
+/**
+ * @implements \IteratorAggregate<array-key, mixed>
+ * @implements \ArrayAccess<array-key, mixed>
+ */
 final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 {
+	/**
+	 * @param array<array-key, mixed> $data
+	 */
 	public function __construct(
-		private array $data = []
+		private array $data = [],
 	) {}
 
+	/**
+	 * @return array<array-key, mixed>
+	 */
 	public function getSourceArray(): array
 	{
 		if (!$this->data) {
@@ -24,7 +30,7 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 		$return[] = '[';
 		$isAssoc = false;
 		foreach ($this->data as $key => $value) {
-			if (!$isAssoc && is_string($key)) {
+			if ($isAssoc === false && is_string($key)) {
 				$isAssoc = true;
 				break;
 			}
@@ -51,14 +57,14 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 			else {
 				$formattedValue = FormatValue::format($value);
 			}
-			if ($isAssoc) {
+			if ($isAssoc && is_string($formattedValue)) {
 				$rows[] = sprintf(
 					"'%s' => %s,",
 					$key,
 					$formattedValue
 				);
 			}
-			else {
+			elseif (is_string($formattedValue)) {
 				$rows[] = sprintf(
 					"%s,",
 					$formattedValue
@@ -99,13 +105,5 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->data);
-	}
-
-	/**
-	 * @param bool $indentFirstLine
-	 */
-	public function setIndentFirstLine(bool $indentFirstLine): void
-	{
-		$this->indentFirstLine = $indentFirstLine;
 	}
 }

@@ -2,6 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder\Renderer;
 
+use Stefna\PhpCodeBuilder\Exception\InvalidCode;
 use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\FormatValue;
 use Stefna\PhpCodeBuilder\PhpDocComment;
@@ -42,7 +43,11 @@ class Php74Renderer extends Php7Renderer
 					$ret[] = $lineStr;
 				}
 				$ret = FlattenSource::applySourceOn($value, $ret);
-				$ret[array_key_last($ret)] .= ';';
+				$lastKey = (int)array_key_last($ret);
+				if (!is_string($ret[$lastKey])) {
+					throw InvalidCode::invalidType();
+				}
+				$ret[$lastKey] .= ';';
 			}
 			else {
 				$lineStr .= $value;
@@ -56,8 +61,11 @@ class Php74Renderer extends Php7Renderer
 		return $ret;
 	}
 
-	public function renderComment(PhpDocComment $comment): array
+	public function renderComment(?PhpDocComment $comment): array
 	{
+		if (!$comment) {
+			return [];
+		}
 		$parent = $comment->getParent();
 		if ($comment->getVar() && $parent instanceof PhpVariable) {
 			if (!$parent->getType()->needDockBlockTypeHint()) {

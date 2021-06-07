@@ -31,7 +31,7 @@ class PhpDocElement
 
 	public function getDataType(): Type
 	{
-		return $this->datatype;
+		return $this->datatype ?? Type::empty();
 	}
 
 	public function getVariableName(): string
@@ -66,7 +66,7 @@ class PhpDocElement
 		$ret .= '@' . $this->type;
 
 		if (!$this->datatype?->isEmpty()) {
-			$ret .= ' ' . $this->datatype->getDocBlockTypeHint();
+			$ret .= ' ' . $this->datatype?->getDocBlockTypeHint();
 		}
 
 		if ($this->variableName !== '') {

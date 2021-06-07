@@ -7,13 +7,20 @@ use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
 
 class FormatValue
 {
+	/**
+	 * @param mixed[] $data
+	 * @return mixed[]
+	 */
 	public static function formatArray(array $data): string|array
 	{
 		$arrayCode = new ArrayCode($data);
 		return $arrayCode->getSourceArray();
 	}
 
-	public static function format($value): array|string
+	/**
+	 * @return mixed[]|string
+	 */
+	public static function format(mixed $value): array|string
 	{
 		if ($value instanceof CodeInterface) {
 			return $value->getSourceArray();
@@ -24,11 +31,12 @@ class FormatValue
 		}
 
 		return match ($type) {
+			'array' => self::formatArray($value),
 			'boolean' => $value ? 'true' : 'false',
 			'NULL' => 'null',
+			'integer', 'double' => (string)$value,
+			'object', 'resource', 'resource (closed)', 'unknown type' => throw new \RuntimeException('Not supported value type'),
 			'string' => "'$value'",
-			'array' => '[]',
-			'integer' => (string)$value,
 		};
 	}
 }

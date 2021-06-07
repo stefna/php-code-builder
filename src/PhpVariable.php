@@ -78,7 +78,7 @@ class PhpVariable
 		protected bool $autoSetter = false,
 		protected bool $autoGetter = false,
 	) {
-		if (!$this->comment && $type && $type->needDockBlockTypeHint()) {
+		if ($this->comment === null && $type->needDockBlockTypeHint()) {
 			$this->comment = PhpDocComment::var($type);
 		}
 	}

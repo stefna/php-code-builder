@@ -106,9 +106,8 @@ class PhpTrait
 		$this->variables[$variable->getIdentifier()] = $variable;
 
 		if ($createGetterSetter) {
-			// todo fix
-#			$this->addMethod(PhpMethod::getter($variable));
-#			$this->addMethod(PhpMethod::setter($variable));
+			$this->addMethod(PhpMethod::getter($variable));
+			$this->addMethod(PhpMethod::setter($variable));
 		}
 
 		return $this;
@@ -228,6 +227,9 @@ class PhpTrait
 		return $this->constants;
 	}
 
+	/**
+	 * @return \SplObjectStorage<Identifier, PhpMethod>
+	 */
 	public function getMethods(): \SplObjectStorage
 	{
 		return $this->methods;
@@ -238,6 +240,9 @@ class PhpTrait
 		return $this->identifier;
 	}
 
+	/**
+	 * @return Identifier[]
+	 */
 	public function getTraits(): array
 	{
 		return $this->traits;
