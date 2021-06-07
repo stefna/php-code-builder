@@ -34,7 +34,7 @@ class PhpParam
 	public function getVariable(): ?PhpVariable
 	{
 		if ($this->autoCreateVariable) {
-			$this->variable = PhpVariable::protected($this->name, $this->type);
+			$this->variable = PhpVariable::private($this->name, $this->type);
 		}
 		return $this->variable;
 	}

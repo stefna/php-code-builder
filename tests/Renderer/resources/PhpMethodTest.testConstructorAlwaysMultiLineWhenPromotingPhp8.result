@@ -1,3 +1,3 @@
 public function __construct(
-	protected int $test1,
+	private int $test1,
 ) {}

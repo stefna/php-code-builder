@@ -29,7 +29,7 @@ final class PhpClassTest extends TestCase
 			extends: \DateTimeImmutable::class,
 			implements: [Identifier::fromString(\JsonSerializable::class)]
 		);
-		$var = PhpVariable::private('param1', Type::fromString('string|int'));
+		$var = PhpVariable::protected('param1', Type::fromString('string|int'));
 		$ctor = PhpMethod::constructor([
 			PhpParam::fromVariable($var),
 		], [], true);
@@ -89,7 +89,7 @@ final class PhpClassTest extends TestCase
 
 	public function testAbstractClass()
 	{
-		$class = new PhpClass(Identifier::fromString(Test\TestClass::class));
+		$class = new PhpClass(Identifier::fromString(Test\AbstractTest\TestClass::class));
 		$class->setAbstract();
 		$class->addMethod(PhpMethod::protected('testNonProtectedMethod', [], []));
 		$class->addMethod(PhpMethod::protected('testAbstractProtectedMethod', [], [])->setAbstract());

@@ -1,10 +1,10 @@
 class TestClass extends DateTimeImmutable implements JsonSerializable
 {
 	/** @var string|int */
-	private $param1;
+	protected $param1;
 	/** @var string|int|null */
 	public $var1;
-	protected ?int $param2;
+	private ?int $param2;
 
 	/**
 	 * @param string|int $param1

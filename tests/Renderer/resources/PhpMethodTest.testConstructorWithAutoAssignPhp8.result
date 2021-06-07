@@ -1,6 +1,6 @@
 public function __construct(
-	protected int $test1,
+	private int $test1,
 	private string $test2,
-	protected null|int|string $test3,
+	private null|int|string $test3,
 	bool $test4 = true,
 ) {}
