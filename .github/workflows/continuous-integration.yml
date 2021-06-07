@@ -1,0 +1,71 @@
+name: "Continuous Integration"
+
+on:
+  - push
+  - pull_request
+
+env:
+  COMPOSER_FLAGS: "--ansi --no-interaction --no-progress --prefer-dist"
+
+jobs:
+  cs:
+    name: Codestyle check on PHP 8.0
+    runs-on: ubuntu-latest
+
+    steps:
+        - name: Set up PHP
+          uses: shivammathur/setup-php@v2
+          with:
+              php-version: 8.0
+
+        - name: Checkout code
+          uses: actions/checkout@v2
+
+        - name: Download dependencies
+          run: composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-stable
+
+        - name: Run tests
+          run: ./vendor/bin/phpcs --standard=vendor/stefna/codestyle/library.xml src/
+
+  tests:
+    name: "Tests"
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - "8.0"
+        experimental:
+          - false
+        include:
+          - php-version: "8.1"
+            composer-options: "--ignore-platform-reqs"
+            experimental: true
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+
+      - name: Get composer cache directory
+        id: composercache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composercache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: "Install latest dependencies"
+        run: "composer update ${{ env.COMPOSER_FLAGS }} ${{ matrix.composer-options }}"
+
+      - name: "Run tests"
+        run: ./vendor/bin/phpunit -c phpunit.xml.dist
