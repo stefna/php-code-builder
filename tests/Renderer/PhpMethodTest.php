@@ -217,4 +217,24 @@ final class PhpMethodTest extends TestCase
 		$renderer = new Php7Renderer();
 		$this->assertSourceResult($renderer->renderMethod($func), 'PhpMethodTest.' . __FUNCTION__);
 	}
+
+	/**
+	 * @dataProvider getterPrefixes
+	 */
+	public function testAutoGetterPrefix(string $name, Type $type, string $expectedMethodName)
+	{
+		$var = PhpVariable::protected($name, $type);
+		$method = PhpMethod::getter($var);
+
+		$this->assertSame($expectedMethodName, $method->getIdentifier()->toString());
+	}
+
+	public function getterPrefixes()
+	{
+		return [
+			['hasError', Type::fromString('bool'), 'hasError'],
+			['isAbstract', Type::fromString('bool'), 'isAbstract'],
+			['normal', Type::fromString('string'), 'getNormal'],
+		];
+	}
 }

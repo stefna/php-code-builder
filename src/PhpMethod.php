@@ -66,12 +66,18 @@ class PhpMethod extends PhpFunction
 	{
 		$type = $var->getType();
 		$prefix = 'get';
+		$aliasPrefix = null;
 		if ($type->is('bool')) {
 			$prefix = 'is';
+			$aliasPrefix = 'has';
 		}
 		$methodName = $identifier = $var->getIdentifier()->toString();
 		if (str_starts_with($identifier, $prefix)) {
 			$methodName = substr($methodName, strlen($prefix));
+		}
+		elseif ($aliasPrefix && str_starts_with($identifier, $aliasPrefix)) {
+			$methodName = substr($methodName, strlen($aliasPrefix));
+			$prefix = $aliasPrefix;
 		}
 
 		$source[] = 'return $this->' . $identifier . ';';
