@@ -29,12 +29,19 @@ class PhpParam
 		protected Type $type,
 		protected mixed $value = self::NO_VALUE,
 		protected bool $autoCreateVariable = false,
+		protected bool $autoCreateVariableSetter = false,
+		protected bool $autoCreateVariableGetter = false,
 	) {}
 
 	public function getVariable(): ?PhpVariable
 	{
 		if ($this->autoCreateVariable) {
-			$this->variable = PhpVariable::private($this->name, $this->type);
+			$this->variable = PhpVariable::private(
+				$this->name,
+				$this->type,
+				$this->autoCreateVariableSetter,
+				$this->autoCreateVariableGetter,
+			);
 		}
 		return $this->variable;
 	}

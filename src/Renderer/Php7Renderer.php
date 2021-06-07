@@ -269,7 +269,8 @@ class Php7Renderer implements FullRendererInterface
 			$body = $method->getBody();
 
 			foreach ($method->getParams() as $param) {
-				if ($param->getVariable()) {
+				$var = $param->getVariable();
+				if ($var) {
 					$body[] = sprintf('$this->%s = $%s;', $param->getName(), $param->getName());
 				}
 			}
@@ -523,9 +524,19 @@ class Php7Renderer implements FullRendererInterface
 				$classBody[] = '';
 			}
 			foreach ($variables as $identifier) {
-				$source = $this->renderVariable($variables[$identifier]);
+				/** @var PhpVariable $var */
+				$var = $variables[$identifier];
+				$source = $this->renderVariable($var);
 				if ($source !== null) {
 					$classBody[] = $source;
+				}
+				$setter = $var->getSetter();
+				$getter = $var->getGetter();
+				if ($setter && !$obj->hasMethod($setter->getIdentifier())) {
+					$obj->addMethod($setter);
+				}
+				if ($getter && !$obj->hasMethod($getter->getIdentifier())) {
+					$obj->addMethod($getter);
 				}
 			}
 			$addNewLine = true;

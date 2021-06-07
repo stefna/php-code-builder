@@ -1,0 +1,20 @@
+class TestClass extends DateTimeImmutable implements JsonSerializable
+{
+	/** @var string */
+	private $param1;
+
+	public function __construct(string $param1)
+	{
+		$this->param1 = $param1;
+	}
+
+	public function setParam1(string $param1): void
+	{
+		$this->param1 = $param1;
+	}
+
+	public function getParam1(): string
+	{
+		return $this->param1;
+	}
+}

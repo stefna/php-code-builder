@@ -105,4 +105,26 @@ final class PhpClassTest extends TestCase
 		$class = new PhpClass(Identifier::fromString(Test\TestClass::class));
 		$class->addMethod(PhpMethod::protected('testAbstractProtectedMethod', [], [])->setAbstract());
 	}
+
+	public function testAutoSetterAndGetter()
+	{
+		$class = new PhpClass(
+			Identifier::fromString(Test\TestClass::class),
+			extends: \DateTimeImmutable::class,
+			implements: [Identifier::fromString(\JsonSerializable::class)]
+		);
+		$ctor = PhpMethod::constructor([
+			new PhpParam(
+				'param1',
+				Type::fromString('string'),
+				autoCreateVariable: true,
+				autoCreateVariableSetter: true,
+				autoCreateVariableGetter: true,
+			),
+		], [], true);
+		$class->addMethod($ctor);
+
+		$renderer = new Php7Renderer();
+		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
+	}
 }

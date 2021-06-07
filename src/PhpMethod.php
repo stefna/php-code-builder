@@ -46,6 +46,40 @@ class PhpMethod extends PhpFunction
 		return $self;
 	}
 
+	public static function setter(PhpVariable $var, array $source = [], bool $fluent = false): self
+	{
+		$source[] = '$this->' . $var->getIdentifier()->toString() . ' = $' . $var->getIdentifier()->toString() . ';';
+		if ($fluent) {
+			$source[] = 'return $this;';
+		}
+
+		$valueParam = PhpParam::fromVariable($var);
+		$valueParam->setType(clone $var->getType());
+		$self = new self(self::PUBLIC_ACCESS, 'set' . ucfirst($var->getIdentifier()->toString()), [
+			$valueParam,
+		], $source, Type::fromString('void'));
+		$var->setSetter($self);
+		return $self;
+	}
+
+	public static function getter(PhpVariable $var, array $source = []): self
+	{
+		$type = $var->getType();
+		$prefix = 'get';
+		if ($type->is('bool')) {
+			$prefix = 'is';
+		}
+		$methodName = $identifier = $var->getIdentifier()->toString();
+		if (str_starts_with($identifier, $prefix)) {
+			$methodName = substr($methodName, strlen($prefix));
+		}
+
+		$source[] = 'return $this->' . $identifier . ';';
+		$self = self::public($prefix . ucfirst($methodName), [], $source, $var->getType());
+		$var->setGetter($self);
+		return $self;
+	}
+
 	public static function public(string $identifier, array $params, array $source, Type $type = null): self
 	{
 		return new self(self::PUBLIC_ACCESS, $identifier, $params, $source, $type ?? Type::empty());

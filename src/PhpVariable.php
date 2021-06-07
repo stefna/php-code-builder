@@ -20,34 +20,51 @@ class PhpVariable
 	public const NO_VALUE = '__PhpVariable_NoValue__';
 
 	private bool $promoted = false;
+	private ?PhpMethod $setter = null;
+	private ?PhpMethod $getter = null;
 
-	public static function private(string $identifier, Type $type): self
-	{
+	public static function private(
+		string $identifier,
+		Type $type,
+		bool $autoSetter = false,
+		bool $autoGetter = false,
+	): self {
 		return new self(
 			self::PRIVATE_ACCESS,
 			Identifier::simple($identifier),
 			$type,
-			self::NO_VALUE,
+			autoSetter: $autoSetter,
+			autoGetter: $autoGetter,
 		);
 	}
 
-	public static function protected(string $identifier, Type $type): self
-	{
+	public static function protected(
+		string $identifier,
+		Type $type,
+		bool $autoSetter = false,
+		bool $autoGetter = false,
+	): self {
 		return new self(
 			self::PROTECTED_ACCESS,
 			Identifier::simple($identifier),
 			$type,
-			self::NO_VALUE,
+			autoSetter: $autoSetter,
+			autoGetter: $autoGetter,
 		);
 	}
 
-	public static function public(string $identifier, Type $type): self
-	{
+	public static function public(
+		string $identifier,
+		Type $type,
+		bool $autoSetter = false,
+		bool $autoGetter = false,
+	): self {
 		return new self(
 			self::PUBLIC_ACCESS,
 			Identifier::simple($identifier),
 			$type,
-			self::NO_VALUE,
+			autoSetter: $autoSetter,
+			autoGetter: $autoGetter,
 		);
 	}
 
@@ -58,10 +75,40 @@ class PhpVariable
 		protected mixed $initializedValue = self::NO_VALUE,
 		protected ?PhpDocComment $comment = null,
 		protected bool $static = false,
+		protected bool $autoSetter = false,
+		protected bool $autoGetter = false,
 	) {
 		if (!$this->comment && $type && $type->needDockBlockTypeHint()) {
 			$this->comment = PhpDocComment::var($type);
 		}
+	}
+
+	public function setGetter(PhpMethod $getter): static
+	{
+		$this->getter = $getter;
+		return $this;
+	}
+
+	public function getGetter(): ?PhpMethod
+	{
+		if (!$this->getter && $this->autoGetter) {
+			$this->getter = PhpMethod::getter($this);
+		}
+		return $this->getter;
+	}
+
+	public function setSetter(PhpMethod $setter): static
+	{
+		$this->setter = $setter;
+		return $this;
+	}
+
+	public function getSetter(): ?PhpMethod
+	{
+		if (!$this->setter && $this->autoSetter) {
+			$this->setter = PhpMethod::setter($this);
+		}
+		return $this->setter;
 	}
 
 	public function getAccess(): string
