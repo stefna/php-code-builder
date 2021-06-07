@@ -35,7 +35,8 @@ class FormatValue
 			'boolean' => $value ? 'true' : 'false',
 			'NULL' => 'null',
 			'integer', 'double' => (string)$value,
-			'object', 'resource', 'resource (closed)', 'unknown type' => throw new \RuntimeException('Not supported value type'),
+			'object', 'resource', 'resource (closed)', 'unknown type' =>
+				throw new \RuntimeException('Not supported value type'),
 			'string' => "'$value'",
 		};
 	}
