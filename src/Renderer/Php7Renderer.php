@@ -584,16 +584,24 @@ class Php7Renderer implements FullRendererInterface
 			$addNewLine = true;
 		}
 
+		$constructorMethod = $obj->getMethod('__construct');
+		$constructor = null;
+		if ($constructorMethod) {
+			$constructor = $this->renderMethod($constructorMethod);
+		}
+
 		$variables = $obj->getVariables();
 		if (count($variables)) {
 			if ($addNewLine) {
 				$classBody[] = '';
 			}
+			$addedVars = 0;
 			foreach ($variables as $identifier) {
 				/** @var PhpVariable $var */
 				$var = $variables[$identifier];
 				$source = $this->renderVariable($var);
 				if ($source !== null) {
+					$addedVars++;
 					$classBody[] = $source;
 				}
 				$setter = $var->getSetter();
@@ -605,7 +613,9 @@ class Php7Renderer implements FullRendererInterface
 					$obj->addMethod($getter);
 				}
 			}
-			$addNewLine = true;
+			if ($addedVars > 0) {
+				$addNewLine = true;
+			}
 		}
 
 		$methods = $obj->getMethods();
@@ -613,7 +623,16 @@ class Php7Renderer implements FullRendererInterface
 			if ($addNewLine) {
 				$classBody[] = '';
 			}
+			if ($constructor) {
+				$classBody[] = $constructor;
+				$classBody[] = '';
+			}
+			/** @var Identifier $identifier */
 			foreach ($methods as $identifier) {
+				if ($identifier->toString() === '__construct') {
+					// render constructor separately so it's always on top
+					continue;
+				}
 				$classBody[] = $this->renderMethod($methods[$identifier]);
 				$classBody[] = '';
 			}
