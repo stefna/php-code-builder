@@ -399,9 +399,8 @@ class Php7Renderer implements FullRendererInterface
 			}
 			return $parameterStrings;
 		}
-		else {
-			return implode(', ', $parameterStrings);
-		}
+
+		return implode(', ', $parameterStrings);
 	}
 
 	public function renderParam(PhpParam $param): string

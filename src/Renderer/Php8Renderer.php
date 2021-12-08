@@ -107,12 +107,11 @@ class Php8Renderer extends Php74Renderer
 			$parameterStrings[] = $paramStr . ',';
 		}
 
-		if (count($params) > 2 || $propertyPromotion) {
+		if ($propertyPromotion || count($params) > 2) {
 			return $parameterStrings;
 		}
-		else {
-			return rtrim(implode(' ', $parameterStrings), ',');
-		}
+
+		return rtrim(implode(' ', $parameterStrings), ',');
 	}
 
 	public function renderParam(PhpParam $param): string
