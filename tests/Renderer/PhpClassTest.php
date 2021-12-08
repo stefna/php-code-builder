@@ -65,6 +65,26 @@ final class PhpClassTest extends TestCase
 		$this->assertSourceResult($renderer->renderClass($this->getTestClass()), 'PhpClassTest.' . __FUNCTION__);
 	}
 
+	public function testClassWithPropertyPromotion(): void
+	{
+		$class = new PhpClass(
+			Identifier::fromString(Test\TestClass::class),
+		);
+		$ctor = PhpMethod::constructor([
+			new PhpParam(
+				'test',
+				Type::fromString('string'),
+				autoCreateVariable: true,
+				autoCreateVariableSetter: false,
+				autoCreateVariableGetter: true,
+			),
+		], [], true);
+		$class->addMethod($ctor);
+		$renderer = new Php8Renderer();
+
+		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
+	}
+
 	public function testLegacyTestComplex()
 	{
 		$comment = new PhpDocComment('Test Description');
