@@ -20,19 +20,27 @@ class PhpTrait
 	protected \SplObjectStorage $variables;
 	/** @var \SplObjectStorage<Identifier, PhpMethod> */
 	protected \SplObjectStorage $methods;
+	protected ?PhpDocComment $comment = null;
 
 	public function __construct(
 		protected Identifier $identifier,
-		protected ?PhpDocComment $comment = null,
+		?PhpDocComment $comment = null,
 	) {
+		$this->comment = $comment;
 		$this->methods = new \SplObjectStorage();
 		$this->variables = new \SplObjectStorage();
 		$this->constants = new \SplObjectStorage();
+		if ($comment) {
+			$this->setComment($comment);
+		}
 	}
 
 	public function setComment(PhpDocComment $comment): void
 	{
 		$this->comment = $comment;
+		foreach ($comment->getIdentifiers() as $identifier) {
+			$this->addUse($identifier);
+		}
 	}
 
 	public function getComment(): PhpDocComment

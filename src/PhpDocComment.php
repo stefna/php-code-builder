@@ -2,6 +2,8 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\Contracts\HasIdentifiers;
+use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 /**
@@ -11,7 +13,7 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
  * @author Andreas Sundqvist <andreas@stefna.is>
  * @license http://www.opensource.org/licenses/mit-license.php MIT License
  */
-class PhpDocComment
+class PhpDocComment implements HasIdentifiers
 {
 	private ?PhpDocElement $var = null;
 	private ?PhpDocElement $author = null;
@@ -181,5 +183,20 @@ class PhpDocComment
 	{
 		$this->methods[] = $deprecated;
 		return $this;
+	}
+
+	/**
+	 * @return Identifier[]
+	 */
+	public function getIdentifiers(): array
+	{
+		$return = [];
+		foreach ($this->methods as $method) {
+			if ($method instanceof HasIdentifiers) {
+				$return[] = $method->getIdentifiers();
+			}
+		}
+
+		return array_merge(...$return);
 	}
 }
