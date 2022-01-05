@@ -21,6 +21,7 @@ class PhpTrait
 	/** @var \SplObjectStorage<Identifier, PhpMethod> */
 	protected \SplObjectStorage $methods;
 	protected ?PhpDocComment $comment = null;
+	protected bool $immutable = false;
 
 	public function __construct(
 		protected Identifier $identifier,
@@ -115,7 +116,7 @@ class PhpTrait
 
 		if ($createGetterSetter) {
 			$this->addMethod(PhpMethod::getter($variable));
-			$this->addMethod(PhpMethod::setter($variable));
+			$this->addMethod(PhpMethod::setter($variable, immutable: $this->immutable));
 		}
 
 		return $this;
@@ -254,5 +255,16 @@ class PhpTrait
 	public function getTraits(): array
 	{
 		return $this->traits;
+	}
+
+	public function setImmutable(): static
+	{
+		$this->immutable = true;
+		return $this;
+	}
+
+	public function isImmutable(): bool
+	{
+		return $this->immutable;
 	}
 }

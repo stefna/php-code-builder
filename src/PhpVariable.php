@@ -103,10 +103,11 @@ class PhpVariable
 		return $this;
 	}
 
-	public function getSetter(): ?PhpMethod
+	public function getSetter(?PhpTrait $context = null): ?PhpMethod
 	{
 		if (!$this->setter && $this->autoSetter) {
-			$this->setter = PhpMethod::setter($this);
+			$immutable = $context?->isImmutable() ?? false;
+			$this->setter = PhpMethod::setter($this, immutable: $immutable);
 		}
 		return $this->setter;
 	}

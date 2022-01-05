@@ -603,7 +603,7 @@ class Php7Renderer implements FullRendererInterface
 					$addedVars++;
 					$classBody[] = $source;
 				}
-				$setter = $var->getSetter();
+				$setter = $var->getSetter($obj);
 				$getter = $var->getGetter();
 				if ($setter && !$obj->hasMethod($setter->getIdentifier())) {
 					$obj->addMethod($setter);

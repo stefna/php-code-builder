@@ -218,6 +218,16 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->renderMethod($func), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
+	public function testImmutableSetter()
+	{
+		$var = PhpVariable::protected('test', Type::fromString('string'));
+		$setter = PhpMethod::setter($var, immutable: true);
+
+		$renderer = new Php7Renderer();
+		$this->assertSourceResult($renderer->renderMethod($setter), 'PhpMethodTest.' . __FUNCTION__);
+	}
+
+
 	/**
 	 * @dataProvider getterPrefixes
 	 */

@@ -1,0 +1,6 @@
+public function withTest(string $test): self
+{
+	$self = clone $this;
+	$self->test = $test;
+	return $self;
+}

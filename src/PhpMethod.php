@@ -50,18 +50,32 @@ class PhpMethod extends PhpFunction
 	/**
 	 * @param array<array-key, string|string[]> $source
 	 */
-	public static function setter(PhpVariable $var, array $source = [], bool $fluent = false): self
-	{
-		$source[] = '$this->' . $var->getIdentifier()->toString() . ' = $' . $var->getIdentifier()->toString() . ';';
-		if ($fluent) {
-			$source[] = 'return $this;';
+	public static function setter(
+		PhpVariable $var,
+		array $source = [],
+		bool $fluent = false,
+		bool $immutable = false,
+	): self {
+		$thisName = '$this';
+		$setterName = 'set' . ucfirst($var->getIdentifier()->toString());
+		$setterReturnType = Type::fromString('void');
+		if ($immutable) {
+			$source[] = '$self = clone $this;';
+			$thisName = '$self';
+			$setterName = 'with' . ucfirst($var->getIdentifier()->toString());
+			$setterReturnType = Type::fromString('self');
+		}
+
+		$source[] = $thisName . '->' . $var->getIdentifier()->toString() . ' = $' . $var->getIdentifier()->toString() . ';';
+		if ($fluent || $immutable) {
+			$source[] = 'return ' . $thisName . ';';
 		}
 
 		$valueParam = PhpParam::fromVariable($var);
 		$valueParam->setType(clone $var->getType());
-		$self = new self(self::PUBLIC_ACCESS, 'set' . ucfirst($var->getIdentifier()->toString()), [
+		$self = new self(self::PUBLIC_ACCESS, $setterName, [
 			$valueParam,
-		], $source, Type::fromString('void'));
+		], $source, $setterReturnType);
 		$var->setSetter($self);
 		return $self;
 	}
