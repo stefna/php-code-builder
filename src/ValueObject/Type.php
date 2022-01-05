@@ -20,6 +20,7 @@ final class Type
 	private bool $namespaced;
 	private bool $simplified = false;
 	private bool $inCheckLoop = false;
+	private string $namespace = '';
 	/** @var Type[] */
 	private array $types = [];
 
@@ -83,11 +84,17 @@ final class Type
 		$this->namespaced = str_contains($type, '\\');
 	}
 
+	public function getNamespace(): string
+	{
+		return $this->namespace;
+	}
+
 	public function simplifyName(): void
 	{
 		$this->simplified = true;
 		$p = explode('\\', $this->type);
 		$this->type = array_pop($p);
+		$this->namespace = implode('\\', $p);
 	}
 
 	public function isSimplified(): bool
@@ -264,6 +271,22 @@ final class Type
 		return str_replace('[]', '', $type);
 	}
 
+	public function getArrayTypeObject(): ?Type
+	{
+		$typeStr = $this->getArrayType();
+		if (!$typeStr) {
+			return null;
+		}
+		if ($this->simplified && $this->namespaced) {
+			$typeStr = $this->namespace . '\\' . $typeStr;
+		}
+		$type = Type::fromString($typeStr);
+		if ($this->simplified) {
+			$type->simplifyName();
+		}
+		return $type;
+	}
+
 	public function isNative(): bool
 	{
 		$type = self::ALIAS_MAP[$this->type] ?? $this->type;
@@ -295,5 +318,16 @@ final class Type
 	public function isEmpty(): bool
 	{
 		return $this->type === '' && count($this->types) === 0;
+	}
+
+	/**
+	 * @return class-string
+	 */
+	public function getFqcn(): string
+	{
+		if ($this->simplified && $this->namespaced) {
+			return $this->namespace . '\\' . $this->type;
+		}
+		return $this->type;
 	}
 }
