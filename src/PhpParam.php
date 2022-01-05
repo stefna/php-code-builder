@@ -2,6 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 class PhpParam
@@ -31,16 +32,18 @@ class PhpParam
 		protected bool $autoCreateVariable = false,
 		protected bool $autoCreateVariableSetter = false,
 		protected bool $autoCreateVariableGetter = false,
+		protected string $autoCreateVariableAccess = PhpVariable::PRIVATE_ACCESS,
 	) {}
 
 	public function getVariable(): ?PhpVariable
 	{
 		if (!$this->variable && $this->autoCreateVariable) {
-			$this->variable = PhpVariable::private(
-				$this->name,
+			$this->variable = new PhpVariable(
+				$this->autoCreateVariableAccess,
+				Identifier::simple($this->name),
 				$this->type,
-				$this->autoCreateVariableSetter,
-				$this->autoCreateVariableGetter,
+				autoSetter: $this->autoCreateVariableSetter,
+				autoGetter: $this->autoCreateVariableGetter,
 			);
 		}
 		return $this->variable;

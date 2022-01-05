@@ -227,6 +227,19 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->renderMethod($setter), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
+	public function testConstructorWithPropertyPromotionWithCustomAccess()
+	{
+		$var = PhpVariable::private('test2', Type::fromString('string'));
+		$ctor = PhpMethod::constructor([
+			new PhpParam('test1', Type::fromString('int'), autoCreateVariable: true),
+			PhpParam::fromVariable($var),
+			new PhpParam('test3', Type::fromString('int|string|null'), autoCreateVariable: true, autoCreateVariableAccess: PhpVariable::PUBLIC_ACCESS),
+			new PhpParam('test4', Type::fromString('bool'), true),
+		], [], true);
+
+		$renderer = new Php8Renderer();
+		$this->assertSourceResult($renderer->renderMethod($ctor), 'PhpMethodTest.' . __FUNCTION__);
+	}
 
 	/**
 	 * @dataProvider getterPrefixes

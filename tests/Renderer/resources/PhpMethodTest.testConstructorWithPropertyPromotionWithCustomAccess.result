@@ -1,0 +1,6 @@
+public function __construct(
+	private int $test1,
+	private string $test2,
+	public null|int|string $test3,
+	bool $test4 = true,
+) {}
