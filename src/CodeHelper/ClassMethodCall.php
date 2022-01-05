@@ -25,6 +25,11 @@ final class ClassMethodCall implements CodeInterface
 		$this->identifier = $class->toString();
 	}
 
+	public function getVariableReference(): VariableReference
+	{
+		return $this->class;
+	}
+
 	/**
 	 * @return array<int, mixed>
 	 */
