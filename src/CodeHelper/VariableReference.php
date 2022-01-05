@@ -7,18 +7,24 @@ final class VariableReference implements CodeInterface
 	public static function this(string $variable = ''): self
 	{
 		if ($variable) {
-			return new self('this->' . $variable);
+			return new self($variable, 'this->');
 		}
 		return new self('this');
 	}
 
 	public function __construct(
-		private string $name
+		private string $name,
+		private string $prefix = '',
 	) {}
 
 	public function toString(): string
 	{
-		return '$' . $this->name;
+		return '$' . $this->prefix . $this->name;
+	}
+
+	public function getName(): string
+	{
+		return $this->name;
 	}
 
 	/**
@@ -26,6 +32,6 @@ final class VariableReference implements CodeInterface
 	 */
 	public function getSourceArray(): array
 	{
-		return ['$' . $this->name];
+		return ['$' . $this->prefix . $this->name];
 	}
 }
