@@ -19,12 +19,12 @@ final class VariableReference implements CodeInterface
 
 	public function toString(): string
 	{
-		return '$' . $this->prefix . $this->name;
+		return '$' . $this->prefix . ltrim($this->name, '$');
 	}
 
 	public function getName(): string
 	{
-		return $this->name;
+		return ltrim($this->name, '$');
 	}
 
 	/**
@@ -32,6 +32,6 @@ final class VariableReference implements CodeInterface
 	 */
 	public function getSourceArray(): array
 	{
-		return ['$' . $this->prefix . $this->name];
+		return ['$' . $this->prefix . ltrim($this->name, '$')];
 	}
 }
