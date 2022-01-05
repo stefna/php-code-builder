@@ -2,6 +2,8 @@
 
 namespace Stefna\PhpCodeBuilder;
 
+use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
+use Stefna\PhpCodeBuilder\CodeHelper\VariableReference;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 
@@ -12,7 +14,7 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
  * @author Andreas Sundqvist <andreas@stefna.is>
  * @license http://www.opensource.org/licenses/mit-license.php MIT License
  */
-class PhpVariable
+class PhpVariable implements CodeInterface
 {
 	public const PRIVATE_ACCESS = 'private';
 	public const PROTECTED_ACCESS = 'protected';
@@ -175,5 +177,15 @@ class PhpVariable
 	{
 		$this->promoted = $promoted;
 		return $this;
+	}
+
+	public function getCodeReference(): VariableReference
+	{
+		return VariableReference::this($this->identifier->toString());
+	}
+
+	public function getSourceArray(): array
+	{
+		return $this->getCodeReference()->getSourceArray();
 	}
 }

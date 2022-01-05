@@ -54,8 +54,14 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 				$rows[] = $lastValue .',';
 				continue;
 			}
-			else {
-				$formattedValue = FormatValue::format($value);
+
+			$formattedValue = FormatValue::format($value);
+			if ($value instanceof CodeInterface &&
+				is_array($formattedValue) &&
+				count($formattedValue) === 1 &&
+				is_string($formattedValue[0])
+			) {
+				$formattedValue = $formattedValue[0];
 			}
 			if ($isAssoc && is_string($formattedValue)) {
 				$rows[] = sprintf(
