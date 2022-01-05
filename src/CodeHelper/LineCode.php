@@ -8,9 +8,6 @@ final class LineCode implements CodeInterface
 		private CodeInterface $code,
 	) {}
 
-	/**
-	 * @return array<int,string|string[]>
-	 */
 	public function getSourceArray(): array
 	{
 		$code = $this->code->getSourceArray();

@@ -18,7 +18,7 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 	) {}
 
 	/**
-	 * @return array<array-key, mixed>
+	 * @return list<mixed>
 	 */
 	public function getSourceArray(): array
 	{

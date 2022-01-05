@@ -11,9 +11,6 @@ final class AssignmentCode implements CodeInterface
 		private CodeInterface $assignment,
 	) {}
 
-	/**
-	 * @return array<int,string|string[]>
-	 */
 	public function getSourceArray(): array
 	{
 		$firstLine = $this->variable->toString() . ' = ';

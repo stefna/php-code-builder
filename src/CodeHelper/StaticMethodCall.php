@@ -10,7 +10,7 @@ final class StaticMethodCall implements CodeInterface
 	use MethodParamsTrait;
 
 	/**
-	 * @param array<int,string|string[]|PhpParam|VariableReference|CodeInterface> $params
+	 * @param list<string|string[]|PhpParam|VariableReference|CodeInterface> $params
 	 */
 	public function __construct(
 		private Identifier $class,
@@ -21,9 +21,6 @@ final class StaticMethodCall implements CodeInterface
 		$this->callIdentifier = '::';
 	}
 
-	/**
-	 * @return array<int,string|string[]>
-	 */
 	public function getSourceArray(): array
 	{
 		return $this->buildSourceArray();

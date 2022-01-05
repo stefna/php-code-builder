@@ -25,9 +25,6 @@ final class IfCode implements CodeInterface
 		private array $code,
 	) {}
 
-	/**
-	 * @return array<int,string|string[]>
-	 */
 	public function getSourceArray(int $currentIndent = 0): array
 	{
 		return [
