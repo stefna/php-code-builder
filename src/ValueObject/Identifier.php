@@ -9,6 +9,14 @@ final class Identifier
 
 	private ?string $alias = null;
 
+	public static function fromObject(string|object $object): self
+	{
+		if (is_object($object)) {
+			$object = get_class($object);
+		}
+		return self::fromString($object);
+	}
+
 	public static function fromString(string $identifier): self
 	{
 		$namespace = '';
@@ -17,11 +25,12 @@ final class Identifier
 			$identifier = array_pop($ns);
 			$namespace  = implode('\\', $ns);
 		}
-		if (isset(self::$instances[$identifier . $namespace])) {
-			return self::$instances[$identifier . $namespace];
+		$identifierKey = $identifier . $namespace;
+		if (isset(self::$instances[$identifierKey])) {
+			return self::$instances[$identifierKey];
 		}
 
-		return self::$instances[$identifier . $namespace] = new self($identifier, $namespace);
+		return self::$instances[$identifierKey] = new self($identifier, $namespace);
 	}
 
 	public static function simple(string $name): self

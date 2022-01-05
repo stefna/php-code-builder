@@ -1,0 +1,8 @@
+/**
+ * @template T of GenericClass
+ * @extends AbstractClass<T, GenericAlias>
+ * @implements GenericInterface<T>
+ */
+class TestClass extends AbstractClass implements GenericInterface
+{
+}

@@ -11,6 +11,9 @@ use Stefna\PhpCodeBuilder\PhpDocElementFactory;
 use Stefna\PhpCodeBuilder\PhpFile;
 use Stefna\PhpCodeBuilder\PhpMethod;
 use Stefna\PhpCodeBuilder\PhpParam;
+use Stefna\PhpCodeBuilder\PhpStan\ExtendsField;
+use Stefna\PhpCodeBuilder\PhpStan\ImplementsField;
+use Stefna\PhpCodeBuilder\PhpStan\TemplateField;
 use Stefna\PhpCodeBuilder\PhpVariable;
 use Stefna\PhpCodeBuilder\Renderer\Php74Renderer;
 use Stefna\PhpCodeBuilder\Renderer\Php7Renderer;
@@ -143,6 +146,30 @@ final class PhpClassTest extends TestCase
 			),
 		], [], true);
 		$class->addMethod($ctor);
+
+		$renderer = new Php7Renderer();
+		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
+	}
+
+	public function testDocBlockWithImplementsAndExtend(): void
+	{
+		$templateFieldT = new TemplateField('T', Identifier::fromString(Test\AbstractTest2\GenericClass::class));
+		$extends = Identifier::fromString(Test\AbstractTest2\AbstractClass::class);
+		$implement = Identifier::fromString(Test\AbstractTest2\GenericInterface::class);
+		$extraGenericIdentifier = Identifier::fromString(Test\AbstractTest2\GenericClass2::class);
+		$extraGenericIdentifier->setAlias('GenericAlias');
+
+		$comment = new PhpDocComment();
+		$comment->addField($templateFieldT);
+		$comment->addField(new ExtendsField($extends, $templateFieldT, $extraGenericIdentifier));
+		$comment->addField(new ImplementsField($implement, $templateFieldT));
+
+		$class = new PhpClass(
+			Identifier::fromString(Test\AbstractTest\TestClass::class),
+			extends: $extends,
+			implements: [$implement],
+			comment: $comment,
+		);
 
 		$renderer = new Php7Renderer();
 		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
