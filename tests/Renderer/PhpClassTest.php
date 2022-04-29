@@ -47,21 +47,21 @@ final class PhpClassTest extends TestCase
 		return $class;
 	}
 
-	public function testClassRenderedWithPhp7()
+	public function testClassRenderedWithPhp7(): void
 	{
 		$renderer = new Php7Renderer();
 
 		$this->assertSourceResult($renderer->render($this->getTestClass()), 'PhpClassTest.' . __FUNCTION__);
 	}
 
-	public function testClassRenderedWithPhp74()
+	public function testClassRenderedWithPhp74(): void
 	{
 		$renderer = new Php74Renderer();
 
 		$this->assertSourceResult($renderer->renderClass($this->getTestClass()), 'PhpClassTest.' . __FUNCTION__);
 	}
 
-	public function testClassRenderedWithPhp8()
+	public function testClassRenderedWithPhp8(): void
 	{
 		$renderer = new Php8Renderer();
 
@@ -88,7 +88,7 @@ final class PhpClassTest extends TestCase
 		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
 	}
 
-	public function testLegacyTestComplex()
+	public function testLegacyTestComplex(): void
 	{
 		$comment = new PhpDocComment('Test Description');
 		$comment->addMethod(PhpDocElementFactory::method('DateTime', 'TestClass', 'getDate'));
@@ -110,7 +110,7 @@ final class PhpClassTest extends TestCase
 		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
 	}
 
-	public function testAbstractClass()
+	public function testAbstractClass(): void
 	{
 		$class = new PhpClass(Identifier::fromString(Test\AbstractTest\TestClass::class));
 		$class->setAbstract();
@@ -121,7 +121,7 @@ final class PhpClassTest extends TestCase
 		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
 	}
 
-	public function testAddingAbstractMethodToNoneAbstractClass()
+	public function testAddingAbstractMethodToNoneAbstractClass(): void
 	{
 		$this->expectException(\BadMethodCallException::class);
 
@@ -129,7 +129,7 @@ final class PhpClassTest extends TestCase
 		$class->addMethod(PhpMethod::protected('testAbstractProtectedMethod', [], [])->setAbstract());
 	}
 
-	public function testAutoSetterAndGetter()
+	public function testAutoSetterAndGetter(): void
 	{
 		$class = new PhpClass(
 			Identifier::fromString(Test\TestClass::class),
