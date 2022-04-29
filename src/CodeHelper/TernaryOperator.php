@@ -2,6 +2,8 @@
 
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
+use Stefna\PhpCodeBuilder\FlattenSource;
+
 final class TernaryOperator implements CodeInterface
 {
 	public static function nullableCall(VariableReference $variableReference, ClassMethodCall $call): self
@@ -14,15 +16,60 @@ final class TernaryOperator implements CodeInterface
 	}
 
 	public function __construct(
-		private string $check,
-		private string $successCode,
-		private string $failureCode,
+		private string|VariableReference $check,
+		private string|CodeInterface|array $successCode,
+		private string|CodeInterface|array $failureCode,
 	) {}
 
 	public function getSourceArray(): array
 	{
-		return [
-			$this->check .' ? ' . $this->successCode . ' : ' . $this->failureCode,
+		$check = $this->check;
+		if ($check instanceof VariableReference) {
+			$check = $check->toString();
+		}
+
+		$source = [
+			$check . ' ? ',
 		];
+
+		if ($this->successCode instanceof CodeInterface) {
+			$this->successCode = $this->successCode->getSourceArray();
+		}
+		if ($this->failureCode instanceof CodeInterface) {
+			$this->failureCode = $this->failureCode->getSourceArray();
+		}
+
+		if (is_string($this->successCode) || (is_array($this->successCode) && count($this->successCode) === 1)) {
+			$source[0] .= is_string($this->successCode) ? $this->successCode : $this->successCode[0];
+			$source[0] .= ' : ';
+		}
+		else {
+			$code = $this->successCode;
+			$code[array_key_last($code)] .= ' : ';
+			if (!is_array($code[array_key_first($code)])) {
+				$firstLine = array_shift($code);
+				$source[0] .= $firstLine;
+			}
+			$source = FlattenSource::applySourceOn($code, $source);
+		}
+
+		if (is_string($this->failureCode) || (is_array($this->failureCode) && count($this->failureCode) === 1)) {
+			if (is_string($source[array_key_last($source)])) {
+				$source[array_key_last($source)] .= is_string($this->failureCode) ? $this->failureCode : $this->failureCode[0];
+			}
+			else {
+				$source[] = $this->failureCode;
+			}
+		}
+		else {
+			$code = $this->failureCode;
+			if (!is_array($code[array_key_first($code)])) {
+				$firstLine = array_shift($code);
+				$source[array_key_last($source)] .= $firstLine;
+			}
+			$source = FlattenSource::applySourceOn($code, $source);
+		}
+
+		return $source;
 	}
 }
