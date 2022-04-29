@@ -1,0 +1,6 @@
+/**
+ * @implements RepositoryInterface<Id, BuilderInterface<Select>, Entity, Collection>
+ */
+class TestClass implements RepositoryInterface
+{
+}

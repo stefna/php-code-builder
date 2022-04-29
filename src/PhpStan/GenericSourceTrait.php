@@ -15,8 +15,13 @@ trait GenericSourceTrait
 		$fields = [];
 		foreach ($this->templateFields as $field) {
 			$name = $field->getName();
-			if ($field instanceof Identifier && $field->getAlias()) {
-				$name = $field->getAlias();
+			if ($field instanceof Identifier) {
+				if ($field->getAlias()) {
+					$name = $field->getAlias();
+				}
+				if ($field->isGeneric()) {
+					$name .= '<' . $field->getGenericIdentifier()?->toString() . '>';
+				}
 			}
 			$fields[] = $name;
 		}

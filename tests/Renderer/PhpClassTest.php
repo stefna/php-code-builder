@@ -175,6 +175,29 @@ final class PhpClassTest extends TestCase
 		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
 	}
 
+	public function testDocBlockWithNestedTemplates(): void
+	{
+		$implement = Identifier::fromString(RepositoryInterface::class);
+
+		$comment = new PhpDocComment();
+		$comment->addField(new ImplementsField(
+			$implement,
+			Identifier::fromString('Id'),
+			Identifier::fromString('BuilderInterface')->genericOf(Identifier::fromString('Select')),
+			Identifier::fromString('Entity'),
+			Identifier::fromString('Collection'),
+		));
+
+		$class = new PhpClass(
+			Identifier::fromString(Test\AbstractTest\TestClass::class),
+			implements: [$implement],
+			comment: $comment,
+		);
+
+		$renderer = new Php7Renderer();
+		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
+	}
+
 	public function testAutoSetterAndGetterImmutable(): void
 	{
 		$class = new PhpClass(

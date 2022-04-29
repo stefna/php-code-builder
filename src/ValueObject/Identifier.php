@@ -9,6 +9,8 @@ final class Identifier
 
 	private ?string $alias = null;
 
+	private ?Identifier $generic = null;
+
 	public static function fromObject(string|object $object): self
 	{
 		if (is_object($object)) {
@@ -87,6 +89,23 @@ final class Identifier
 	public function getAlias(): ?string
 	{
 		return $this->alias;
+	}
+
+	public function isGeneric(): bool
+	{
+		return $this->generic !== null;
+	}
+
+	public function getGenericIdentifier(): ?Identifier
+	{
+		return $this->generic;
+	}
+
+	public function genericOf(Identifier $generic): self
+	{
+		$self = clone $this;
+		$self->generic =  $generic;
+		return $self;
 	}
 
 	public function equal(Identifier $identifier): bool
