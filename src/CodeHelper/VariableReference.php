@@ -4,6 +4,11 @@ namespace Stefna\PhpCodeBuilder\CodeHelper;
 
 final class VariableReference implements CodeInterface
 {
+	public static function array(string $variable, string $arrayKey): self
+	{
+		return new self($variable . "['$arrayKey']");
+	}
+
 	public static function this(string $variable = ''): self
 	{
 		if ($variable) {
