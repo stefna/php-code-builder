@@ -29,6 +29,11 @@ final class Type
 		return new self('');
 	}
 
+	public static function fromIdentifier(Identifier $identifier): self
+	{
+		return self::fromString($identifier->toString());
+	}
+
 	public static function fromString(string $type): self
 	{
 		if (!trim($type, '? ')) {
