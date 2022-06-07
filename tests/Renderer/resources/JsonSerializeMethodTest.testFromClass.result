@@ -1,0 +1,9 @@
+public function jsonSerialize()
+{
+	return [
+		'random' => $this->random,
+		'randomBool' => $this->randomBool,
+		'randomInt' => $this->randomInt,
+		'randomIntList' => $this->randomIntList,
+	];
+}

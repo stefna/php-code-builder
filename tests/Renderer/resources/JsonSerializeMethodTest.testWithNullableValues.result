@@ -1,0 +1,8 @@
+public function jsonSerialize()
+{
+	return [
+		'jsonSerialize' => $this->jsonSerialize ? $this->jsonSerialize->jsonSerialize() : null,
+		'stringable' => (string)$this->stringable,
+		'toString' => $this->toString ? $this->toString->toString() : null,
+	];
+}

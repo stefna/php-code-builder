@@ -1,0 +1,25 @@
+public function jsonSerialize()
+{
+	$arrayWithToString = [];
+	foreach ($this->arrayWithToString as $key => $value) {
+		$arrayWithToString[$key] = $value->toString();
+	}
+	$iteratorAggregate = [];
+	foreach ($this->iteratorAggregate as $key => $value) {
+		$innerLoop = [];
+		foreach ($value as $innerKey => $innerValue) {
+			$innerLoop[$innerKey] = $innerValue;
+		}
+		$iteratorAggregate[$key] = $innerLoop;
+	}
+	$arrayCopy = [];
+	foreach ($this->arrayCopy as $key => $value) {
+		$arrayCopy[$key] = $value->getArrayCopy();
+	}
+	return [
+		'simpleArray' => $this->simpleArray,
+		'arrayWithToString' => $arrayWithToString,
+		'iteratorAggregate' => $iteratorAggregate,
+		'arrayCopy' => $arrayCopy,
+	];
+}

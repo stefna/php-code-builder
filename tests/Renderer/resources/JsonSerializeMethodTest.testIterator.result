@@ -1,0 +1,11 @@
+public function jsonSerialize()
+{
+	$iteratorAggregate = [];
+	foreach ($this->iteratorAggregate as $key => $value) {
+		$iteratorAggregate[$key] = $value;
+	}
+	return [
+		'getArrayCopy' => $this->getArrayCopy->getArrayCopy(),
+		'iteratorAggregate' => $iteratorAggregate,
+	];
+}
