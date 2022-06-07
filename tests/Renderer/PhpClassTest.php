@@ -11,8 +11,10 @@ use Stefna\PhpCodeBuilder\PhpDocElementFactory;
 use Stefna\PhpCodeBuilder\PhpFile;
 use Stefna\PhpCodeBuilder\PhpMethod;
 use Stefna\PhpCodeBuilder\PhpParam;
+use Stefna\PhpCodeBuilder\PhpStan\ArrayTypeField;
 use Stefna\PhpCodeBuilder\PhpStan\ExtendsField;
 use Stefna\PhpCodeBuilder\PhpStan\ImplementsField;
+use Stefna\PhpCodeBuilder\PhpStan\ImportArrayTypeField;
 use Stefna\PhpCodeBuilder\PhpStan\TemplateField;
 use Stefna\PhpCodeBuilder\PhpVariable;
 use Stefna\PhpCodeBuilder\Renderer\Php74Renderer;
@@ -170,6 +172,69 @@ final class PhpClassTest extends TestCase
 			implements: [$implement],
 			comment: $comment,
 		);
+
+		$renderer = new Php7Renderer();
+		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
+	}
+
+	public function testPhpStanArrayType(): void
+	{
+		$addressIdentifier = Identifier::fromString(Test\Address::class);
+		$addressIdentifier->setAlias('OfficeAddress');
+		$arrayType = new ArrayTypeField('RowSchema', [
+			'name' => 'string',
+			'age?' => Type::fromString('int'),
+			'address' => $addressIdentifier,
+		]);
+		$comment = new PhpDocComment();
+		$comment->addField($arrayType);
+
+		$class = new PhpClass(
+			Identifier::fromString(Test\AbstractTest\TestClass::class),
+			comment: $comment,
+		);
+
+		$methodComment = new PhpDocComment();
+		$methodComment->addField(PhpDocElementFactory::getReturn('RowSchema'));
+
+		$method = PhpMethod::public('getArray', [], [], Type::fromString('array'));
+		$method->setComment($methodComment);
+		$class->addMethod($method);
+
+		$renderer = new Php7Renderer();
+		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
+	}
+
+	public function testPhpStanImportArrayType(): void
+	{
+		$addressIdentifier = Identifier::fromString(Test\Address::class);
+		$addressIdentifier->setAlias('OfficeAddress');
+		$arrayType = new ArrayTypeField('RowSchema', [
+			'name' => 'string',
+			'age?' => Type::fromString('int'),
+			'address' => $addressIdentifier,
+		]);
+
+		$importedType = new ImportArrayTypeField(
+			Identifier::fromString(Test\AbstractTest\TestClass::class),
+			$arrayType->getIdentifier(),
+			'RandomSchema',
+		);
+
+		$comment = new PhpDocComment();
+		$comment->addField($importedType);
+
+		$class = new PhpClass(
+			Identifier::fromString(Test\AbstractTest\TestClass::class),
+			comment: $comment,
+		);
+
+		$methodComment = new PhpDocComment();
+		$methodComment->addField(PhpDocElementFactory::getReturn($importedType->getDataType()));
+
+		$method = PhpMethod::public('getArray', [], [], Type::fromString('array'));
+		$method->setComment($methodComment);
+		$class->addMethod($method);
 
 		$renderer = new Php7Renderer();
 		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);

@@ -1,0 +1,16 @@
+/**
+ * @phpstan-type RowSchema array{
+ *     name: string,
+ *     age?: int,
+ *     address: OfficeAddress,
+ * }
+ */
+class TestClass
+{
+	/**
+	 * @return RowSchema
+	 */
+	public function getArray(): array
+	{
+	}
+}

@@ -1,0 +1,12 @@
+/**
+ * @phpstan-import-type RowSchema from TestClass as RandomSchema
+ */
+class TestClass
+{
+	/**
+	 * @return RandomSchema
+	 */
+	public function getArray(): array
+	{
+	}
+}
