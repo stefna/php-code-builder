@@ -11,28 +11,13 @@ use Stefna\PhpCodeBuilder\PhpFunction;
 use Stefna\PhpCodeBuilder\PhpMethod;
 use Stefna\PhpCodeBuilder\PhpParam;
 use Stefna\PhpCodeBuilder\PhpVariable;
+use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 class Php8Renderer extends Php74Renderer
 {
-	/**
-	 * @return array<int, mixed>|null
-	 */
-	public function renderVariable(PhpVariable $variable): array|null
+	protected function formatTypeHint(?Type $type): ?string
 	{
-		if ($variable->isPromoted()) {
-			return null;
-		}
-		$type = $variable->getType();
-		if ($type->isUnion()) {
-			$ret = [];
-
-			$line = [];
-			$line[] = $variable->getAccess() ?: 'public';
-
-			if ($variable->isStatic()) {
-				$line[] = 'static';
-			}
-
+		if ($type?->isUnion()) {
 			$typeHint = [];
 			if ($type->isNullable()) {
 				$typeHint[] = 'null';
@@ -40,41 +25,19 @@ class Php8Renderer extends Php74Renderer
 			foreach ($type->getUnionTypes() as $unionType) {
 				$typeHint[] = $unionType->getTypeHint();
 			}
+			return implode('|', $typeHint);
+		}
 
-			$comment = $variable->getComment();
-			if ($comment) {
-				$comment->removeVar();
-				$ret = FlattenSource::applySourceOn($this->renderComment($comment), $ret);
-			}
+		return $type?->getTypeHint();
+	}
 
-			$line[] = implode('|', $typeHint);
-			$line[] = '$' . $variable->getIdentifier()->getName();
-			$lineStr = implode(' ', $line);
-
-			if ($variable->getInitializedValue() !== PhpVariable::NO_VALUE) {
-				$lineStr .= ' = ';
-				$value = FormatValue::format($variable->getInitializedValue());
-				if (is_array($value)) {
-					if (count($value) > 1) {
-						$lineStr .= array_shift($value);
-						$ret[] = $lineStr;
-					}
-					$ret = FlattenSource::applySourceOn($value, $ret);
-					$lastKey = (int)array_key_last($ret);
-					if (is_string($ret[$lastKey])) {
-						$ret[$lastKey] .= ';';
-					}
-				}
-				else {
-					$lineStr .= $value;
-					$ret[] = $lineStr . ';';
-				}
-			}
-			else {
-				$ret[] = $lineStr . ';';
-			}
-
-			return $ret;
+	/**
+	 * @return array<int, mixed>|null
+	 */
+	public function renderVariable(PhpVariable $variable): array|null
+	{
+		if ($variable->isPromoted()) {
+			return null;
 		}
 
 		return parent::renderVariable($variable);
@@ -166,5 +129,19 @@ class Php8Renderer extends Php74Renderer
 		}
 
 		return $ret;
+	}
+
+	public function renderComment(?PhpDocComment $comment): array
+	{
+		if (!$comment) {
+			return [];
+		}
+		$parent = $comment->getParent();
+		if ($comment->getVar() && $parent instanceof PhpVariable) {
+			if ($parent->getType()->isUnion()) {
+				$comment->removeVar();
+			}
+		}
+		return parent::renderComment($comment);
 	}
 }

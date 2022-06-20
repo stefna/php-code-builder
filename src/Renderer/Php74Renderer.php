@@ -7,6 +7,7 @@ use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\FormatValue;
 use Stefna\PhpCodeBuilder\PhpDocComment;
 use Stefna\PhpCodeBuilder\PhpVariable;
+use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 class Php74Renderer extends Php7Renderer
 {
@@ -19,6 +20,17 @@ class Php74Renderer extends Php7Renderer
 			$ret = FlattenSource::applySourceOn($this->renderComment($comment), $ret);
 		}
 
+		$line = $this->formatVariableModifiers($variable, $variable->getType());
+		$line[] = '$' . $variable->getIdentifier()->getName();
+
+		return $this->formatVariableValue($variable, implode(' ', $line), $ret);
+	}
+
+	/**
+	 * @return array<int, mixed>
+	 */
+	protected function formatVariableModifiers(PhpVariable $variable, ?Type $type = null): array
+	{
 		$line = [];
 		$line[] = $variable->getAccess() ?: 'public';
 
@@ -26,39 +38,17 @@ class Php74Renderer extends Php7Renderer
 			$line[] = 'static';
 		}
 
-		$typeStr = $variable->getType()->getTypeHint();
+		$typeStr = $this->formatTypeHint($type);
 		if ($typeStr) {
 			$line[] = $typeStr;
 		}
 
-		$line[] = '$' . $variable->getIdentifier()->getName();
-		$lineStr = implode(' ', $line);
+		return $line;
+	}
 
-		if ($variable->getInitializedValue() !== PhpVariable::NO_VALUE) {
-			$lineStr .= ' = ';
-			$value = FormatValue::format($variable->getInitializedValue());
-			if (is_array($value)) {
-				if (count($value) > 1) {
-					$lineStr .= array_shift($value);
-					$ret[] = $lineStr;
-				}
-				$ret = FlattenSource::applySourceOn($value, $ret);
-				$lastKey = (int)array_key_last($ret);
-				if (!is_string($ret[$lastKey])) {
-					throw InvalidCode::invalidType();
-				}
-				$ret[$lastKey] .= ';';
-			}
-			else {
-				$lineStr .= $value;
-				$ret[] = $lineStr . ';';
-			}
-		}
-		else {
-			$ret[] = $lineStr . ';';
-		}
-
-		return $ret;
+	protected function formatTypeHint(?Type $type): ?string
+	{
+		return $type?->getTypeHint();
 	}
 
 	public function renderComment(?PhpDocComment $comment): array

@@ -18,6 +18,7 @@ use Stefna\PhpCodeBuilder\PhpParam;
 use Stefna\PhpCodeBuilder\PhpTrait;
 use Stefna\PhpCodeBuilder\PhpVariable;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
+use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 class Php7Renderer implements FullRendererInterface
 {
@@ -256,31 +257,38 @@ class Php7Renderer implements FullRendererInterface
 
 		$line[] = '$' . $variable->getIdentifier()->getName();
 
-		$lineStr = implode(' ', $line);
+		return $this->formatVariableValue($variable, implode(' ', $line), $ret);
+	}
 
-		if ($variable->getInitializedValue() !== PhpVariable::NO_VALUE) {
-			$lineStr .= ' = ';
-			$value = FormatValue::format($variable->getInitializedValue());
-			if (is_array($value)) {
-				if (count($value) === 1) {
-					$ret[] = $lineStr . $value[0] . ';';
-					return $ret;
-				}
-				$lineStr .= array_shift($value);
-				$ret[] = $lineStr;
-				$ret = FlattenSource::applySourceOn($value, $ret);
-				$lastKey = (int)array_key_last($ret);
-				if (is_string($ret[$lastKey])) {
-					$ret[$lastKey] .= ';';
-				}
-			}
-			else {
-				$lineStr .= $value;
-				$ret[] = $lineStr . ';';
-			}
-		}
-		else {
+	/**
+	 * @param array<int, mixed> $ret
+	 * @return array<int, mixed>
+	 */
+	protected function formatVariableValue(PhpVariable $variable, string $lineStr, array $ret): array
+	{
+		if ($variable->getInitializedValue() === PhpVariable::NO_VALUE) {
 			$ret[] = $lineStr . ';';
+			return $ret;
+		}
+
+		$lineStr .= ' = ';
+		$value = FormatValue::format($variable->getInitializedValue());
+		if (!is_array($value)) {
+			$lineStr .= $value;
+			$ret[] = $lineStr . ';';
+			return $ret;
+		}
+
+		if (count($value) === 1 && !is_array($value[0])) {
+			$ret[] = $lineStr . $value[0] . ';';
+			return $ret;
+		}
+		$lineStr .= array_shift($value);
+		$ret[] = $lineStr;
+		$ret = FlattenSource::applySourceOn($value, $ret);
+		$lastKey = (int)array_key_last($ret);
+		if (is_string($ret[$lastKey])) {
+			$ret[$lastKey] .= ';';
 		}
 
 		return $ret;

@@ -82,6 +82,7 @@ class PhpVariable implements CodeInterface
 	) {
 		if ($this->comment === null && $type->needDockBlockTypeHint()) {
 			$this->comment = PhpDocComment::var($type);
+			$this->comment->setParent($this);
 		}
 	}
 
