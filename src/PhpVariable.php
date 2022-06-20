@@ -79,10 +79,14 @@ class PhpVariable implements CodeInterface
 		protected bool $static = false,
 		protected bool $autoSetter = false,
 		protected bool $autoGetter = false,
+		protected bool $readOnly = false,
 	) {
 		if ($this->comment === null && $type->needDockBlockTypeHint()) {
 			$this->comment = PhpDocComment::var($type);
 			$this->comment->setParent($this);
+		}
+		if ($this->readOnly) {
+			$this->setReadOnly();
 		}
 	}
 
@@ -127,6 +131,9 @@ class PhpVariable implements CodeInterface
 
 	public function setStatic(): static
 	{
+		if ($this->readOnly) {
+			throw new \BadMethodCallException('ReadOnly variable can\'t be static');
+		}
 		$this->static = true;
 		return $this;
 	}
@@ -168,6 +175,11 @@ class PhpVariable implements CodeInterface
 		return $this->promoted;
 	}
 
+	public function isReadOnly(): bool
+	{
+		return $this->readOnly;
+	}
+
 	public function setAccess(string $access): static
 	{
 		$this->access = $access;
@@ -177,6 +189,19 @@ class PhpVariable implements CodeInterface
 	public function setPromoted(bool $promoted = true): static
 	{
 		$this->promoted = $promoted;
+		return $this;
+	}
+
+	public function setReadOnly(bool $readOnly = true): static
+	{
+		if ($readOnly && $this->static) {
+			throw new \BadMethodCallException('Static variable can\'t be readOnly');
+		}
+		if ($readOnly && $this->type->isEmpty()) {
+			throw new \BadMethodCallException('ReadOnly variable needs type');
+		}
+
+		$this->readOnly = $readOnly;
 		return $this;
 	}
 

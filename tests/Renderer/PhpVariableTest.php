@@ -8,6 +8,8 @@ use Stefna\PhpCodeBuilder\PhpDocComment;
 use Stefna\PhpCodeBuilder\PhpVariable;
 use Stefna\PhpCodeBuilder\Renderer\Php74Renderer;
 use Stefna\PhpCodeBuilder\Renderer\Php7Renderer;
+use Stefna\PhpCodeBuilder\Renderer\Php81Renderer;
+use Stefna\PhpCodeBuilder\Renderer\Php8Renderer;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 
@@ -201,6 +203,36 @@ final class PhpVariableTest extends TestCase
 		$this->assertSame([
 			'/** @var \Stefna\OpenApiRuntime\ServerConfiguration\SecurityScheme[] */',
 			'protected $securitySchemes = [];',
+		], $renderer->renderVariable($var));
+	}
+
+	public function testReadOnlyPhp8(): void
+	{
+		$var = new PhpVariable(
+			PhpVariable::PUBLIC_ACCESS,
+			Identifier::simple('test'),
+			Type::fromString('string'),
+			readOnly: true,
+		);
+
+		$renderer = new Php8Renderer();
+		$this->assertSame([
+			'public string $test;',
+		], $renderer->renderVariable($var));
+	}
+
+	public function testReadOnlyPhp81(): void
+	{
+		$var = new PhpVariable(
+			PhpVariable::PUBLIC_ACCESS,
+			Identifier::simple('test'),
+			Type::fromString('string'),
+			readOnly: true,
+		);
+
+		$renderer = new Php81Renderer();
+		$this->assertSame([
+			'public readonly string $test;',
 		], $renderer->renderVariable($var));
 	}
 }
