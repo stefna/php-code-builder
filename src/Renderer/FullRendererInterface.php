@@ -5,6 +5,7 @@ namespace Stefna\PhpCodeBuilder\Renderer;
 use Stefna\PhpCodeBuilder\PhpClass;
 use Stefna\PhpCodeBuilder\PhpConstant;
 use Stefna\PhpCodeBuilder\PhpDocComment;
+use Stefna\PhpCodeBuilder\PhpEnum;
 use Stefna\PhpCodeBuilder\PhpFile;
 use Stefna\PhpCodeBuilder\PhpFunction;
 use Stefna\PhpCodeBuilder\PhpInterface;
@@ -19,6 +20,11 @@ interface FullRendererInterface extends RenderInterface
 	 * @return array<int, string|array<int, string>>
 	 */
 	public function renderFile(PhpFile $file): array;
+
+	/**
+	 * @return array<int, string|array<int, string>>
+	 */
+	public function renderEnum(PhpEnum $enum): array;
 
 	/**
 	 * @return array<int, string|array<int, string>>

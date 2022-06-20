@@ -1,0 +1,37 @@
+final class Test
+{
+	public const Up = 'Up';
+	public const Down = 'Down';
+
+	public string $value;
+
+	private function __construct(string $value)
+	{
+		$this->value = $value;
+	}
+
+	public static function from(string $value): self
+	{
+		$self = self::tryFrom($value);
+		if ($self) {
+			return $self;
+		}
+		throw new ValueError('Enum not found');
+	}
+
+	public static function tryFrom(string $value): ?self
+	{
+		if ($value === self::Up) {
+			return new self($value);
+		}
+		if ($value === self::Down) {
+			return new self($value);
+		}
+		return null;
+	}
+
+	public function __toString(): string
+	{
+		return (string)$this->value;
+	}
+}

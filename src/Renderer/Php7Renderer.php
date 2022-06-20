@@ -10,6 +10,7 @@ use Stefna\PhpCodeBuilder\PhpClass;
 use Stefna\PhpCodeBuilder\PhpConstant;
 use Stefna\PhpCodeBuilder\PhpDocComment;
 use Stefna\PhpCodeBuilder\PhpDocElementFactory;
+use Stefna\PhpCodeBuilder\PhpEnum;
 use Stefna\PhpCodeBuilder\PhpFile;
 use Stefna\PhpCodeBuilder\PhpFunction;
 use Stefna\PhpCodeBuilder\PhpInterface;
@@ -17,6 +18,7 @@ use Stefna\PhpCodeBuilder\PhpMethod;
 use Stefna\PhpCodeBuilder\PhpParam;
 use Stefna\PhpCodeBuilder\PhpTrait;
 use Stefna\PhpCodeBuilder\PhpVariable;
+use Stefna\PhpCodeBuilder\ValueObject\EnumBackedCase;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 
@@ -106,6 +108,56 @@ class Php7Renderer implements FullRendererInterface
 		}
 
 		return $ret;
+	}
+
+	public function renderEnum(PhpEnum $enum): array
+	{
+		$enum->setFinal();
+		$tryFromCtorSource = [];
+
+		foreach ($enum->getCases() as $case) {
+			$value = $case instanceof EnumBackedCase ? $case->getValue() : null;
+			$enum->addConstant(PhpConstant::public($case->getName(), $value)->setCase(PhpConstant::CASE_NONE));
+			$tryFromCtorSource[] = 'if ($value === self::' . $case->getName() . ') {';
+			$tryFromCtorSource[] = ['return new self($value);'];
+			$tryFromCtorSource[] = '}';
+		}
+
+		$tryFromCtorSource[] = 'return null;';
+
+		$fromCtor = PhpMethod::public('from', [
+			new PhpParam('value', Type::fromString('string')),
+		], [
+			'$self = self::tryFrom($value);',
+			'if ($self) {',
+			['return $self;'],
+			'}',
+			'throw new ValueError(\'Enum not found\');',
+		], Type::fromString('self'));
+		$fromCtor->setStatic();
+		$enum->addMethod($fromCtor);
+		$tryFromCtor = PhpMethod::public('tryFrom', [
+			new PhpParam('value', Type::fromString('string')),
+		], $tryFromCtorSource, Type::fromString('self|null'));
+		$tryFromCtor->setStatic();
+		$enum->addMethod($tryFromCtor);
+
+		$ctor = PhpMethod::constructor([
+			new PhpParam(
+				'value',
+				Type::fromString('string'),
+				autoCreateVariable: true,
+				autoCreateVariableAccess: PhpVariable::PUBLIC_ACCESS,
+			),
+		], [], true);
+		$ctor->setAccess(PhpMethod::PRIVATE_ACCESS);
+		$enum->addMethod($ctor);
+		$enum->addMethod(PhpMethod::public('__toString', [], [
+			'return (string)$this->value;',
+		], Type::fromString('string')));
+
+
+		return $this->renderClass($enum);
 	}
 
 	/**
@@ -659,6 +711,9 @@ class Php7Renderer implements FullRendererInterface
 		}
 		elseif ($obj instanceof PhpInterface) {
 			$source = $this->renderInterface($obj);
+		}
+		elseif ($obj instanceof PhpEnum) {
+			$source = $this->renderEnum($obj);
 		}
 		elseif ($obj instanceof PhpClass) {
 			$source = $this->renderClass($obj);

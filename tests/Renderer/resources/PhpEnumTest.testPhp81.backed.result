@@ -1,0 +1,5 @@
+enum Test: string
+{
+	case Up = 'U';
+	case Down = 'N';
+}
