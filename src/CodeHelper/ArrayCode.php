@@ -83,17 +83,17 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 		return $return;
 	}
 
-	public function offsetExists($offset)
+	public function offsetExists($offset): bool
 	{
 		return array_key_exists($offset, $this->data);
 	}
 
-	public function offsetGet($offset)
+	public function offsetGet($offset): mixed
 	{
 		return $this->data[$offset] ?? null;
 	}
 
-	public function offsetSet($offset, $value)
+	public function offsetSet(mixed $offset, mixed $value): void
 	{
 		if (is_string($offset)) {
 			$this->data[$offset] = $value;
@@ -103,12 +103,15 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 		}
 	}
 
-	public function offsetUnset($offset)
+	public function offsetUnset(mixed $offset): void
 	{
 		// TODO: Implement offsetUnset() method.
 	}
 
-	public function getIterator()
+	/**
+	 * @return \ArrayIterator<array-key, mixed>
+	 */
+	public function getIterator(): \ArrayIterator
 	{
 		return new \ArrayIterator($this->data);
 	}

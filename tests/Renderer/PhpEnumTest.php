@@ -35,6 +35,9 @@ class PhpEnumTest extends TestCase
 		$this->assertSourceResult($renderer->render($enum), 'PhpEnumTest.' . __FUNCTION__ . '.' . $expectedFile);
 	}
 
+	/**
+	 * @return array[]
+	 */
 	public function enumTypes(): array
 	{
 		return [
@@ -44,21 +47,21 @@ class PhpEnumTest extends TestCase
 					cases: [
 						new EnumCase('Up'),
 						new EnumCase('Down'),
-					]
+					],
 				),
 				'simple',
-			], [
+			],
+			[
 				new PhpEnum(
 					'Test',
 					Type::fromString('string'),
 					cases: [
 						new EnumBackedCase('Up', 'U'),
 						new EnumBackedCase('Down', 'N'),
-					]
+					],
 				),
 				'backed',
-			]
+			],
 		];
 	}
-
 }

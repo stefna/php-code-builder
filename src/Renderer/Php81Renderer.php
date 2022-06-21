@@ -75,6 +75,9 @@ class Php81Renderer extends Php8Renderer
 		return $ret;
 	}
 
+	/**
+	 * @return array<int, string|array<int, string>>
+	 */
 	private function renderEnumBody(PhpEnum $obj): array
 	{
 		$classBody = [];
@@ -101,6 +104,7 @@ class Php81Renderer extends Php8Renderer
 				}
 				$line = 'case ' . $case->getName();
 				if ($isBacked && $case instanceof EnumBackedCase) {
+					// @phpstan-ignore-next-line - we know it's not an array
 					$line .= ' = ' . FormatValue::format($case->getValue());
 				}
 				$caseLines[] = $line . ';';

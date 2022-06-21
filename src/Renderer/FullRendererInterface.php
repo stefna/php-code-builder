@@ -14,70 +14,73 @@ use Stefna\PhpCodeBuilder\PhpParam;
 use Stefna\PhpCodeBuilder\PhpTrait;
 use Stefna\PhpCodeBuilder\PhpVariable;
 
+/**
+ * @phpstan-import-type SourceArray from RenderInterface
+ */
 interface FullRendererInterface extends RenderInterface
 {
 	/**
-	 * @return array<int, string|array<int, string>>
+	 * @phpstan-return SourceArray
 	 */
 	public function renderFile(PhpFile $file): array;
 
 	/**
-	 * @return array<int, string|array<int, string>>
+	 * @phpstan-return SourceArray
 	 */
 	public function renderEnum(PhpEnum $enum): array;
 
 	/**
-	 * @return array<int, string|array<int, string>>
+	 * @phpstan-return SourceArray
 	 */
 	public function renderClass(PhpClass $class): array;
 
 	/**
-	 * @return array<int, string|array<int, string>>
+	 * @phpstan-return SourceArray
 	 */
 	public function renderInterface(PhpInterface $interface): array;
 
 	/**
-	 * @return array<int, string|array<int, string>>
+	 * @phpstan-return SourceArray
 	 */
 	public function renderTrait(PhpTrait $trait): array;
 
 	/**
-	 * @return array<int, string|array<int, string>>
+	 * @phpstan-return SourceArray
 	 */
 	public function renderMethod(PhpMethod $method): array;
 
 	/**
-	 * @return array<int, string|array<int, string>>
+	 * @phpstan-return SourceArray
 	 */
 	public function renderFunction(PhpFunction $function): array;
 
 	/**
-	 * @return array<int, string|array<int, string>>|string
+	 * @phpstan-return SourceArray
 	 */
 	public function renderParams(PhpFunction $function, PhpParam ...$params): array|string;
 
 	/**
-	 * @return array<int, string|array<int, string>>
+	 * @phpstan-return SourceArray
 	 */
 	public function renderConstant(PhpConstant $constant): array;
 
 	/**
-	 * @return array<int, string|array<int, string>>|null
+	 * @phpstan-return SourceArray
 	 */
 	public function renderVariable(PhpVariable $variable): array|null;
 
 	/**
-	 * @return array<int, string|array<int, string>>
+	 * @phpstan-return SourceArray
 	 */
 	public function renderComment(PhpDocComment $comment): array;
 
 	/**
-	 * @return array<int, string|array<int, string>>
+	 * @phpstan-return SourceArray
 	 */
 	public function renderFunctionSignature(PhpFunction $function): array;
 
 	/**
-	 * @return array<int, string|array<int, string>>
+	 * @phpstan-return SourceArray
 	 */
 	public function renderObjectBody(PhpTrait|PhpClass|PhpInterface $obj): array;
 }

@@ -3,13 +3,17 @@
 namespace Stefna\PhpCodeBuilder;
 
 use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
+use Stefna\PhpCodeBuilder\Renderer\RenderInterface;
 
+/**
+ * @phpstan-import-type SourceArray from RenderInterface
+ */
 class FlattenSource
 {
 	/**
-	 * @param string|array<int, array<int, string>|string> $source
-	 * @param array<int, array<int, string>|string> $on
-	 * @return array<int, array<int, string>|string>
+	 * @phpstan-param string|SourceArray $source
+	 * @phpstan-param SourceArray $on
+	 * @phpstan-return SourceArray
 	 */
 	public static function applySourceOn(string|array $source, array $on): array
 	{

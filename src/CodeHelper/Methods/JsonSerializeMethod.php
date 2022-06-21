@@ -11,7 +11,11 @@ use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\PhpClass;
 use Stefna\PhpCodeBuilder\PhpMethod;
 use Stefna\PhpCodeBuilder\PhpVariable;
+use Stefna\PhpCodeBuilder\Renderer\RenderInterface;
 
+/**
+ * @phpstan-import-type SourceArray from RenderInterface
+ */
 final class JsonSerializeMethod extends PhpMethod
 {
 	public static function fromClass(PhpClass $class, TypeCallResolverInterface $resolver = null): self
@@ -34,6 +38,9 @@ final class JsonSerializeMethod extends PhpMethod
 		return self::fromSource($source);
 	}
 
+	/**
+	 * @phpstan-param SourceArray|CodeInterface $source
+	 */
 	public static function fromSource(array|CodeInterface $source): self
 	{
 		if ($source instanceof CodeInterface) {

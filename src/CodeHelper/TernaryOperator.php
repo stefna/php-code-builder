@@ -3,7 +3,11 @@
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
 use Stefna\PhpCodeBuilder\FlattenSource;
+use Stefna\PhpCodeBuilder\Renderer\RenderInterface;
 
+/**
+ * @phpstan-import-type SourceArray from RenderInterface
+ */
 final class TernaryOperator implements CodeInterface
 {
 	public static function nullableCall(VariableReference $variableReference, ClassMethodCall $call): self
@@ -17,7 +21,9 @@ final class TernaryOperator implements CodeInterface
 
 	public function __construct(
 		private string|VariableReference $check,
+		/** @phpstan-var string|CodeInterface|SourceArray */
 		private string|CodeInterface|array $successCode,
+		/** @phpstan-var string|CodeInterface|SourceArray */
 		private string|CodeInterface|array $failureCode,
 	) {}
 
@@ -28,6 +34,7 @@ final class TernaryOperator implements CodeInterface
 			$check = $check->toString();
 		}
 
+		/** @var list<string> $source */
 		$source = [
 			$check . ' ? ',
 		];
@@ -39,14 +46,21 @@ final class TernaryOperator implements CodeInterface
 			$this->failureCode = $this->failureCode->getSourceArray();
 		}
 
-		if (is_string($this->successCode) || (is_array($this->successCode) && count($this->successCode) === 1)) {
-			$source[0] .= is_string($this->successCode) ? $this->successCode : $this->successCode[0];
+		if (is_string($this->successCode)) {
+			$source[0] .= $this->successCode;
+			$source[0] .= ' : ';
+		}
+		elseif (is_array($this->successCode) && count($this->successCode) === 1 && is_string($this->successCode[0])) {
+			$source[0] .= $this->successCode[0];
 			$source[0] .= ' : ';
 		}
 		else {
 			$code = $this->successCode;
-			$code[array_key_last($code)] .= ' : ';
+			if (is_string($code[array_key_last($code)])) {
+				$code[array_key_last($code)] .= ' : ';
+			}
 			if (!is_array($code[array_key_first($code)])) {
+				/** @var string $firstLine */
 				$firstLine = array_shift($code);
 				$source[0] .= $firstLine;
 			}

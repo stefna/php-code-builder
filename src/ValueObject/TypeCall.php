@@ -6,6 +6,9 @@ use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
 
 class TypeCall
 {
+	/**
+	 * @param array<int, string|array<int, string>>|CodeInterface $extraSource
+	 */
 	public function __construct(
 		protected string|CodeInterface $call,
 		protected array|CodeInterface $extraSource,
@@ -16,6 +19,9 @@ class TypeCall
 		return $this->call;
 	}
 
+	/**
+	 * @return array<int, string|array<int, string>>
+	 */
 	public function getExtraSource(): array
 	{
 		if ($this->extraSource instanceof CodeInterface) {

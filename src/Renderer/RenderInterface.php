@@ -2,10 +2,13 @@
 
 namespace Stefna\PhpCodeBuilder\Renderer;
 
+/**
+ * @phpstan-type SourceArray array<int, string|array<int, string>>
+ */
 interface RenderInterface
 {
 	/**
-	 * @param array<array-key, mixed>|object $obj
+	 * @phpstan-param SourceArray|object $obj
 	 */
 	public function render(array|object $obj): string;
 }

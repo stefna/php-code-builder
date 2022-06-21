@@ -58,5 +58,4 @@ class PhpEnum extends PhpClass
 		$this->cases[] = $case;
 		return $this;
 	}
-
 }

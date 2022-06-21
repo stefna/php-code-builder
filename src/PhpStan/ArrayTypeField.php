@@ -10,6 +10,7 @@ final class ArrayTypeField extends PhpDocElement
 {
 	public function __construct(
 		private string $name,
+		/** @var array<string, Type|Identifier|string> $fieldMap */
 		private array $fieldMap,
 	) {
 		parent::__construct('phpstan-type', Type::empty(), '', '');
