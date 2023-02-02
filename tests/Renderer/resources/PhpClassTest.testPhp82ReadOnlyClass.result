@@ -1,0 +1,13 @@
+final readonly class TestClass
+{
+	public string $stringTest;
+
+	public function __construct(
+		private string $test,
+	) {}
+
+	public function getTest(): string
+	{
+		return $this->test;
+	}
+}

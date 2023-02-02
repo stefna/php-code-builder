@@ -29,6 +29,7 @@ class PhpClass extends PhpTrait
 		private bool $final = false,
 		private bool $abstract = false,
 		array $implements = [],
+		private bool $readOnly = false,
 	) {
 		parent::__construct(Identifier::fromUnknown($identifier), $comment);
 		if ($extends) {
@@ -56,6 +57,12 @@ class PhpClass extends PhpTrait
 	public function setFinal(): static
 	{
 		$this->final = true;
+		return $this;
+	}
+
+	public function setReadOnly(): static
+	{
+		$this->readOnly = true;
 		return $this;
 	}
 
@@ -103,5 +110,10 @@ class PhpClass extends PhpTrait
 	public function isAbstract(): bool
 	{
 		return $this->abstract;
+	}
+
+	public function isReadOnly(): bool
+	{
+		return $this->readOnly;
 	}
 }

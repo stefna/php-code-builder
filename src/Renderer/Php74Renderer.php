@@ -5,13 +5,15 @@ namespace Stefna\PhpCodeBuilder\Renderer;
 use Stefna\PhpCodeBuilder\Exception\InvalidCode;
 use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\FormatValue;
+use Stefna\PhpCodeBuilder\PhpClass;
 use Stefna\PhpCodeBuilder\PhpDocComment;
+use Stefna\PhpCodeBuilder\PhpTrait;
 use Stefna\PhpCodeBuilder\PhpVariable;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 class Php74Renderer extends Php7Renderer
 {
-	public function renderVariable(PhpVariable $variable): array|null
+	public function renderVariable(PhpVariable $variable, ?PhpTrait $parent = null): array|null
 	{
 		$ret = [];
 
@@ -20,7 +22,7 @@ class Php74Renderer extends Php7Renderer
 			$ret = FlattenSource::applySourceOn($this->renderComment($comment), $ret);
 		}
 
-		$line = $this->formatVariableModifiers($variable, $variable->getType());
+		$line = $this->formatVariableModifiers($variable, $variable->getType(), $parent);
 		$line[] = '$' . $variable->getIdentifier()->getName();
 
 		return $this->formatVariableValue($variable, implode(' ', $line), $ret);
@@ -29,8 +31,11 @@ class Php74Renderer extends Php7Renderer
 	/**
 	 * @return array<int, mixed>
 	 */
-	protected function formatVariableModifiers(PhpVariable $variable, ?Type $type = null): array
-	{
+	protected function formatVariableModifiers(
+		PhpVariable $variable,
+		?Type $type = null,
+		?PhpClass $parent,
+	): array {
 		$line = [];
 		$line[] = $variable->getAccess() ?: 'public';
 

@@ -10,6 +10,7 @@ use Stefna\PhpCodeBuilder\PhpDocElementFactory;
 use Stefna\PhpCodeBuilder\PhpFunction;
 use Stefna\PhpCodeBuilder\PhpMethod;
 use Stefna\PhpCodeBuilder\PhpParam;
+use Stefna\PhpCodeBuilder\PhpTrait;
 use Stefna\PhpCodeBuilder\PhpVariable;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 
@@ -34,13 +35,13 @@ class Php8Renderer extends Php74Renderer
 	/**
 	 * @return array<int, mixed>|null
 	 */
-	public function renderVariable(PhpVariable $variable): array|null
+	public function renderVariable(PhpVariable $variable, ?PhpTrait $parent = null): array|null
 	{
 		if ($variable->isPromoted()) {
 			return null;
 		}
 
-		return parent::renderVariable($variable);
+		return parent::renderVariable($variable, $parent);
 	}
 
 	/**
@@ -64,8 +65,11 @@ class Php8Renderer extends Php74Renderer
 			}
 			$paramStr = $this->renderParam($param);
 			if ($propertyPromotion && $param->getVariable()) {
-				$access = $param->getVariable()?->getAccess() ?? 'protected';
-				$paramStr = $access . ' ' . $paramStr;
+				$paramStr = $this->renderPromotedPropertyModifiers(
+					$param,
+					$param->getVariable(),
+					$function,
+				) . ' ' . $paramStr;
 			}
 			$parameterStrings[] = $paramStr . ',';
 		}
@@ -143,5 +147,13 @@ class Php8Renderer extends Php74Renderer
 			}
 		}
 		return parent::renderComment($comment);
+	}
+
+	protected function renderPromotedPropertyModifiers(
+		PhpParam $param,
+		PhpVariable $variable,
+		PhpMethod $method,
+	): string {
+		return $variable->getAccess() ?? 'protected';
 	}
 }

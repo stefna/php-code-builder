@@ -161,19 +161,29 @@ class Php7Renderer implements FullRendererInterface
 	}
 
 	/**
+	 * @return list<string>
+	 */
+	protected function formatClassModifiers(PhpClass $class): array
+	{
+		$modifiers = [];
+		if ($class->isFinal()) {
+			$modifiers[] = 'final';
+		}
+		elseif ($class->isAbstract()) {
+			$modifiers[] = 'abstract';
+		}
+
+		return $modifiers;
+	}
+
+	/**
 	 * @return array<int, string|array<int, string>>
 	 */
 	public function renderClass(PhpClass $class): array
 	{
 		$ret = FlattenSource::applySourceOn($this->renderComment($class->getComment()), []);
 
-		$declaration = [];
-		if ($class->isFinal()) {
-			$declaration[] = 'final';
-		}
-		elseif ($class->isAbstract()) {
-			$declaration[] = 'abstract';
-		}
+		$declaration = $this->formatClassModifiers($class);
 		$declaration[] = 'class';
 		$declaration[] = $class->getIdentifier()->getName();
 		$extends = $class->getExtends();
@@ -283,7 +293,7 @@ class Php7Renderer implements FullRendererInterface
 	/**
 	 * @return array<int, mixed>
 	 */
-	public function renderVariable(PhpVariable $variable): array|null
+	public function renderVariable(PhpVariable $variable, ?PhpTrait $parent = null): array|null
 	{
 		/** @var array<int, mixed> $ret */
 		$ret = [];
@@ -658,7 +668,7 @@ class Php7Renderer implements FullRendererInterface
 			foreach ($variables as $identifier) {
 				/** @var PhpVariable $var */
 				$var = $variables[$identifier];
-				$source = $this->renderVariable($var);
+				$source = $this->renderVariable($var, $obj);
 				if ($source !== null) {
 					$addedVars++;
 					$classBody[] = $source;

@@ -19,6 +19,8 @@ use Stefna\PhpCodeBuilder\PhpStan\TemplateField;
 use Stefna\PhpCodeBuilder\PhpVariable;
 use Stefna\PhpCodeBuilder\Renderer\Php74Renderer;
 use Stefna\PhpCodeBuilder\Renderer\Php7Renderer;
+use Stefna\PhpCodeBuilder\Renderer\Php81Renderer;
+use Stefna\PhpCodeBuilder\Renderer\Php82Renderer;
 use Stefna\PhpCodeBuilder\Renderer\Php8Renderer;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
@@ -35,6 +37,7 @@ final class PhpClassTest extends TestCase
 			implements: [Identifier::fromString(\JsonSerializable::class)]
 		);
 		$var = PhpVariable::protected('param1', Type::fromString('string|int'));
+		$var->setReadOnly(true);
 		$ctor = PhpMethod::constructor([
 			PhpParam::fromVariable($var),
 		], [], true);
@@ -66,6 +69,20 @@ final class PhpClassTest extends TestCase
 	public function testClassRenderedWithPhp8(): void
 	{
 		$renderer = new Php8Renderer();
+
+		$this->assertSourceResult($renderer->renderClass($this->getTestClass()), 'PhpClassTest.' . __FUNCTION__);
+	}
+
+	public function testClassRenderedWithPhp81(): void
+	{
+		$renderer = new Php81Renderer();
+
+		$this->assertSourceResult($renderer->renderClass($this->getTestClass()), 'PhpClassTest.' . __FUNCTION__);
+	}
+
+	public function testClassRenderedWithPhp82(): void
+	{
+		$renderer = new Php82Renderer();
 
 		$this->assertSourceResult($renderer->renderClass($this->getTestClass()), 'PhpClassTest.' . __FUNCTION__);
 	}
@@ -283,6 +300,52 @@ final class PhpClassTest extends TestCase
 		$class->addMethod($ctor);
 
 		$renderer = new Php7Renderer();
+		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
+	}
+
+	public function testPhp82ReadOnlyClass(): void
+	{
+		$class = new PhpClass(
+			Identifier::fromString(Test\TestClass::class),
+			final: true,
+			readOnly: true,
+		);
+		$ctor = PhpMethod::constructor([
+			new PhpParam(
+				'test',
+				Type::fromString('string'),
+				autoCreateVariable: true,
+				autoCreateVariableSetter: false,
+				autoCreateVariableGetter: true,
+			),
+		], [], true);
+		$class->addMethod($ctor);
+		$class->addVariable(PhpVariable::public('stringTest', Type::fromString('string')));
+
+		$renderer = new Php82Renderer();
+		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
+	}
+
+	public function testPhp81ReadOnlyClass(): void
+	{
+		$class = new PhpClass(
+			Identifier::fromString(Test\TestClass::class),
+			final: true,
+			readOnly: true,
+		);
+		$ctor = PhpMethod::constructor([
+			new PhpParam(
+				'test',
+				Type::fromString('string'),
+				autoCreateVariable: true,
+				autoCreateVariableSetter: false,
+				autoCreateVariableGetter: true,
+			),
+		], [], true);
+		$class->addMethod($ctor);
+		$class->addVariable(PhpVariable::public('stringTest', Type::fromString('string')));
+
+		$renderer = new Php81Renderer();
 		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
 	}
 }

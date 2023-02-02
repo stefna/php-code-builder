@@ -67,7 +67,7 @@ interface FullRendererInterface extends RenderInterface
 	/**
 	 * @phpstan-return SourceArray
 	 */
-	public function renderVariable(PhpVariable $variable): array|null;
+	public function renderVariable(PhpVariable $variable, ?PhpTrait $parent = null): array|null;
 
 	/**
 	 * @phpstan-return SourceArray
