@@ -348,4 +348,31 @@ final class PhpClassTest extends TestCase
 		$renderer = new Php81Renderer();
 		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
 	}
+
+	public function testPhp81PropertyDocBlock(): void
+	{
+		$comment = new PhpDocComment();
+		$class = new PhpClass(
+			Identifier::fromString(Test\TestClass::class),
+			comment: $comment,
+			final: true,
+			readOnly: true,
+		);
+		$ctor = PhpMethod::constructor([
+			new PhpParam(
+				'test',
+				Type::fromString('string'),
+				autoCreateVariable: true,
+				autoCreateVariableSetter: false,
+				autoCreateVariableGetter: true,
+			),
+		], [], true);
+		$class->addMethod($ctor);
+		$var = PhpVariable::public('stringTest', Type::fromString('string'));
+		$class->addVariable($var);
+		$comment->addField(PhpDocElementFactory::getPropertyFromVariable($var, 'VARCHAR(10) NOT NULL'));
+
+		$renderer = new Php81Renderer();
+		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
+	}
 }

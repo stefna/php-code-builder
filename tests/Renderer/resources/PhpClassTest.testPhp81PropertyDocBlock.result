@@ -1,0 +1,16 @@
+/**
+ * @property string $stringTest VARCHAR(10) NOT NULL
+ */
+final class TestClass
+{
+	public readonly string $stringTest;
+
+	public function __construct(
+		private readonly string $test,
+	) {}
+
+	public function getTest(): string
+	{
+		return $this->test;
+	}
+}

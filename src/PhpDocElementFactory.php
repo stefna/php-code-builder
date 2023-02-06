@@ -81,4 +81,14 @@ class PhpDocElementFactory
 	{
 		return new PhpDocElement('licence', Type::empty(), '', $information);
 	}
+
+	public static function getPropertyFromVariable(PhpVariable $var, string $description = ''): PhpDocElement
+	{
+		return new PhpDocElement('property', $var->getType(), $var->getIdentifier()->toString(), $description);
+	}
+
+	public static function getReadPropertyFromVariable(PhpVariable $var, string $description = ''): PhpDocElement
+	{
+		return new PhpDocElement('property-read', $var->getType(), $var->getIdentifier()->toString(), $description);
+	}
 }
