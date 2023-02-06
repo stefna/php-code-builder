@@ -61,6 +61,16 @@ final class Identifier
 		private string $namespace,
 	) {}
 
+	public function withNamespace(string $namespace): self
+	{
+		$identifierKey = $this->name . $namespace;
+		if (isset(self::$instances[$identifierKey])) {
+			return self::$instances[$identifierKey];
+		}
+
+		return self::$instances[$identifierKey] = new self($this->name, $namespace);
+	}
+
 	public function getName(): string
 	{
 		return $this->name;
