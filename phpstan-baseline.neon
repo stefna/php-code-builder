@@ -1,9 +1,24 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Parameter \\#2 \\$extraSource of class Stefna\\\\PhpCodeBuilder\\\\ValueObject\\\\TypeCall constructor expects array\\<int, array\\<int, string\\>\\|string\\>\\|Stefna\\\\PhpCodeBuilder\\\\CodeHelper\\\\CodeInterface, array\\<Stefna\\\\PhpCodeBuilder\\\\CodeHelper\\\\CodeInterface\\|string\\> given\\.$#"
+			count: 1
+			path: src/CodeHelper/JsonSerializeTypeCallResolver.php
+
+		-
+			message: "#^Parameter \\#2 \\$on of static method Stefna\\\\PhpCodeBuilder\\\\FlattenSource\\:\\:applySourceOn\\(\\) expects array\\<int, array\\<int, string\\>\\|string\\>, array\\<Stefna\\\\PhpCodeBuilder\\\\CodeHelper\\\\CodeInterface\\|string\\> given\\.$#"
+			count: 1
+			path: src/CodeHelper/JsonSerializeTypeCallResolver.php
+
+		-
 			message: "#^Parameter \\#1 \\$source of static method Stefna\\\\PhpCodeBuilder\\\\CodeHelper\\\\Methods\\\\JsonSerializeMethod\\:\\:fromSource\\(\\) expects array\\<int, array\\<int, string\\>\\|string\\>\\|Stefna\\\\PhpCodeBuilder\\\\CodeHelper\\\\CodeInterface, array\\<int, array\\<int, string\\>\\|Stefna\\\\PhpCodeBuilder\\\\CodeHelper\\\\ReturnCode\\|string\\> given\\.$#"
 			count: 1
 			path: src/CodeHelper/Methods/JsonSerializeMethod.php
+
+		-
+			message: "#^Parameter \\#2 \\$array of function implode expects array\\<string\\>, array\\<int, array\\|string\\> given\\.$#"
+			count: 1
+			path: src/CodeHelper/StaticMethodCall.php
 
 		-
 			message: "#^Binary operation \"\\.\\=\" between array\\<int, string\\>\\|string and array\\<string\\>\\|string\\|null results in an error\\.$#"
@@ -34,6 +49,16 @@ parameters:
 			message: "#^Match expression does not handle remaining value\\: string$#"
 			count: 1
 			path: src/FormatValue.php
+
+		-
+			message: "#^Property Stefna\\\\PhpCodeBuilder\\\\PhpStan\\\\ExtendsField\\:\\:\\$templateFields \\(array\\<int, Stefna\\\\PhpCodeBuilder\\\\PhpStan\\\\TemplateField\\|Stefna\\\\PhpCodeBuilder\\\\ValueObject\\\\Identifier\\>\\) does not accept array\\<int\\|string, Stefna\\\\PhpCodeBuilder\\\\PhpStan\\\\TemplateField\\|Stefna\\\\PhpCodeBuilder\\\\ValueObject\\\\Identifier\\>\\.$#"
+			count: 1
+			path: src/PhpStan/ExtendsField.php
+
+		-
+			message: "#^Property Stefna\\\\PhpCodeBuilder\\\\PhpStan\\\\ImplementsField\\:\\:\\$templateFields \\(array\\<int, Stefna\\\\PhpCodeBuilder\\\\PhpStan\\\\TemplateField\\|Stefna\\\\PhpCodeBuilder\\\\ValueObject\\\\Identifier\\>\\) does not accept array\\<int\\|string, Stefna\\\\PhpCodeBuilder\\\\PhpStan\\\\TemplateField\\|Stefna\\\\PhpCodeBuilder\\\\ValueObject\\\\Identifier\\>\\.$#"
+			count: 1
+			path: src/PhpStan/ImplementsField.php
 
 		-
 			message: "#^Instanceof between object and Stefna\\\\PhpCodeBuilder\\\\PhpVariable will always evaluate to false\\.$#"

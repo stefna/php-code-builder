@@ -13,9 +13,9 @@ final class StaticMethodCall implements CodeInterface
 	 * @param list<string|string[]|PhpParam|VariableReference|CodeInterface> $params
 	 */
 	public function __construct(
-		private Identifier $class,
-		private string $method,
-		private array $params = []
+		protected Identifier $class,
+		protected string $method,
+		protected array $params = []
 	) {
 		$this->identifier = $class->getName();
 		$this->callIdentifier = '::';

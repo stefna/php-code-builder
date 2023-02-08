@@ -6,6 +6,6 @@ final class ComplexTypeWithIteratorAggregate implements \IteratorAggregate
 {
 	public function getIterator(): \ArrayIterator
 	{
-		return new \ArrayIterator([1,2,3]);
+		return new \ArrayIterator([1, 2, 3]);
 	}
 }

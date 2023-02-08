@@ -55,7 +55,7 @@ final class JsonSerializeTypeCallResolver implements TypeCallResolverInterface
 	}
 
 	/**
-	 * @return array{CodeInterface, array}
+	 * @return array{CodeInterface, array<array-key, CodeInterface|string>}
 	 * @throws \ReflectionException
 	 */
 	private function classTypeResolver(VariableReference $variableReference, Type $type): array

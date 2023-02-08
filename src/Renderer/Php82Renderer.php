@@ -50,7 +50,7 @@ class Php82Renderer extends Php81Renderer
 			return parent::renderPromotedPropertyModifiers($param, $variable, $method);
 		}
 		$modifiers = [];
-		$modifiers[] = $variable->getAccess() ?? 'protected';
+		$modifiers[] = $variable->getAccess() ?: 'protected';
 		return implode(' ', $modifiers);
 	}
 }

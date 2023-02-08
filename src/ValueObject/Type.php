@@ -66,7 +66,7 @@ final class Type
 			}
 			foreach ($types as $typePart) {
 				if (strpos($typePart, $arraySubTypeKey)) {
-					$typePart = str_replace($arraySubTypeKey, $arraySubType, $typePart);
+					$typePart = str_replace($arraySubTypeKey, (string)$arraySubType, $typePart);
 				}
 				$self->addUnion($typePart);
 			}
@@ -77,7 +77,7 @@ final class Type
 		}
 
 		if (strpos($type, $arraySubTypeKey)) {
-			$type = str_replace($arraySubTypeKey, $arraySubType, $type);
+			$type = str_replace($arraySubTypeKey, (string)$arraySubType, $type);
 		}
 		return new self($type);
 	}
@@ -98,7 +98,7 @@ final class Type
 	{
 		$this->simplified = true;
 		$p = explode('\\', $this->type);
-		$this->type = array_pop($p);
+		$this->type = (string)array_pop($p);
 		$this->namespace = implode('\\', $p);
 	}
 

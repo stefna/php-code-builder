@@ -8,15 +8,15 @@ final class InstantiateClass implements CodeInterface
 {
 	use MethodParamsTrait;
 
-	private string $method = '';
-	private bool $indentFirstLine = false;
+	protected string $method = '';
+	protected bool $indentFirstLine = false;
 
 	/**
 	 * @param array<int, VariableReference|ArrayCode|string> $params
 	 */
 	public function __construct(
-		private Identifier $class,
-		private array $params = [],
+		protected Identifier $class,
+		protected array $params = [],
 	) {
 		$this->identifier = 'new ' . $class->getName();
 		$this->callIdentifier = '';

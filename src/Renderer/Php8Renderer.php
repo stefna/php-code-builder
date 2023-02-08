@@ -68,6 +68,7 @@ class Php8Renderer extends Php74Renderer
 				$paramStr = $this->renderPromotedPropertyModifiers(
 					$param,
 					$param->getVariable(),
+					// @phpstan-ignore-next-line - check happens on line 57
 					$function,
 				) . ' ' . $paramStr;
 			}
@@ -154,6 +155,6 @@ class Php8Renderer extends Php74Renderer
 		PhpVariable $variable,
 		PhpMethod $method,
 	): string {
-		return $variable->getAccess() ?? 'protected';
+		return $variable->getAccess() ?: 'protected';
 	}
 }
