@@ -27,7 +27,7 @@ final class JsonSerializeMethod extends PhpMethod
 		foreach ($class->getVariables() as $identifier) {
 			/** @var PhpVariable $variable */
 			$variable = $class->getVariable($identifier);
-			$typeCall = $resolver->resolve($variable->getType(),$variable->getCodeReference());
+			$typeCall = $resolver->resolve($variable->getType(), $variable->getCodeReference());
 			$array[$variable->getIdentifier()->toString()] = $typeCall->getCall();
 			if ($typeCall->getExtraSource()) {
 				$source = FlattenSource::applySourceOn($typeCall->getExtraSource(), $source);
