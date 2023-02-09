@@ -14,7 +14,7 @@ final class PhpTraitTest extends TestCase
 {
 	use AssertResultTrait;
 
-	public function testTrait()
+	public function testTrait(): voidrush
 	{
 		$trait = new PhpTrait(Identifier::fromString(Test\TestTrait::class));
 		$trait->addMethod(PhpMethod::protected('testTraitMethod', [], [], Type::fromString('void')));

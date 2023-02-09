@@ -244,7 +244,7 @@ final class PhpMethodTest extends TestCase
 	/**
 	 * @dataProvider getterPrefixes
 	 */
-	public function testAutoGetterPrefix(string $name, Type $type, string $expectedMethodName)
+	public function testAutoGetterPrefix(string $name, Type $type, string $expectedMethodName): void
 	{
 		$var = PhpVariable::protected($name, $type);
 		$method = PhpMethod::getter($var);
@@ -252,7 +252,7 @@ final class PhpMethodTest extends TestCase
 		$this->assertSame($expectedMethodName, $method->getIdentifier()->toString());
 	}
 
-	public function getterPrefixes()
+	public static function getterPrefixes()
 	{
 		return [
 			['hasError', Type::fromString('bool'), 'hasError'],

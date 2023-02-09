@@ -36,12 +36,12 @@ class PhpEnumTest extends TestCase
 	}
 
 	/**
-	 * @return array[]
+	 * @return array<string, array{PhpEnum, string}>
 	 */
-	public function enumTypes(): array
+	public static function enumTypes(): array
 	{
 		return [
-			[
+			'simple enum' => [
 				new PhpEnum(
 					'Test',
 					cases: [
@@ -51,7 +51,7 @@ class PhpEnumTest extends TestCase
 				),
 				'simple',
 			],
-			[
+			'backed enum' => [
 				new PhpEnum(
 					'Test',
 					Type::fromString('string'),

@@ -15,7 +15,7 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 final class PhpVariableTest extends TestCase
 {
-	public function testProtectedSimplePhp7()
+	public function testProtectedSimplePhp7(): void
 	{
 		$variable = PhpVariable::protected('test', Type::fromString('string'));
 
@@ -27,7 +27,7 @@ final class PhpVariableTest extends TestCase
 		], $renderer->renderVariable($variable));
 	}
 
-	public function testProtectedSimplePhp74()
+	public function testProtectedSimplePhp74(): void
 	{
 		$variable = PhpVariable::public('test', Type::fromString('string'));
 
@@ -36,7 +36,7 @@ final class PhpVariableTest extends TestCase
 		$this->assertSame(['public string $test;'], $renderer->renderVariable($variable));
 	}
 
-	public function testProtectedWithComplexCommentPhp7()
+	public function testProtectedWithComplexCommentPhp7(): void
 	{
 		$variable = PhpVariable::protected('test', Type::fromString('string'));
 		$comment = PhpDocComment::var($variable->getType());
@@ -55,7 +55,7 @@ final class PhpVariableTest extends TestCase
 		], $renderer->renderVariable($variable));
 	}
 
-	public function testProtectedWithComplexCommentPhp74()
+	public function testProtectedWithComplexCommentPhp74(): void
 	{
 		$variable = PhpVariable::protected('test', Type::fromString('string'));
 		$comment = PhpDocComment::var($variable->getType());
@@ -72,7 +72,7 @@ final class PhpVariableTest extends TestCase
 		], $renderer->renderVariable($variable));
 	}
 
-	public function testVariableWithoutAccess()
+	public function testVariableWithoutAccess(): void
 	{
 		$var = new PhpVariable('', Identifier::simple('test'), Type::empty());
 
@@ -81,7 +81,7 @@ final class PhpVariableTest extends TestCase
 		$this->assertSame(['public $test;'], $renderer->renderVariable($var));
 	}
 
-	public function testStaticVariable()
+	public function testStaticVariable(): void
 	{
 		$var = PhpVariable::private('test', Type::fromString('Class'))->setStatic();
 
@@ -98,7 +98,7 @@ final class PhpVariableTest extends TestCase
 	/**
 	 * @dataProvider defaultValueProvider
 	 */
-	public function testVariableWithDefaultValue(Type $type, $value, $expected)
+	public function testVariableWithDefaultValue(Type $type, $value, $expected): void
 	{
 		$variable = PhpVariable::private('test', $type);
 		$variable->setInitializedValue($value);
@@ -134,7 +134,7 @@ final class PhpVariableTest extends TestCase
 	/**
 	 * @dataProvider defaultValueProvider
 	 */
-	public function test74VariableWithDefaultValue(Type $type, $value, $expected)
+	public function test74VariableWithDefaultValue(Type $type, $value, $expected): void
 	{
 		$variable = PhpVariable::private('test', $type);
 		$variable->setInitializedValue($value);
@@ -169,7 +169,7 @@ final class PhpVariableTest extends TestCase
 		}
 	}
 
-	public function defaultValueProvider(): array
+	public static function defaultValueProvider(): array
 	{
 		return [
 			[Type::fromString('string'), 'test value', '\'test value\''],
@@ -190,7 +190,7 @@ final class PhpVariableTest extends TestCase
 		];
 	}
 
-	public function testArrayAsDefaultValue()
+	public function testArrayAsDefaultValue(): void
 	{
 		$var = new PhpVariable(
 			PhpVariable::PROTECTED_ACCESS,

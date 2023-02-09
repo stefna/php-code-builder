@@ -96,7 +96,7 @@ final class PhpInterfaceTest extends TestCase
 	 */
 	public function testAddingPrivateStuffToInterfaceWithConvert(
 		PhpVariable|PhpConstant|PhpMethod $stuff,
-	) {
+	): void {
 		$interface = new PhpInterface(Identifier::fromString(\Test\TestInterface::class));
 
 		if ($stuff instanceof PhpVariable) {
@@ -119,7 +119,7 @@ final class PhpInterfaceTest extends TestCase
 		}
 	}
 
-	public function privateProtectedStuff()
+	public static function privateProtectedStuff(): array
 	{
 		return [
 			[PhpVariable::private('privateVar', Type::empty())],
@@ -131,7 +131,7 @@ final class PhpInterfaceTest extends TestCase
 		];
 	}
 
-	public function testCreateInterfaceFromClass()
+	public function testCreateInterfaceFromClass(): void
 	{
 		$class = new PhpClass(Identifier::fromString(Test\TestClass::class));
 		$class->setExtends(\DateTimeImmutable::class);

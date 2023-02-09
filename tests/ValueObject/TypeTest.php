@@ -90,7 +90,10 @@ class TypeTest extends TestCase
 		var_dump($type);
 	}
 
-	public function invalidInput(): array
+	/**
+	 * @return list<string[]>
+	 */
+	public static function invalidInput(): array
 	{
 		return [
 			['null|null'],
@@ -108,7 +111,10 @@ class TypeTest extends TestCase
 		$this->assertNull($type->getTypeHint());
 	}
 
-	public function invalidTypeHints(): array
+	/**
+	 * @return list<string[]>
+	 */
+	public static function invalidTypeHints(): array
 	{
 		return [
 			['mixed'],
@@ -129,7 +135,10 @@ class TypeTest extends TestCase
 		}
 	}
 
-	public function arrayTypes()
+	/**
+	 * @return array<array{string, string|null}>
+	 */
+	public static function arrayTypes(): array
 	{
 		return [
 			['int[]', 'int'],
@@ -193,7 +202,7 @@ class TypeTest extends TestCase
 		$this->assertCount(2, $type->getUnionTypes());
 	}
 
-	public function testRemoveNull()
+	public function testRemoveNull(): void
 	{
 		$type = Type::empty();
 		$type->addUnion(Type::fromString('string'));
@@ -204,7 +213,7 @@ class TypeTest extends TestCase
 		$this->assertSame('string|float', $type->notNull()->getDocBlockTypeHint());
 	}
 
-	public function testNullabilityCheck()
+	public function testNullabilityCheck(): void
 	{
 		$type = Type::fromString('string|int|null');
 
@@ -214,9 +223,9 @@ class TypeTest extends TestCase
 	/**
 	 * @dataProvider nativeTypeProvider
 	 */
-	public function testIsNativeCheck($type)
+	public function testIsNativeCheck(string $strType): void
 	{
-		$type = Type::fromString($type);
+		$type = Type::fromString($strType);
 
 		$this->assertTrue($type->isNative());
 	}
@@ -224,14 +233,17 @@ class TypeTest extends TestCase
 	/**
 	 * @dataProvider notNativeTypeProvider
 	 */
-	public function testIsNotNativeCheck($type)
+	public function testIsNotNativeCheck(string $strType): void
 	{
-		$type = Type::fromString($type);
+		$type = Type::fromString($strType);
 
 		$this->assertFalse($type->isNative());
 	}
 
-	public function nativeTypeProvider()
+	/**
+	 * @return array<string[]>
+	 */
+	public static function nativeTypeProvider(): array
 	{
 		return [
 			['string'],
@@ -246,7 +258,10 @@ class TypeTest extends TestCase
 		];
 	}
 
-	public function notNativeTypeProvider()
+	/**
+	 * @return array<string[]>
+	 */
+	public static function notNativeTypeProvider(): array
 	{
 		return [
 			[TestCase::class],
@@ -255,7 +270,7 @@ class TypeTest extends TestCase
 		];
 	}
 
-	public function testIsAliasForDouble()
+	public function testIsAliasForDouble(): void
 	{
 		$type = Type::fromString('double');
 		$this->assertTrue($type->is('float'));
