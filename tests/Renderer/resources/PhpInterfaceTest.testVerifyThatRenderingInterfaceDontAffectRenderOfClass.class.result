@@ -1,0 +1,7 @@
+class TestClass
+{
+	public function testPublicMethod()
+	{
+		// void
+	}
+}

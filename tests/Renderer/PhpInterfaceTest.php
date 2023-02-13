@@ -169,6 +169,29 @@ final class PhpInterfaceTest extends TestCase
 		);
 	}
 
+	public function testVerifyThatRenderingInterfaceDontAffectRenderOfClass(): void
+	{
+		$class = new PhpClass(Identifier::fromString(Test\TestClass::class));
+		$class->addMethod(PhpMethod::public('testPublicMethod', [], [
+			'// void',
+		]));
+		$interface = PhpInterface::fromClass(
+			Identifier::fromString(Test\TestInterface::class),
+			$class,
+		);
+
+		$renderer = new Php7Renderer();
+
+		$this->assertSourceResult(
+			$renderer->render($interface),
+			'PhpInterfaceTest.' . __FUNCTION__ . '.interface',
+		);
+		$this->assertSourceResult(
+			$renderer->render($class),
+			'PhpInterfaceTest.' . __FUNCTION__ . '.class',
+		);
+	}
+
 	public function testCreateFromClassKeepsUseStatements(): void
 	{
 		$class = new PhpClass(Identifier::fromString(Test\TestClass::class));

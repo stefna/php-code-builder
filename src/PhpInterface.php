@@ -98,7 +98,7 @@ class PhpInterface extends PhpTrait
 			}
 
 			if ($method->getAccess() === PhpMethod::PUBLIC_ACCESS) {
-				$interface->addMethod($method);
+				$interface->addMethod(clone $method);
 			}
 		}
 
