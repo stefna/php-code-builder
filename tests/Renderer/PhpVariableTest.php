@@ -235,4 +235,15 @@ final class PhpVariableTest extends TestCase
 			'public readonly string $test;',
 		], $renderer->renderVariable($var));
 	}
+
+	public function testRenderNotRemovingDocBlockWithExpandedTypeInfo(): void
+	{
+		$variable = PhpVariable::protected('test', Type::fromString('null|string[]'));
+		$renderer = new Php74Renderer();
+
+		$this->assertSame([
+			'/** @var string[]|null */',
+			'protected ?array $test;',
+		], $renderer->renderVariable($variable));
+	}
 }

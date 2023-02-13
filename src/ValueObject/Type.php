@@ -143,6 +143,9 @@ final class Type
 	{
 		if (count($this->types) > 1) {
 			if ($this->isArray()) {
+				if ($this->isNullable()) {
+					return '?array';
+				}
 				return 'array';
 			}
 			return null;
@@ -153,6 +156,9 @@ final class Type
 			return null;
 		}
 		if ($this->isArray()) {
+			if ($this->nullable) {
+				return '?array';
+			}
 			return 'array';
 		}
 
