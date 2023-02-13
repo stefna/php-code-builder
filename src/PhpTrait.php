@@ -223,8 +223,15 @@ class PhpTrait
 	private function addUseFromType(ValueObject\Type $type): void
 	{
 		if ($type->isTypeNamespaced() && !$type->isSimplified()) {
-			$this->addUse($type->getIdentifier());
-			$type->simplifyName();
+			if ($type->isUnion()) {
+				foreach ($type->getUnionTypes() as $unionType) {
+					$this->addUseFromType($unionType);
+				}
+			}
+			else {
+				$this->addUse($type->getIdentifier());
+				$type->simplifyName();
+			}
 		}
 	}
 

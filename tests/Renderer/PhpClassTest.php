@@ -9,6 +9,7 @@ use Stefna\PhpCodeBuilder\PhpConstant;
 use Stefna\PhpCodeBuilder\PhpDocComment;
 use Stefna\PhpCodeBuilder\PhpDocElementFactory;
 use Stefna\PhpCodeBuilder\PhpFile;
+use Stefna\PhpCodeBuilder\PhpInterface;
 use Stefna\PhpCodeBuilder\PhpMethod;
 use Stefna\PhpCodeBuilder\PhpParam;
 use Stefna\PhpCodeBuilder\PhpStan\ArrayTypeField;
@@ -374,5 +375,20 @@ final class PhpClassTest extends TestCase
 
 		$renderer = new Php81Renderer();
 		$this->assertSourceResult($renderer->renderClass($class), 'PhpClassTest.' . __FUNCTION__);
+	}
+
+	public function testStripEmptyTypesFromUses(): void
+	{
+		$class = new PhpClass(Identifier::fromString(Test\TestClass::class));
+		$type = Type::fromString(PhpClass::class);
+		$type->addUnion(PhpInterface::class);
+		$class->addMethod(PhpMethod::constructor([
+			new PhpParam('test', $type),
+		], [], true));
+
+		$this->assertCount(2, $class->getUses());
+		foreach ($class->getUses() as $type) {
+			$this->assertNotEmpty($type->getName());
+		}
 	}
 }
