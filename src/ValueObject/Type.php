@@ -141,9 +141,19 @@ final class Type
 		$this->types[] = $type;
 	}
 
-	public function getTypeHint(): ?string
+	public function getTypeHint($renderUnion = false): ?string
 	{
 		if (count($this->types) > 1) {
+			if ($renderUnion) {
+				$typeHint = [];
+				if ($this->isNullable()) {
+					$typeHint[] = 'null';
+				}
+				foreach ($this->getUnionTypes() as $unionType) {
+					$typeHint[] = $unionType->getTypeHint();
+				}
+				return implode('|', $typeHint);
+			}
 			if ($this->isArray()) {
 				if ($this->isNullable()) {
 					return '?array';

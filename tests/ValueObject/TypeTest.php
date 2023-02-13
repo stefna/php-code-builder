@@ -306,14 +306,6 @@ class TypeTest extends TestCase
 		$complexType->addUnion('null');
 		$type->addUnion($complexType);
 
-		$typeHint = [];
-		if ($type->isNullable()) {
-			$typeHint[] = 'null';
-		}
-		foreach ($type->getUnionTypes() as $unionType) {
-			$typeHint[] = $unionType->getTypeHint();
-		}
-
-		$this->assertSame('null|int|string|DateTimeImmutable', implode('|', $typeHint));
+		$this->assertSame('null|int|string|DateTimeImmutable', $type->getTypeHint(true));
 	}
 }
