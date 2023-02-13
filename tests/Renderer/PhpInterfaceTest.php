@@ -8,6 +8,7 @@ use Stefna\PhpCodeBuilder\PhpConstant;
 use Stefna\PhpCodeBuilder\PhpInterface;
 use Stefna\PhpCodeBuilder\PhpMethod;
 use Stefna\PhpCodeBuilder\PhpParam;
+use Stefna\PhpCodeBuilder\PhpStan\ArrayTypeField;
 use Stefna\PhpCodeBuilder\PhpTrait;
 use Stefna\PhpCodeBuilder\PhpVariable;
 use Stefna\PhpCodeBuilder\Renderer\Php7Renderer;
@@ -166,5 +167,40 @@ final class PhpInterfaceTest extends TestCase
 			)),
 			'PhpInterfaceTest.' . __FUNCTION__,
 		);
+	}
+
+	public function testCreateFromClassKeepsUseStatements(): void
+	{
+		$class = new PhpClass(Identifier::fromString(Test\TestClass::class));
+		$class->setExtends(\DateTimeImmutable::class);
+		$class->addInterface(Identifier::fromString(\JsonSerializable::class));
+		$class->addUse(ArrayTypeField::class);
+		$var = PhpVariable::private('param1', Type::fromString('string|int'));
+		$ctor = PhpMethod::constructor([
+			PhpParam::fromVariable($var),
+		], [], true);
+		$class->addMethod($ctor);
+
+		$class->addVariable(PhpVariable::public('var1', Type::fromString('string|int|null')));
+		$class->addVariable(PhpVariable::private('var2', Type::empty()));
+		$class->addVariable(PhpVariable::protected('var3', Type::empty()));
+
+		$class->addMethod(PhpMethod::protected('notInInterfaceProtected', [], []));
+		$class->addMethod(PhpMethod::private('notInInterfacePrivate', [], []));
+
+		$class->addConstant(PhpConstant::public('inInterface'));
+		$class->addConstant(PhpConstant::private('notInInterfacePrivate'));
+		$class->addConstant(PhpConstant::protected('notInInterfaceProtected'));
+
+		$class->addMethod(PhpMethod::public('testPublicMethod', [], []));
+		$class->addMethod(PhpMethod::private('privateMethodNotInInterface', [], []));
+		$class->addMethod(PhpMethod::protected('protectedMethodNotInInterface', [], []));
+
+		$interface = PhpInterface::fromClass(
+			Identifier::fromString(Test\TestInterface::class),
+			$class,
+		);
+
+		$this->assertSame(count($class->getUses()), count($interface->getUses()));
 	}
 }

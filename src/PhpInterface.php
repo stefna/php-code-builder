@@ -68,6 +68,7 @@ class PhpInterface extends PhpTrait
 	public static function fromClass(Identifier $identifier, PhpClass  $class): self
 	{
 		$interface = new self($identifier);
+		$interface->uses = $class->uses;
 		$constants = $class->getConstants();
 		foreach ($constants as $identifier) {
 			/** @var PhpConstant $constant */
