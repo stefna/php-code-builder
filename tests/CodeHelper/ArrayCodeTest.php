@@ -120,4 +120,17 @@ final class ArrayCodeTest extends TestCase
 	\$this->testVar,
 ]", trim(FlattenSource::source($array->getSourceArray())));
 	}
+
+	public function testListOfTypes(): void
+	{
+		$array = new ArrayCode([
+			'test' => Type::fromString(\RangeException::class),
+			'self' => Type::fromString(self::class),
+		]);
+
+		$this->assertSame("[
+	'test' => RangeException::class,
+	'self' => CodeHelper\ArrayCodeTest::class,
+]", trim(FlattenSource::source($array->getSourceArray())));
+	}
 }

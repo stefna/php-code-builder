@@ -4,6 +4,7 @@ namespace Stefna\PhpCodeBuilder;
 
 use Stefna\PhpCodeBuilder\CodeHelper\ArrayCode;
 use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
+use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 class FormatValue
 {
@@ -25,19 +26,22 @@ class FormatValue
 		if ($value instanceof CodeInterface) {
 			return $value->getSourceArray();
 		}
+		if ($value instanceof Type) {
+			return $value->getType() . '::class';
+		}
 		$type = gettype($value);
 		if ($type === 'array') {
 			return self::formatArray($value);
 		}
 
 		return match ($type) {
-			'array' => self::formatArray($value),
 			'boolean' => $value ? 'true' : 'false',
 			'NULL' => 'null',
 			'integer', 'double' => (string)$value,
 			'object', 'resource', 'resource (closed)', 'unknown type' =>
 				throw new \RuntimeException('Not supported value type'),
 			'string' => "'$value'",
+			default => $value,
 		};
 	}
 }
