@@ -299,7 +299,7 @@ class TypeTest extends TestCase
 	}
 	public function testUnionTypeWithMultipleNullableTypes(): void
 	{
-		$type = Type::fromString('int');
+		$type = Type::fromString('int|null');
 		$type->addUnion(Type::fromString('string|null'));
 		$type->addUnion('null');
 		$complexType = Type::fromString(\DateTimeImmutable::class);

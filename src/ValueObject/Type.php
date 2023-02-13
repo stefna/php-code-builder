@@ -129,7 +129,9 @@ final class Type
 			$type = Type::fromString($type);
 		}
 		if (!count($this->types)) {
-			$this->types[] = clone $this;
+			$tmpThis = clone $this;
+			$tmpThis->nullable = false;
+			$this->types[] = $tmpThis;
 			$this->type = '';
 		}
 		$type->nullable = false;
