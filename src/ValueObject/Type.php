@@ -129,7 +129,8 @@ final class Type
 			$type = Type::fromString($type);
 		}
 		if (!count($this->types)) {
-			$this->types[] = $this;
+			$this->types[] = clone $this;
+			$this->type = '';
 		}
 		foreach ($this->types as $currentType) {
 			if ($currentType->type === $type->type) {

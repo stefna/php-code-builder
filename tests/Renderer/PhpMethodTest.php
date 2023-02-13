@@ -106,6 +106,23 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->render($ctor), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
+	public function testConstructorPromotionWithUnionType()
+	{
+		$type = Type::fromString('int');
+		$type->addUnion('string');
+		$type->addUnion('null');
+		$type->addUnion(\DateTimeImmutable::class);
+		$ctor = PhpMethod::constructor([
+			new PhpParam('test1',
+				$type,
+				autoCreateVariable: true,
+			),
+		], [], true);
+
+		$renderer = new Php8Renderer();
+		$this->assertSourceResult($renderer->renderMethod($ctor), 'PhpMethodTest.' . __FUNCTION__);
+	}
+
 	public function testConstructorPromotingNotRenderingVariablePhp8()
 	{
 		$var = PhpVariable::protected('test', Type::fromString('float'));

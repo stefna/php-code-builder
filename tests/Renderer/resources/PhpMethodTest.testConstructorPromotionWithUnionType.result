@@ -1,0 +1,3 @@
+public function __construct(
+	private null|int|string|DateTimeImmutable $test1,
+) {}
