@@ -132,6 +132,7 @@ final class Type
 			$this->types[] = clone $this;
 			$this->type = '';
 		}
+		$type->nullable = false;
 		foreach ($this->types as $currentType) {
 			if ($currentType->type === $type->type) {
 				return;

@@ -279,4 +279,41 @@ class TypeTest extends TestCase
 		$this->assertSame('number', $type->getType());
 		$this->assertTrue($type->is('float'));
 	}
+
+	public function testUnionType(): void
+	{
+		$type = Type::fromString('int');
+		$type->addUnion('string');
+		$type->addUnion('null');
+		$type->addUnion(\DateTimeImmutable::class);
+
+		$typeHint = [];
+		if ($type->isNullable()) {
+			$typeHint[] = 'null';
+		}
+		foreach ($type->getUnionTypes() as $unionType) {
+			$typeHint[] = $unionType->getTypeHint();
+		}
+
+		$this->assertSame('null|int|string|DateTimeImmutable', implode('|', $typeHint));
+	}
+	public function testUnionTypeWithMultipleNullableTypes(): void
+	{
+		$type = Type::fromString('int');
+		$type->addUnion(Type::fromString('string|null'));
+		$type->addUnion('null');
+		$complexType = Type::fromString(\DateTimeImmutable::class);
+		$complexType->addUnion('null');
+		$type->addUnion($complexType);
+
+		$typeHint = [];
+		if ($type->isNullable()) {
+			$typeHint[] = 'null';
+		}
+		foreach ($type->getUnionTypes() as $unionType) {
+			$typeHint[] = $unionType->getTypeHint();
+		}
+
+		$this->assertSame('null|int|string|DateTimeImmutable', implode('|', $typeHint));
+	}
 }
