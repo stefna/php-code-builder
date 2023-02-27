@@ -8,9 +8,11 @@ final class IfCode implements CodeInterface
 {
 	/**
 	 * @param array<int, mixed> $code
+	 * @param Identifier|class-string $identifier
 	 */
-	public static function instanceOf(VariableReference $var, Identifier $identifier, array $code): self
+	public static function instanceOf(VariableReference $var, Identifier|string $identifier, array $code): self
 	{
+		$identifier = Identifier::fromUnknown($identifier);
 		return new self(
 			$var->toString() . ' instanceof ' . $identifier->getName(),
 			$code

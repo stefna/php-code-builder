@@ -29,7 +29,7 @@ final class AssignmentCodeTest extends TestCase
 
 	public function testAssignClass(): void
 	{
-		$code = new InstantiateClass(Identifier::fromString(StaticMethodCall::class), [
+		$code = new InstantiateClass(StaticMethodCall::class, [
 			'site-bearer-token',
 			new ArrayCode([
 				'type' => 'http',

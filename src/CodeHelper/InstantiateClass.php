@@ -12,13 +12,14 @@ final class InstantiateClass implements CodeInterface, MethodCallInterface
 	protected bool $indentFirstLine = false;
 
 	/**
+	 * @param Identifier|class-string $class
 	 * @param array<int, VariableReference|ArrayCode|string> $params
 	 */
 	public function __construct(
-		protected Identifier $class,
+		protected Identifier|string $class,
 		protected array $params = [],
 	) {
-		$this->identifier = 'new ' . $class->getName();
+		$this->identifier = 'new ' . Identifier::fromUnknown($class)->getName();
 		$this->callIdentifier = '';
 	}
 

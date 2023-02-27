@@ -51,4 +51,16 @@ final class IfCodeTest extends TestCase
 	$this->serverConfiguration->setSecurityValue(\'test-scheme\', SecurityValue::apiKey($token));
 }', trim(FlattenSource::source($if->getSourceArray())));
 	}
+
+	public function testInstanceOf(): void
+	{
+		$var = new VariableReference('test');
+		$if = IfCode::instanceOf($var, VariableReference::class, []);
+
+		$this->assertSame([
+			'if ($test instanceof VariableReference) {',
+			[],
+			'}',
+		], $if->getSourceArray());
+	}
 }

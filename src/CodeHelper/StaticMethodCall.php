@@ -10,14 +10,15 @@ final class StaticMethodCall implements CodeInterface, MethodCallInterface
 	use MethodParamsTrait;
 
 	/**
+	 * @param Identifier|class-string $class
 	 * @param list<string|string[]|PhpParam|VariableReference|CodeInterface> $params
 	 */
 	public function __construct(
-		protected Identifier $class,
+		protected Identifier|string $class,
 		protected string $method,
 		protected array $params = []
 	) {
-		$this->identifier = $class->getName();
+		$this->identifier = Identifier::fromUnknown($class)->getName();
 		$this->callIdentifier = '::';
 	}
 
