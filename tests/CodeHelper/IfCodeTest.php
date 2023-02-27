@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\CodeHelper\ClassMethodCall;
 use Stefna\PhpCodeBuilder\CodeHelper\IfCode;
 use Stefna\PhpCodeBuilder\CodeHelper\LineCode;
+use Stefna\PhpCodeBuilder\CodeHelper\ReturnCode;
 use Stefna\PhpCodeBuilder\CodeHelper\StaticMethodCall;
 use Stefna\PhpCodeBuilder\CodeHelper\VariableReference;
 use Stefna\PhpCodeBuilder\FlattenSource;
@@ -16,7 +17,20 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 final class IfCodeTest extends TestCase
 {
-	public function testIf()
+	public function testNullCheck(): void
+	{
+		$var = new VariableReference('test');
+		$if = IfCode::nullCheck($var, [
+			new ReturnCode($var),
+		]);
+
+		$this->assertSame('if ($test === null) {
+	return $test;
+}
+', FlattenSource::source($if->getSourceArray()));
+	}
+
+	public function testIf(): void
 	{
 		$if = IfCode::instanceOf(
 			VariableReference::this('serverConfiguration'),

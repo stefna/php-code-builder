@@ -20,6 +20,17 @@ final class IfCode implements CodeInterface
 	/**
 	 * @param array<int, mixed> $code
 	 */
+	public static function nullCheck(VariableReference $var, array $code): self
+	{
+		return new self(
+			$var->toString() . ' === null',
+			$code
+		);
+	}
+
+	/**
+	 * @param array<int, mixed> $code
+	 */
 	public function __construct(
 		private string $if,
 		private array $code,
