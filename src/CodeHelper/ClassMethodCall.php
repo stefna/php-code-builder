@@ -2,7 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
-final class ClassMethodCall implements CodeInterface
+final class ClassMethodCall implements CodeInterface, MethodCallInterface
 {
 	use MethodParamsTrait;
 

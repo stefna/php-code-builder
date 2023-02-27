@@ -4,9 +4,11 @@ namespace Stefna\PhpCodeBuilder\Tests\CodeHelper;
 
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\CodeHelper\ClassMethodCall;
+use Stefna\PhpCodeBuilder\CodeHelper\StaticMethodCall;
 use Stefna\PhpCodeBuilder\CodeHelper\TernaryOperator;
 use Stefna\PhpCodeBuilder\CodeHelper\VariableReference;
 use Stefna\PhpCodeBuilder\FlattenSource;
+use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
 final class TernaryOperatorTest extends TestCase
 {
@@ -73,5 +75,16 @@ final class TernaryOperatorTest extends TestCase
 	\'test4\'
 )
 ', FlattenSource::source($t->getSourceArray()));
+	}
+
+	public function testNullableCallFactory(): void
+	{
+		$call = new StaticMethodCall(Identifier::fromString(VariableReference::class), 'this');
+		$var = new VariableReference('test');
+		$code = TernaryOperator::nullableCall($var, $call);
+
+		$this->assertSame([
+			'$test ? VariableReference::this() : null',
+		], $code->getSourceArray());
 	}
 }

@@ -4,7 +4,7 @@ namespace Stefna\PhpCodeBuilder\CodeHelper;
 
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
-final class InstantiateClass implements CodeInterface
+final class InstantiateClass implements CodeInterface, MethodCallInterface
 {
 	use MethodParamsTrait;
 

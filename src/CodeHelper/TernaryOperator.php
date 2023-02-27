@@ -10,8 +10,10 @@ use Stefna\PhpCodeBuilder\Renderer\RenderInterface;
  */
 final class TernaryOperator implements CodeInterface
 {
-	public static function nullableCall(VariableReference $variableReference, ClassMethodCall $call): self
-	{
+	public static function nullableCall(
+		VariableReference $variableReference,
+		MethodCallInterface $call,
+	): self {
 		return new self(
 			$variableReference->toString(),
 			$call->getSourceArray()[0],

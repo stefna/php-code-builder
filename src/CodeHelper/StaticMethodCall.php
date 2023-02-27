@@ -5,7 +5,7 @@ namespace Stefna\PhpCodeBuilder\CodeHelper;
 use Stefna\PhpCodeBuilder\PhpParam;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
-final class StaticMethodCall implements CodeInterface
+final class StaticMethodCall implements CodeInterface, MethodCallInterface
 {
 	use MethodParamsTrait;
 
