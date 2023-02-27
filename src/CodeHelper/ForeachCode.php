@@ -27,7 +27,10 @@ final class ForeachCode implements CodeInterface
 			$valueName = $this->variablePrefix . ucfirst($valueName);
 		}
 
-		$loopSource = ($this->loopSourceCallback)("\$$keyName", "\$$valueName");
+		$loopSource = ($this->loopSourceCallback)(
+			new VariableReference($keyName),
+			new VariableReference($valueName)
+		);
 		return [
 			'foreach (' . $this->reference->toString() . ' as $' . $keyName . ' => $' . $valueName . ') {',
 			$loopSource,
