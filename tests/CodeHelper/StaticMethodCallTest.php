@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CodeHelper;
+namespace Stefna\PhpCodeBuilder\Tests\CodeHelper;
 
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\CodeHelper\ArrayCode;
@@ -11,14 +11,14 @@ use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
 final class StaticMethodCallTest extends TestCase
 {
-	public function testSimple()
+	public function testSimple(): void
 	{
 		$call = new StaticMethodCall(Identifier::fromString(StaticMethodCall::class), 'test');
 
 		$this->assertSame('StaticMethodCall::test()', trim(FlattenSource::source($call->getSourceArray())));
 	}
 
-	public function testWithParams()
+	public function testWithParams(): void
 	{
 		$call = new StaticMethodCall(Identifier::fromString(StaticMethodCall::class), 'test', [
 			false,
@@ -31,7 +31,7 @@ final class StaticMethodCallTest extends TestCase
 		);
 	}
 
-	public function testManyWithParams()
+	public function testManyWithParams(): void
 	{
 		$call = new StaticMethodCall(Identifier::fromString(StaticMethodCall::class), 'test', [
 			false,
@@ -50,7 +50,7 @@ final class StaticMethodCallTest extends TestCase
 )', trim(FlattenSource::source($call->getSourceArray())));
 	}
 
-	public function testWithComplexParams()
+	public function testWithComplexParams(): void
 	{
 		$call = new StaticMethodCall(Identifier::fromString(StaticMethodCall::class), 'test', [
 			'site-bearer-token',
@@ -69,7 +69,7 @@ final class StaticMethodCallTest extends TestCase
 ], $testVar)', trim(FlattenSource::source($call->getSourceArray())));
 	}
 
-	public function testWithLastParamIsArray()
+	public function testWithLastParamIsArray(): void
 	{
 		$call = new StaticMethodCall(Identifier::fromString(StaticMethodCall::class), 'test', [
 			'site-bearer-token',

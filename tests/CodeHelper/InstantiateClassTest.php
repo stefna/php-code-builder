@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CodeHelper;
+namespace Stefna\PhpCodeBuilder\Tests\CodeHelper;
 
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\CodeHelper\ArrayCode;
@@ -12,7 +12,7 @@ use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
 final class InstantiateClassTest extends TestCase
 {
-	public function testSimple()
+	public function testSimple(): void
 	{
 		$call = new InstantiateClass(Identifier::fromString(StaticMethodCall::class), []);
 
@@ -22,7 +22,7 @@ final class InstantiateClassTest extends TestCase
 		);
 	}
 
-	public function testComplex()
+	public function testComplex(): void
 	{
 		$call = new InstantiateClass(Identifier::fromString(StaticMethodCall::class), [
 			'site-bearer-token',

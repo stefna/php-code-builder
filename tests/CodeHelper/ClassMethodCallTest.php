@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CodeHelper;
+namespace Stefna\PhpCodeBuilder\Tests\CodeHelper;
 
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\CodeHelper\ArrayCode;
@@ -12,7 +12,7 @@ use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
 final class ClassMethodCallTest extends TestCase
 {
-	public function testComplex()
+	public function testComplex(): void
 	{
 		$call = new ClassMethodCall(VariableReference::this(), 'addSecurityScheme', [
 			new StaticMethodCall(Identifier::fromString(StaticMethodCall::class), 'test', [
@@ -32,7 +32,7 @@ final class ClassMethodCallTest extends TestCase
 ]))', trim(FlattenSource::source($call->getSourceArray())));
 	}
 
-	public function testWithVariableParam()
+	public function testWithVariableParam(): void
 	{
 		$call = new ClassMethodCall(VariableReference::this(), 'setSecurityValue', [
 			'site-bearer-token',
@@ -45,7 +45,7 @@ final class ClassMethodCallTest extends TestCase
 		);
 	}
 
-	public function testWithStaticMethodCall()
+	public function testWithStaticMethodCall(): void
 	{
 		$x = new ClassMethodCall(VariableReference::this('serverConfiguration'), 'setSecurityValue', [
 			'test-scheme',

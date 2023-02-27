@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CodeHelper;
+namespace Stefna\PhpCodeBuilder\Tests\CodeHelper;
 
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\CodeHelper\ClassMethodCall;
@@ -10,7 +10,7 @@ use Stefna\PhpCodeBuilder\FlattenSource;
 
 final class LineCodeTest extends TestCase
 {
-	public function testWithVariableParam()
+	public function testWithVariableParam(): void
 	{
 		$call = ClassMethodCall::this('setSecurityValue', [
 			'site-bearer-token',

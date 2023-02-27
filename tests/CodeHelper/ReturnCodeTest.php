@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace CodeHelper;
+namespace Stefna\PhpCodeBuilder\Tests\CodeHelper;
 
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\CodeHelper\ArrayCode;
@@ -15,7 +15,7 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 final class ReturnCodeTest extends TestCase
 {
-	public function testEmptyArray()
+	public function testEmptyArray(): void
 	{
 		$array = new ReturnCode(new ArrayCode());
 
@@ -23,7 +23,7 @@ final class ReturnCodeTest extends TestCase
 		$this->assertSame(['return [];'], $array->getSourceArray());
 	}
 
-	public function testArray()
+	public function testArray(): void
 	{
 		$array = new ReturnCode(new ArrayCode([
 			'test1' => 2,
@@ -43,7 +43,7 @@ final class ReturnCodeTest extends TestCase
 		], $array->getSourceArray());
 	}
 
-	public function testMethodCall()
+	public function testMethodCall(): void
 	{
 		$call = new ReturnCode(ClassMethodCall::this('setSecurityValue', [
 			'site-bearer-token',
@@ -57,7 +57,7 @@ final class ReturnCodeTest extends TestCase
 		);
 	}
 
-	public function testComplex()
+	public function testComplex(): void
 	{
 		$call = new ClassMethodCall(VariableReference::this(), 'addSecurityScheme', [
 			new StaticMethodCall(Identifier::fromString(StaticMethodCall::class), 'test', [
