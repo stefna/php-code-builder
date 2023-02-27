@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Stefna\PhpCodeBuilder\CodeHelper;
+namespace Stefna\PhpCodeBuilder\Tests\CodeHelper;
 
 use PHPUnit\Framework\TestCase;
 
