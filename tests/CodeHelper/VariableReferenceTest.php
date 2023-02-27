@@ -13,4 +13,12 @@ final class VariableReferenceTest extends TestCase
 
 		$this->assertSame("\$input['status']", $var->toString());
 	}
+
+	public function testArrayVariableWithDynamicKey(): void
+	{
+		$key = new VariableReference('key');
+		$var = VariableReference::array('input', $key);
+
+		$this->assertSame("\$input[\$key]", $var->toString());
+	}
 }
