@@ -130,7 +130,7 @@ final class ArrayCodeTest extends TestCase
 
 		$this->assertSame("[
 	'test' => RangeException::class,
-	'self' => CodeHelper\ArrayCodeTest::class,
+	'self' => Stefna\PhpCodeBuilder\Tests\CodeHelper\ArrayCodeTest::class,
 ]", trim(FlattenSource::source($array->getSourceArray())));
 	}
 }

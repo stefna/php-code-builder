@@ -33,15 +33,15 @@ final class JsonSerializeTypeCallResolver implements TypeCallResolverInterface
 
 			$extraCode = [
 				$localVariable->toString() . ' = [];',
-				new ForeachCode($variableReference, function (string $keyName, string $valueName) use ($arrayType, $localVariable) {
-					[$arrayCall, $arrayExtraCode] = $this->classTypeResolver(
-						new VariableReference($valueName),
-						$arrayType,
-					);
+				new ForeachCode($variableReference, function (
+					VariableReference $keyName,
+					VariableReference $valueName,
+				) use ($arrayType, $localVariable) {
+					[$arrayCall, $arrayExtraCode] = $this->classTypeResolver($valueName, $arrayType);
 					/** @var string $arrayCallStr */
 					$arrayCallStr = $arrayCall->getSourceArray()[0];
 					return FlattenSource::applySourceOn([
-						$localVariable->toString() . '[' . $keyName . '] = ' . $arrayCallStr . ';',
+						$localVariable->toString() . '[' . $keyName->toString() . '] = ' . $arrayCallStr . ';',
 					], $arrayExtraCode);
 				}),
 			];
@@ -86,9 +86,9 @@ final class JsonSerializeTypeCallResolver implements TypeCallResolverInterface
 				$localVariable->toString() . ' = [];',
 				new ForeachCode(
 					$variableReference,
-					function (string $keyName, string $valueName) use ($localVariable) {
+					function (VariableReference $keyName, VariableReference $valueName) use ($localVariable) {
 						return [
-							$localVariable->toString() . '[' . $keyName . '] = ' . $valueName . ';',
+							$localVariable->toString() . '[' . $keyName->toString() . '] = ' . $valueName->toString() . ';',
 						];
 					},
 					$prefix
