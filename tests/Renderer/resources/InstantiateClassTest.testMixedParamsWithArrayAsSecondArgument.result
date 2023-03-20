@@ -1,0 +1,16 @@
+new self(
+	'random',
+	[
+		'id',
+	],
+	[
+		'a',
+		'b',
+		'c',
+		'd',
+		'e',
+		'f',
+	],
+	null,
+	null
+)
