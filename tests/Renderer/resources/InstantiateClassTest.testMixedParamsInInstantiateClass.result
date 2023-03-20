@@ -1,6 +1,6 @@
 new self(
-	'random',
-	'random',
+	DateTimeImmutable::class,
+	EnumCase::class,
 	[
 		'id',
 	],

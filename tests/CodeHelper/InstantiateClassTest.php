@@ -4,12 +4,14 @@ namespace Stefna\PhpCodeBuilder\Tests\CodeHelper;
 
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\CodeHelper\ArrayCode;
+use Stefna\PhpCodeBuilder\CodeHelper\ConstString;
 use Stefna\PhpCodeBuilder\CodeHelper\InstantiateClass;
 use Stefna\PhpCodeBuilder\CodeHelper\StaticMethodCall;
 use Stefna\PhpCodeBuilder\CodeHelper\VariableReference;
 use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\Renderer\Php7Renderer;
 use Stefna\PhpCodeBuilder\Tests\Renderer\AssertResultTrait;
+use Stefna\PhpCodeBuilder\ValueObject\EnumCase;
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
 final class InstantiateClassTest extends TestCase
@@ -50,8 +52,8 @@ final class InstantiateClassTest extends TestCase
 		$x = new InstantiateClass(
 			Identifier::fromString('self'),
 			[
-				'random',
-				'random',
+				ConstString::class('\DateTimeImmutable'),
+				ConstString::class(EnumCase::class),
 				new ArrayCode(['id']),
 				new ArrayCode(['a', 'b', 'c', 'd', 'e', 'f']),
 				null,
@@ -63,8 +65,8 @@ final class InstantiateClassTest extends TestCase
 		$this->assertSame([
 			'new self(',
 			[
-				"'random',",
-				"'random',",
+				"DateTimeImmutable::class,",
+				"EnumCase::class,",
 				'[',
 				[
 					"'id',",
