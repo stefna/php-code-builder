@@ -196,14 +196,22 @@ final class Type
 					$docType[] = $type->type;
 				}
 			}
-			if ($this->nullable) {
+			if ($this->nullable && $this->type !== 'mixed') {
 				$docType[] = 'null';
 			}
 			return implode('|', array_filter($docType));
 		}
 
 		$type = self::ALIAS_MAP[$this->type] ?? $this->type;
-		return ($this->namespaced && !$this->simplified ? '\\' : '') . $type . ($this->nullable ? '|null' : '');
+		if ($this->namespaced && !$this->simplified) {
+			$type = '\\' . $type;
+		}
+
+		if ($this->nullable && $this->type !== 'mixed') {
+			$type = $type . '|null';
+		}
+
+		return $type;
 	}
 
 	public function isNullable(): bool
