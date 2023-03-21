@@ -29,6 +29,10 @@ class Php8Renderer extends Php74Renderer
 			return implode('|', $typeHint);
 		}
 
+		if ($type->getType() === 'mixed') {
+			return 'mixed';
+		}
+
 		return $type?->getTypeHint();
 	}
 
@@ -39,6 +43,10 @@ class Php8Renderer extends Php74Renderer
 	{
 		if ($variable->isPromoted()) {
 			return null;
+		}
+
+		if ($variable->getType()->getType() === 'mixed') {
+			$variable->getComment()?->removeVar();
 		}
 
 		return parent::renderVariable($variable, $parent);

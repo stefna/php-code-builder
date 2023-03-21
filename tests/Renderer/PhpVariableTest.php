@@ -246,4 +246,50 @@ final class PhpVariableTest extends TestCase
 			'protected ?array $test;',
 		], $renderer->renderVariable($variable));
 	}
+
+	public function testVariableWithMixedType(): void
+	{
+		$variable = PhpVariable::protected('test', Type::fromString('mixed'));
+
+		$renderer = new Php8Renderer();
+
+		$this->assertSame([
+			'protected mixed $test;',
+		], $renderer->renderVariable($variable));
+	}
+
+	public function testVariableWithMixedAndNullType(): void
+	{
+		$variable = PhpVariable::protected('test', Type::fromString('mixed|null'));
+
+		$renderer = new Php8Renderer();
+
+		$this->assertSame([
+			'protected mixed $test;',
+		], $renderer->renderVariable($variable));
+	}
+
+	public function testVariableWithMixedType74(): void
+	{
+		$variable = PhpVariable::protected('test', Type::fromString('mixed'));
+
+		$renderer = new Php74Renderer();
+
+		$this->assertSame([
+			'/** @var mixed */',
+			'protected $test;',
+		], $renderer->renderVariable($variable));
+	}
+
+	public function testVariableWithMixedAndNullType74(): void
+	{
+		$variable = PhpVariable::protected('test', Type::fromString('mixed|null'));
+
+		$renderer = new Php74Renderer();
+
+		$this->assertSame([
+			'/** @var mixed */',
+			'protected $test;',
+		], $renderer->renderVariable($variable));
+	}
 }
