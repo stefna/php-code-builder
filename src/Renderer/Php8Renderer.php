@@ -45,8 +45,13 @@ class Php8Renderer extends Php74Renderer
 			return null;
 		}
 
-		if ($variable->getType()->getType() === 'mixed') {
+
+		$type = $variable->getType();
+		if ($type->getType() === 'mixed') {
 			$variable->getComment()?->removeVar();
+		}
+		if ($type->isUnion() && $type->isNullable() && $variable->getInitializedValue() === PhpVariable::NO_VALUE) {
+			$variable->setInitializedValue(null);
 		}
 
 		return parent::renderVariable($variable, $parent);

@@ -17,6 +17,13 @@ class Php74Renderer extends Php7Renderer
 	{
 		$ret = [];
 
+		if ($variable->getType()->isNullable() &&
+			$variable->getInitializedValue() === PhpVariable::NO_VALUE &&
+			$variable->getType()->getTypeHint()
+		) {
+			$variable->setInitializedValue(null);
+		}
+
 		$comment = $variable->getComment();
 		if ($comment) {
 			$ret = FlattenSource::applySourceOn($this->renderComment($comment), $ret);
