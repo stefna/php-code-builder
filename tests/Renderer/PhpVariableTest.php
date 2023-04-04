@@ -243,7 +243,7 @@ final class PhpVariableTest extends TestCase
 
 		$this->assertSame([
 			'/** @var string[]|null */',
-			'protected ?array $test;',
+			'protected ?array $test = null;',
 		], $renderer->renderVariable($variable));
 	}
 
