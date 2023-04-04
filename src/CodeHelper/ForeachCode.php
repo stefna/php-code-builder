@@ -4,9 +4,12 @@ namespace Stefna\PhpCodeBuilder\CodeHelper;
 
 final class ForeachCode implements CodeInterface
 {
-	/** @var callable(string $keyName, string $valueName): mixed[] */
+	/** @var callable(VariableReference $keyName, VariableReference $valueName): mixed[] */
 	private $loopSourceCallback;
 
+	/**
+	 * @param callable(VariableReference $keyName, VariableReference $valueName): mixed[] $loopSourceCallback
+	 */
 	public function __construct(
 		private VariableReference $reference,
 		callable $loopSourceCallback,

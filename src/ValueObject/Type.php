@@ -143,7 +143,7 @@ final class Type
 		$this->types[] = $type;
 	}
 
-	public function getTypeHint($renderUnion = false): ?string
+	public function getTypeHint(bool $renderUnion = false): ?string
 	{
 		if (count($this->types) > 1) {
 			if ($renderUnion) {

@@ -18,7 +18,11 @@ class Php8Renderer extends Php74Renderer
 {
 	protected function formatTypeHint(?Type $type): ?string
 	{
-		if ($type?->isUnion()) {
+		if (!$type) {
+			return null;
+		}
+
+		if ($type->isUnion()) {
 			$typeHint = [];
 			if ($type->isNullable()) {
 				$typeHint[] = 'null';
@@ -33,7 +37,7 @@ class Php8Renderer extends Php74Renderer
 			return 'mixed';
 		}
 
-		return $type?->getTypeHint();
+		return $type->getTypeHint();
 	}
 
 	/**
@@ -44,7 +48,6 @@ class Php8Renderer extends Php74Renderer
 		if ($variable->isPromoted()) {
 			return null;
 		}
-
 
 		$type = $variable->getType();
 		if ($type->getType() === 'mixed') {

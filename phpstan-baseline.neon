@@ -46,11 +46,6 @@ parameters:
 			path: src/CodeHelper/TernaryOperator.php
 
 		-
-			message: "#^Match expression does not handle remaining value\\: string$#"
-			count: 1
-			path: src/FormatValue.php
-
-		-
 			message: "#^Property Stefna\\\\PhpCodeBuilder\\\\PhpStan\\\\ExtendsField\\:\\:\\$templateFields \\(array\\<int, Stefna\\\\PhpCodeBuilder\\\\PhpStan\\\\TemplateField\\|Stefna\\\\PhpCodeBuilder\\\\ValueObject\\\\Identifier\\>\\) does not accept array\\<int\\|string, Stefna\\\\PhpCodeBuilder\\\\PhpStan\\\\TemplateField\\|Stefna\\\\PhpCodeBuilder\\\\ValueObject\\\\Identifier\\>\\.$#"
 			count: 1
 			path: src/PhpStan/ExtendsField.php

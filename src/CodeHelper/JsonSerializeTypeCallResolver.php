@@ -36,7 +36,10 @@ final class JsonSerializeTypeCallResolver implements TypeCallResolverInterface
 				new ForeachCode($variableReference, function (
 					VariableReference $keyName,
 					VariableReference $valueName,
-				) use ($arrayType, $localVariable) {
+				) use (
+					$arrayType,
+					$localVariable,
+				) {
 					[$arrayCall, $arrayExtraCode] = $this->classTypeResolver($valueName, $arrayType);
 					/** @var string $arrayCallStr */
 					$arrayCallStr = $arrayCall->getSourceArray()[0];

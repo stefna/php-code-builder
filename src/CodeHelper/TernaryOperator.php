@@ -12,7 +12,7 @@ final class TernaryOperator implements CodeInterface
 {
 	public static function nullableCall(
 		VariableReference $variableReference,
-		MethodCallInterface $call,
+		MethodCallInterface&CodeInterface $call,
 	): self {
 		return new self(
 			$variableReference->toString(),
@@ -52,7 +52,7 @@ final class TernaryOperator implements CodeInterface
 			$source[0] .= $this->successCode;
 			$source[0] .= ' : ';
 		}
-		elseif (is_array($this->successCode) && count($this->successCode) === 1 && is_string($this->successCode[0])) {
+		elseif (count($this->successCode) === 1 && is_string($this->successCode[0])) {
 			$source[0] .= $this->successCode[0];
 			$source[0] .= ' : ';
 		}
@@ -69,9 +69,17 @@ final class TernaryOperator implements CodeInterface
 			$source = FlattenSource::applySourceOn($code, $source);
 		}
 
-		if (is_string($this->failureCode) || (is_array($this->failureCode) && count($this->failureCode) === 1)) {
+		if (is_string($this->failureCode)) {
 			if (is_string($source[array_key_last($source)])) {
-				$source[array_key_last($source)] .= is_string($this->failureCode) ? $this->failureCode : $this->failureCode[0];
+				$source[array_key_last($source)] .= $this->failureCode;
+			}
+			else {
+				$source[] = $this->failureCode;
+			}
+		}
+		elseif (count($this->failureCode) === 1) {
+			if (is_string($source[array_key_last($source)])) {
+				$source[array_key_last($source)] .= $this->failureCode[0];
 			}
 			else {
 				$source[] = $this->failureCode;

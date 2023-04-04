@@ -113,7 +113,8 @@ final class PhpMethodTest extends TestCase
 		$type->addUnion('null');
 		$type->addUnion(\DateTimeImmutable::class);
 		$ctor = PhpMethod::constructor([
-			new PhpParam('test1',
+			new PhpParam(
+				'test1',
 				$type,
 				autoCreateVariable: true,
 			),
