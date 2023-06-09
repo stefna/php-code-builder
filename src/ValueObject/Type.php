@@ -11,18 +11,22 @@ final class Type
 		'number' => 'float',
 	];
 
-	private const INVALID_RETURN_TYPES = [
-		'mixed',
-		'resource',
-		'static',
-		'object',
-	];
+	/** @var list<string> */
+	private static array $invalidReturnTypes = [];
 	private bool $namespaced;
 	private bool $simplified = false;
 	private bool $inCheckLoop = false;
 	private string $namespace = '';
 	/** @var Type[] */
 	private array $types = [];
+
+	/**
+	 * @param list<string> $types
+	 */
+	public static function setInvalidReturnTypes(array $types): void
+	{
+		self::$invalidReturnTypes = $types;
+	}
 
 	public static function empty(): self
 	{
@@ -166,7 +170,7 @@ final class Type
 		}
 		$type = self::ALIAS_MAP[$this->type] ?? $this->type;
 
-		if (in_array($type, self::INVALID_RETURN_TYPES, true)) {
+		if (in_array($type, self::$invalidReturnTypes, true)) {
 			return null;
 		}
 		if ($this->isArray()) {

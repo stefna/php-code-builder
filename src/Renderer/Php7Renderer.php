@@ -24,6 +24,14 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 class Php7Renderer implements FullRendererInterface
 {
+	/** @var list<string> */
+	protected array $invalidReturnTypes = [
+		'mixed',
+		'resource',
+		'static',
+		'object',
+	];
+
 	/**
 	 * @return array<int, string|array<int, string>>
 	 */
@@ -384,6 +392,7 @@ class Php7Renderer implements FullRendererInterface
 	 */
 	public function renderFunction(PhpFunction $function): array
 	{
+		Type::setInvalidReturnTypes($this->invalidReturnTypes);
 		$ret = [];
 
 		if (!$function->getComment()) {

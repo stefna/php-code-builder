@@ -278,4 +278,20 @@ final class PhpMethodTest extends TestCase
 			['normal', Type::fromString('string'), 'getNormal'],
 		];
 	}
+
+	public function testStaticReturnTypePhp7(): void
+	{
+		$method = PhpMethod::public('generate', [], [], Type::fromString('static'));
+
+		$renderer = new Php7Renderer();
+		$this->assertSourceResult($renderer->renderMethod($method), 'PhpMethodTest.testStaticReturnTypePhp7');
+	}
+
+	public function testStaticReturnTypePhp8(): void
+	{
+		$method = PhpMethod::public('generate', [], [], Type::fromString('static'));
+
+		$renderer = new Php8Renderer();
+		$this->assertSourceResult($renderer->renderMethod($method), 'PhpMethodTest.testStaticReturnTypePhp8');
+	}
 }

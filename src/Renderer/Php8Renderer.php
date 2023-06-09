@@ -16,6 +16,10 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 class Php8Renderer extends Php74Renderer
 {
+	protected array $invalidReturnTypes = [
+		'resource',
+	];
+
 	protected function formatTypeHint(?Type $type): ?string
 	{
 		if (!$type) {
