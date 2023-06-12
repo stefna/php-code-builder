@@ -41,7 +41,7 @@ class Php74Renderer extends Php7Renderer
 	protected function formatVariableModifiers(
 		PhpVariable $variable,
 		?Type $type = null,
-		?PhpTrait $parent,
+		?PhpTrait $parent = null,
 	): array {
 		$line = [];
 		$line[] = $variable->getAccess() ?: 'public';
