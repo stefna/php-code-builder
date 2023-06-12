@@ -1,0 +1,10 @@
+new ColumnInfo(
+	'status',
+	'enum',
+	false,
+	null,
+	[
+		'a',
+		'b',
+	]
+)

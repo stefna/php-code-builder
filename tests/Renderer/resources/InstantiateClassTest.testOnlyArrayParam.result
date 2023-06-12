@@ -1,0 +1,4 @@
+new ColumnInfo([
+	'a',
+	'b',
+])

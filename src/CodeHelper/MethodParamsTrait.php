@@ -3,6 +3,7 @@
 namespace Stefna\PhpCodeBuilder\CodeHelper;
 
 use Stefna\PhpCodeBuilder\Exception\InvalidCode;
+use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\FormatValue;
 
 trait MethodParamsTrait
@@ -44,6 +45,9 @@ trait MethodParamsTrait
 				return $return;
 			}
 		}
+		elseif (count($paramSource) === 3 && $paramSource[0] === '[' && $paramSource[2] === ']') {
+			return [$firstLine . '[', $paramSource[1] , '])'];
+		}
 
 		if (is_string($paramSource[0]) && strpos($paramSource[0], ',')) {
 			$firstParamSource = array_shift($paramSource);
@@ -70,12 +74,12 @@ trait MethodParamsTrait
 				}
 			}
 			if ($lastValueIsArray) {
-				$renderedValues[count($renderedValues) - 1] = ')';
+				$tmpArray = $renderedValues[count($renderedValues) - 1];
+				unset($renderedValues[count($renderedValues) - 1]);
+				$renderedValues = FlattenSource::applySourceOn($tmpArray, $renderedValues);
 			}
 			$return[] = $renderedValues;
-			if (!$lastValueIsArray) {
-				$return[] = ')';
-			}
+			$return[] = ')';
 			return $return;
 		}
 

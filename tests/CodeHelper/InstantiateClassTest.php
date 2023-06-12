@@ -101,4 +101,42 @@ final class InstantiateClassTest extends TestCase
 
 		$this->assertSourceResult(FlattenSource::source($source), 'InstantiateClassTest.testMixedParamsWithArrayAsSecondArgument');
 	}
+
+	public function testEndsWithArray(): void
+	{
+		$x =  new InstantiateClass(
+			Identifier::fromString(ColumnInfo::class),
+			[
+				'status',
+				'enum',
+				false,
+				null,
+				[
+					'a',
+					'b',
+				],
+			],
+		);
+
+		$source = $x->getSourceArray();
+
+		$this->assertSourceResult(FlattenSource::source($source), 'InstantiateClassTest.testEndsWithArray');
+	}
+
+	public function testOnlyArrayParam(): void
+	{
+		$x =  new InstantiateClass(
+			Identifier::fromString(ColumnInfo::class),
+			[
+				[
+					'a',
+					'b',
+				],
+			],
+		);
+
+		$source = $x->getSourceArray();
+
+		$this->assertSourceResult(FlattenSource::source($source), 'InstantiateClassTest.testOnlyArrayParam');
+	}
 }
