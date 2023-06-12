@@ -4,6 +4,7 @@ namespace Stefna\PhpCodeBuilder\Tests\CodeHelper;
 
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\CodeHelper\ArrayCode;
+use Stefna\PhpCodeBuilder\CodeHelper\InstantiateClass;
 use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\PhpVariable;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
@@ -132,5 +133,36 @@ final class ArrayCodeTest extends TestCase
 	'test' => RangeException::class,
 	'self' => Stefna\PhpCodeBuilder\Tests\CodeHelper\ArrayCodeTest::class,
 ]", trim(FlattenSource::source($array->getSourceArray())));
+	}
+
+	public function testComplexArray(): void
+	{
+		$array = new ArrayCode([
+			'test1' => new InstantiateClass('Test', ['a', 'b', 'c', 'd']),
+			'test2' => new InstantiateClass('Test', ['a', 'b', 'c', 'd']),
+		]);
+
+		$this->assertSame([
+			'[',
+			[
+				"'test1' => new Test(",
+				[
+					"'a',",
+					"'b',",
+					"'c',",
+					"'d'",
+				],
+				'),',
+				"'test2' => new Test(",
+				[
+					"'a',",
+					"'b',",
+					"'c',",
+					"'d'",
+				],
+				'),',
+			],
+			']',
+		], $array->getSourceArray());
 	}
 }

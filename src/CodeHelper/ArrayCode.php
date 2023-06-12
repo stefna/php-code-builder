@@ -63,12 +63,25 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 			) {
 				$formattedValue = $formattedValue[0];
 			}
-			if ($isAssoc && is_string($formattedValue)) {
-				$rows[] = sprintf(
-					"'%s' => %s,",
-					$key,
-					$formattedValue
-				);
+			if ($isAssoc) {
+				if (is_string($formattedValue)) {
+					$rows[] = sprintf(
+						"'%s' => %s,",
+						$key,
+						$formattedValue
+					);
+				}
+				elseif (is_array($formattedValue)) {
+					$rows[] = sprintf(
+						"'%s' => %s",
+						$key,
+						$formattedValue[0]
+					);
+					for ($i = 1; $i < count($formattedValue); $i++) {
+						$rows[] = $formattedValue[$i];
+					}
+					$rows[array_key_last($rows)] .= ',';
+				}
 			}
 			elseif (is_string($formattedValue)) {
 				$rows[] = sprintf(
