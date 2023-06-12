@@ -117,13 +117,13 @@ trait MethodParamsTrait
 					if (count($value) === 1) {
 						$value = $value[0];
 					}
-					if (is_array($value)) {
-						$isComplex = true;
-					}
 				}
 			}
 			else {
 				$value = FormatValue::format($param);
+			}
+			if (is_array($value)) {
+				$isComplex = true;
 			}
 			$params[] = $value;
 		}
