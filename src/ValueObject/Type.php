@@ -63,7 +63,10 @@ final class Type
 				}
 			}
 			if (count($types) === 2 && in_array('null', $types)) {
-				return self::fromString('?' . trim(str_replace('null', '', $type), '|'));
+				if (!in_array('mixed', $types)) {
+					return self::fromString('?' . trim(str_replace('null', '', $type), '|'));
+				}
+				$types = ['mixed'];
 			}
 			if ($noValidTypes) {
 				throw new \InvalidArgumentException('No valid type hint found in string');
@@ -126,6 +129,9 @@ final class Type
 	public function addUnion(Type|string $type): void
 	{
 		if ($type === 'null') {
+			if ($this->type === 'mixed') {
+				return;
+			}
 			$this->nullable = true;
 			return;
 		}

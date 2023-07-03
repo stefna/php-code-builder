@@ -313,4 +313,16 @@ final class PhpMethodTest extends TestCase
 		$renderer = new Php8Renderer();
 		$this->assertSourceResult($renderer->renderMethod($ctor), 'PhpMethodTest.testParamWithDefaultEmptyArray');
 	}
+
+	public function testParamWithMixedAndNullable(): void
+	{
+		$var = new PhpVariable(
+			PhpVariable::PRIVATE_ACCESS,
+			Identifier::fromString('test'),
+			Type::fromString('mixed|null'),
+		);
+		$param = PhpParam::fromVariable($var);
+
+		$this->assertSame('mixed $test', (new Php8Renderer())->renderParam($param));
+	}
 }
