@@ -1,0 +1,5 @@
+/**
+ * @param string[] $test
+ */
+public function __construct(array $test = [])
+{}

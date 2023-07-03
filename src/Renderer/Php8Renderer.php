@@ -124,7 +124,12 @@ class Php8Renderer extends Php74Renderer
 		if ($param->getValue() !== PhpParam::NO_VALUE) {
 			$value = FormatValue::format($param->getValue());
 			if (is_array($value)) {
-				throw new \RuntimeException('Don\'t support multiline values in params');
+				if (count($value) === 1) {
+					$value = $value[0];
+				}
+				else {
+					throw new \RuntimeException('Don\'t support multiline values in params');
+				}
 			}
 			$ret .= ' = ' . $value;
 		}

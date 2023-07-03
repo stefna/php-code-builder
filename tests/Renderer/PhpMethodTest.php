@@ -294,4 +294,23 @@ final class PhpMethodTest extends TestCase
 		$renderer = new Php8Renderer();
 		$this->assertSourceResult($renderer->renderMethod($method), 'PhpMethodTest.testStaticReturnTypePhp8');
 	}
+
+	public function testParamWithDefaultEmptyArray(): void
+	{
+		$var = new PhpVariable(
+			PhpVariable::PRIVATE_ACCESS,
+			Identifier::fromString('test'),
+			Type::fromString('string[]'),
+		);
+		$var->setInitializedValue([]);
+		$param = PhpParam::fromVariable($var);
+		$param->setValue($var->getInitializedValue());
+
+		$ctor = PhpMethod::constructor([
+			$param,
+		], []);
+
+		$renderer = new Php8Renderer();
+		$this->assertSourceResult($renderer->renderMethod($ctor), 'PhpMethodTest.testParamWithDefaultEmptyArray');
+	}
 }
