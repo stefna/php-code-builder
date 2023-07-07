@@ -82,6 +82,11 @@ class PhpDocElementFactory
 		return new PhpDocElement('licence', Type::empty(), '', $information);
 	}
 
+	public static function getGenerated(string $description = ''): PhpDocElement
+	{
+		return new PhpDocElement('generated', Type::empty(), '', $description);
+	}
+
 	public static function getPropertyFromVariable(PhpVariable $var, string $description = ''): PhpDocElement
 	{
 		return new PhpDocElement('property', $var->getType(), $var->getIdentifier()->toString(), $description);

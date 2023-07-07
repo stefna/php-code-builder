@@ -77,6 +77,20 @@ final class PhpDocCommentTest extends TestCase
 		$this->assertSourceResult($renderer->renderComment($comment), 'PhpDocCommentTest.' . __FUNCTION__);
 	}
 
+	public function testGenerated()
+	{
+		$licence = PhpDocElementFactory::getGenerated('From X');
+		$comment = new PhpDocComment();
+		$comment->setLicence($licence);
+		$renderer = new Php7Renderer();
+
+		$this->assertSame([
+			'/**',
+			' * @generated From X',
+			' */',
+		], $renderer->renderComment($comment));
+	}
+
 	public function testCheckForParamInCommentAndRemove()
 	{
 		$comment = new PhpDocComment('Test Description');
