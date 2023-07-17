@@ -110,6 +110,12 @@ class PhpFunction
 		return $this->identifier;
 	}
 
+	public function setIdentifier(Identifier $identifier): static
+	{
+		$this->identifier = $identifier;
+		return $this;
+	}
+
 	/**
 	 * @return array<int, string|string[]>|CodeInterface
 	 */
