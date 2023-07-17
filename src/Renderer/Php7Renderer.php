@@ -463,6 +463,7 @@ class Php7Renderer implements FullRendererInterface
 	 */
 	public function renderParams(PhpFunction $function, PhpParam ...$params): array|string
 	{
+		Type::setInvalidReturnTypes($this->invalidReturnTypes);
 		$docBlock = $function->getComment() ?? new PhpDocComment();
 		$parameterStrings = [];
 		foreach ($params as $param) {

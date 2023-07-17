@@ -107,6 +107,12 @@ class TypeTest extends TestCase
 	 */
 	public function testInvalidReturnTypeHints(string $input): void
 	{
+		Type::setInvalidReturnTypes([
+			'mixed',
+			'resource',
+			'static',
+			'object',
+		]);
 		$type = Type::fromString($input);
 		$this->assertNull($type->getTypeHint());
 	}
@@ -297,6 +303,7 @@ class TypeTest extends TestCase
 
 		$this->assertSame('null|int|string|DateTimeImmutable', implode('|', $typeHint));
 	}
+
 	public function testUnionTypeWithMultipleNullableTypes(): void
 	{
 		$type = Type::fromString('int|null');
@@ -307,5 +314,25 @@ class TypeTest extends TestCase
 		$type->addUnion($complexType);
 
 		$this->assertSame('null|int|string|DateTimeImmutable', $type->getTypeHint(true));
+	}
+
+	public function testMixedIsNullable(): void
+	{
+		Type::setInvalidReturnTypes([]);
+		$type = Type::fromString('mixed');
+
+		$this->assertTrue($type->isNullable());
+
+		$this->assertSame('mixed', $type->getDocBlockTypeHint());
+		$this->assertSame('mixed', $type->getTypeHint());
+	}
+
+	public function testMixedWithNullable(): void
+	{
+		Type::setInvalidReturnTypes([]);
+		$type = Type::fromString('mixed|null|object');
+
+		$this->assertSame('mixed|object', $type->getDocBlockTypeHint());
+		$this->assertSame('mixed|object', $type->getTypeHint(true));
 	}
 }

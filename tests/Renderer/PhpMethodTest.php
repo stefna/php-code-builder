@@ -325,4 +325,29 @@ final class PhpMethodTest extends TestCase
 
 		$this->assertSame('mixed $test', (new Php8Renderer())->renderParam($param));
 	}
+
+	public function testParamWithMixedAndNullableAndMoreTypes(): void
+	{
+		$var = new PhpVariable(
+			PhpVariable::PRIVATE_ACCESS,
+			Identifier::fromString('test'),
+			Type::fromString('mixed|null|object'),
+		);
+		$param = PhpParam::fromVariable($var);
+
+		$this->assertSame('mixed|object $test', (new Php8Renderer())->renderParam($param));
+	}
+
+	public function testParamWithMixedAndMarkedAsNullable(): void
+	{
+		$var = new PhpVariable(
+			PhpVariable::PRIVATE_ACCESS,
+			Identifier::fromString('test'),
+			Type::fromString('mixed'),
+		);
+		$param = PhpParam::fromVariable($var);
+		$param->allowNull();
+
+		$this->assertSame('mixed $test', (new Php8Renderer())->renderParam($param));
+	}
 }

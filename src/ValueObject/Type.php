@@ -82,6 +82,9 @@ final class Type
 		if (str_starts_with($type, '?')) {
 			return new self(substr($type, 1), true);
 		}
+		if ($type === 'mixed') {
+			return new self($type, true);
+		}
 
 		if (strpos($type, $arraySubTypeKey)) {
 			$type = str_replace($arraySubTypeKey, (string)$arraySubType, $type);
@@ -158,11 +161,11 @@ final class Type
 		if (count($this->types) > 1) {
 			if ($renderUnion) {
 				$typeHint = [];
-				if ($this->isNullable()) {
-					$typeHint[] = 'null';
-				}
 				foreach ($this->getUnionTypes() as $unionType) {
 					$typeHint[] = $unionType->getTypeHint();
+				}
+				if ($this->isNullable() && !in_array('mixed', $typeHint)) {
+					array_unshift($typeHint, 'null');
 				}
 				return implode('|', $typeHint);
 			}
@@ -185,6 +188,9 @@ final class Type
 			}
 			return 'array';
 		}
+		if ($type === 'mixed') {
+			return $type;
+		}
 
 		return ($this->nullable ? '?' : '') . ($this->namespaced && !$this->simplified ? '\\' : '') . $type;
 	}
@@ -206,7 +212,7 @@ final class Type
 					$docType[] = $type->type;
 				}
 			}
-			if ($this->nullable && $this->type !== 'mixed') {
+			if ($this->nullable && $this->type !== 'mixed' && !in_array('mixed', $docType, true)) {
 				$docType[] = 'null';
 			}
 			return implode('|', array_filter($docType));

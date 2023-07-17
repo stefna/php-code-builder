@@ -108,11 +108,11 @@ class Php8Renderer extends Php74Renderer
 		$ret = '';
 		if ($type->isUnion()) {
 			$typeHint = [];
-			if ($type->isNullable()) {
-				$typeHint[] = 'null';
-			}
 			foreach ($type->getUnionTypes() as $unionType) {
 				$typeHint[] = $unionType->getTypeHint();
+			}
+			if ($type->isNullable() && !in_array('mixed', $typeHint)) {
+				array_unshift($typeHint, 'null');
 			}
 
 			$ret .= implode('|', $typeHint);
