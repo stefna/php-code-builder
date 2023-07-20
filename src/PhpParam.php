@@ -7,6 +7,8 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 class PhpParam
 {
+	use AttributeAware;
+
 	public const NO_VALUE = '__PhpParam_NoValue__';
 
 	/**

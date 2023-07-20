@@ -6,6 +6,7 @@ use Stefna\PhpCodeBuilder\CodeHelper\CodeInterface;
 use Stefna\PhpCodeBuilder\Exception\InvalidCode;
 use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\FormatValue;
+use Stefna\PhpCodeBuilder\PhpAttribute;
 use Stefna\PhpCodeBuilder\PhpClass;
 use Stefna\PhpCodeBuilder\PhpConstant;
 use Stefna\PhpCodeBuilder\PhpDocComment;
@@ -770,5 +771,11 @@ class Php7Renderer implements FullRendererInterface
 		}
 
 		throw new \BadMethodCallException('Unknown object type. Don\'t know how to render');
+	}
+
+	public function renderAttribute(PhpAttribute $attr): array
+	{
+		// not-supported
+		return [];
 	}
 }

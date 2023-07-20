@@ -2,6 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder\Renderer;
 
+use Stefna\PhpCodeBuilder\PhpAttribute;
 use Stefna\PhpCodeBuilder\PhpClass;
 use Stefna\PhpCodeBuilder\PhpConstant;
 use Stefna\PhpCodeBuilder\PhpDocComment;
@@ -83,4 +84,9 @@ interface FullRendererInterface extends RenderInterface
 	 * @phpstan-return SourceArray
 	 */
 	public function renderObjectBody(PhpTrait|PhpClass|PhpInterface $obj): array;
+
+	/**
+	 * @phpstan-return SourceArray
+	 */
+	public function renderAttribute(PhpAttribute $attr): array;
 }

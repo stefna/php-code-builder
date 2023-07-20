@@ -2,8 +2,10 @@
 
 namespace Stefna\PhpCodeBuilder\Tests\Renderer;
 
+use JetBrains\PhpStorm\ArrayShape;
 use PHPUnit\Framework\TestCase;
 use Stefna\OpenApiRuntime\ServerConfiguration\SecurityScheme;
+use Stefna\PhpCodeBuilder\PhpAttribute;
 use Stefna\PhpCodeBuilder\PhpDocComment;
 use Stefna\PhpCodeBuilder\PhpVariable;
 use Stefna\PhpCodeBuilder\Renderer\Php74Renderer;
@@ -290,6 +292,34 @@ final class PhpVariableTest extends TestCase
 		$this->assertSame([
 			'/** @var mixed */',
 			'protected $test;',
+		], $renderer->renderVariable($variable));
+	}
+
+	public function testAttributesOn74(): void
+	{
+		$variable = PhpVariable::protected('test', Type::fromString('array<string, scalar>'));
+		$variable->addAttribute(new PhpAttribute(HiddenVariable::class));
+		$variable->addAttribute(new PhpAttribute(ArrayShape::class, '["f" => "int", "string", "x" => "float"]'));
+		$renderer = new Php74Renderer();
+
+		$this->assertSame([
+			'/** @var array<string, scalar> */',
+			'protected array $test;',
+		], $renderer->renderVariable($variable));
+	}
+
+	public function testAttributes(): void
+	{
+		$variable = PhpVariable::protected('test', Type::fromString('array<string, scalar>'));
+		$variable->addAttribute(new PhpAttribute(HiddenVariable::class));
+		$variable->addAttribute(new PhpAttribute(ArrayShape::class, '["f" => "int", "string", "x" => "float"]'));
+		$renderer = new Php8Renderer();
+
+		$this->assertSame([
+			'/** @var array<string, scalar> */',
+			'#[HiddenVariable]',
+			'#[ArrayShape(["f" => "int", "string", "x" => "float"])]',
+			'protected array $test;',
 		], $renderer->renderVariable($variable));
 	}
 }

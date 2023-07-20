@@ -28,6 +28,12 @@ class Php74Renderer extends Php7Renderer
 		if ($comment) {
 			$ret = FlattenSource::applySourceOn($this->renderComment($comment), $ret);
 		}
+		$attributes = $variable->getAttributes();
+		if ($attributes) {
+			foreach ($attributes as $attr) {
+				$ret = FlattenSource::applySourceOn($this->renderAttribute($attr), $ret);
+			}
+		}
 
 		$line = $this->formatVariableModifiers($variable, $variable->getType(), $parent);
 		$line[] = '$' . $variable->getIdentifier()->getName();

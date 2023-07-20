@@ -16,6 +16,8 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
  */
 class PhpVariable implements CodeInterface
 {
+	use AttributeAware;
+
 	public const PRIVATE_ACCESS = 'private';
 	public const PROTECTED_ACCESS = 'protected';
 	public const PUBLIC_ACCESS = 'public';

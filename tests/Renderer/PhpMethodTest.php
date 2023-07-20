@@ -3,6 +3,7 @@
 namespace Stefna\PhpCodeBuilder\Tests\Renderer;
 
 use PHPUnit\Framework\TestCase;
+use Stefna\PhpCodeBuilder\PhpAttribute;
 use Stefna\PhpCodeBuilder\PhpMethod;
 use Stefna\PhpCodeBuilder\PhpParam;
 use Stefna\PhpCodeBuilder\PhpVariable;
@@ -349,5 +350,25 @@ final class PhpMethodTest extends TestCase
 		$param->allowNull();
 
 		$this->assertSame('mixed $test', (new Php8Renderer())->renderParam($param));
+	}
+
+	public function testParamAttributeWithPromotedProperties(): void
+	{
+
+		$type = Type::fromString('int');
+		$param1 = new PhpParam('test1', $type, autoCreateVariable: true);
+		$param1->addAttribute(new PhpAttribute(HiddenVariable::class));
+
+		$param2 = new PhpParam('test2', $type, autoCreateVariable: true);
+		$param3 = new PhpParam('test3', $type, autoCreateVariable: true);
+		$param3->getVariable()?->addAttribute(new PhpAttribute(TestAttribute::class, '1'));
+		$ctor = PhpMethod::constructor([
+			$param1,
+			$param2,
+			$param3,
+		], [], true);
+
+		$renderer = new Php8Renderer();
+		$this->assertSourceResult($renderer->renderMethod($ctor), 'PhpMethodTest.testParamAttributeWithPromotedProperties');
 	}
 }

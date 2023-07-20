@@ -5,6 +5,7 @@ namespace Stefna\PhpCodeBuilder\Renderer;
 use Stefna\PhpCodeBuilder\Exception\InvalidCode;
 use Stefna\PhpCodeBuilder\FlattenSource;
 use Stefna\PhpCodeBuilder\FormatValue;
+use Stefna\PhpCodeBuilder\PhpAttribute;
 use Stefna\PhpCodeBuilder\PhpDocComment;
 use Stefna\PhpCodeBuilder\PhpDocElementFactory;
 use Stefna\PhpCodeBuilder\PhpFunction;
@@ -69,22 +70,23 @@ class Php8Renderer extends Php74Renderer
 	 */
 	public function renderParams(PhpFunction $function, PhpParam ...$params): array|string
 	{
-		$propertyPromotion = false;
+		$multiLine = false;
 		if ($function instanceof PhpMethod &&
 			$function->isConstructor() &&
 			$function->doConstructorAutoAssign()
 		) {
-			$propertyPromotion = true;
+			$multiLine = true;
 		}
 
 		$docBlock = $function->getComment() ?? new PhpDocComment();
 		$parameterStrings = [];
 		foreach ($params as $param) {
+			$attributes = [...$param->getAttributes(), ...($param->getVariable()?->getAttributes() ?? [])];
 			if ($param->getType()->needDockBlockTypeHint() && !$param->getType()->isUnion()) {
 				$docBlock->addParam(PhpDocElementFactory::getParam($param->getType(), $param->getName()));
 			}
 			$paramStr = $this->renderParam($param);
-			if ($propertyPromotion && $param->getVariable()) {
+			if ($multiLine && $param->getVariable()) {
 				$paramStr = $this->renderPromotedPropertyModifiers(
 					$param,
 					$param->getVariable(),
@@ -92,10 +94,16 @@ class Php8Renderer extends Php74Renderer
 					$function,
 				) . ' ' . $paramStr;
 			}
+			if ($attributes) {
+				$multiLine = true;
+				foreach ($attributes as $attr) {
+					$parameterStrings[] = $this->renderAttribute($attr)[0];// todo deal with multiline attributes
+				}
+			}
 			$parameterStrings[] = $paramStr . ',';
 		}
 
-		if ($propertyPromotion || count($params) > 2) {
+		if ($multiLine || count($params) > 2) {
 			return $parameterStrings;
 		}
 
@@ -181,5 +189,25 @@ class Php8Renderer extends Php74Renderer
 		PhpMethod $method,
 	): string {
 		return $variable->getAccess() ?: 'protected';
+	}
+
+	public function renderAttribute(PhpAttribute $attr): array
+	{
+		$args = $attr->getArgs();
+		$start = '#['.$attr->getIdentifier()->toString();
+		if (!$args) {
+			return [
+				$start . ']',
+			];
+		}
+		if (count($args) < 3) {
+			$argString = implode(', ', $args);
+		}
+		else {
+			$argString = implode(',' . PHP_EOL, $args);
+		}
+		return [
+			$start.'(' . $argString . ')]',
+		];
 	}
 }
