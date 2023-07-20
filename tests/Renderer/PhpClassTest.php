@@ -4,6 +4,7 @@ namespace Stefna\PhpCodeBuilder\Tests\Renderer;
 
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\FlattenSource;
+use Stefna\PhpCodeBuilder\PhpAttribute;
 use Stefna\PhpCodeBuilder\PhpClass;
 use Stefna\PhpCodeBuilder\PhpConstant;
 use Stefna\PhpCodeBuilder\PhpDocComment;
@@ -390,5 +391,22 @@ final class PhpClassTest extends TestCase
 		foreach ($class->getUses() as $type) {
 			$this->assertNotEmpty($type->getName());
 		}
+	}
+
+	public function testVariableAttributeFromCtorNotPropegateToSetter(): void
+	{
+		$class = new PhpClass(Identifier::fromString('Test'));
+
+		$type = Type::fromString('int');
+		$param = new PhpParam('test3', $type, autoCreateVariable: true, autoCreateVariableSetter: true);
+		$param->getVariable()?->addAttribute(new PhpAttribute(TestAttribute::class, '1'));
+		$ctor = PhpMethod::constructor([
+			$param,
+		], [], true);
+
+		$class->addMethod($ctor);
+
+		$renderer = new Php8Renderer();
+		$this->assertSourceResult($renderer->render($class), 'PhpClassTest.testVariableAttributeFromCtorNotPropegateToSetter');
 	}
 }

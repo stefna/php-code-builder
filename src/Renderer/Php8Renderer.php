@@ -71,17 +71,22 @@ class Php8Renderer extends Php74Renderer
 	public function renderParams(PhpFunction $function, PhpParam ...$params): array|string
 	{
 		$multiLine = false;
+		$includeVariableAttributes = false;
 		if ($function instanceof PhpMethod &&
 			$function->isConstructor() &&
 			$function->doConstructorAutoAssign()
 		) {
 			$multiLine = true;
+			$includeVariableAttributes = true;
 		}
 
 		$docBlock = $function->getComment() ?? new PhpDocComment();
 		$parameterStrings = [];
 		foreach ($params as $param) {
-			$attributes = [...$param->getAttributes(), ...($param->getVariable()?->getAttributes() ?? [])];
+			$attributes = [
+				...$param->getAttributes(),
+				...($includeVariableAttributes ? ($param->getVariable()?->getAttributes() ?? []) : []),
+			];
 			if ($param->getType()->needDockBlockTypeHint() && !$param->getType()->isUnion()) {
 				$docBlock->addParam(PhpDocElementFactory::getParam($param->getType(), $param->getName()));
 			}

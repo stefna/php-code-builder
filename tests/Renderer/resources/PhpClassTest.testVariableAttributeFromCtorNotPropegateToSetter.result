@@ -1,0 +1,12 @@
+class Test
+{
+	public function __construct(
+		#[TestAttribute(1)]
+		private int $test3,
+	) {}
+
+	public function setTest3(int $test3): void
+	{
+		$this->test3 = $test3;
+	}
+}
