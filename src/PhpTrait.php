@@ -8,6 +8,8 @@ use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 
 class PhpTrait
 {
+	use AttributeAware;
+
 	protected const TYPE = 'trait';
 
 	/** @var Identifier[] */

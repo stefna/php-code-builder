@@ -13,6 +13,8 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
  */
 class PhpMethod extends PhpFunction
 {
+	use AttributeAware;
+
 	public const PRIVATE_ACCESS = 'private';
 	public const PROTECTED_ACCESS = 'protected';
 	public const PUBLIC_ACCESS = 'public';
