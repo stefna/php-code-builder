@@ -4,6 +4,7 @@ namespace Stefna\PhpCodeBuilder\Tests\Renderer;
 
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\PhpAttribute;
+use Stefna\PhpCodeBuilder\PhpClass;
 use Stefna\PhpCodeBuilder\PhpMethod;
 use Stefna\PhpCodeBuilder\PhpParam;
 use Stefna\PhpCodeBuilder\PhpVariable;
@@ -354,7 +355,6 @@ final class PhpMethodTest extends TestCase
 
 	public function testParamAttributeWithPromotedProperties(): void
 	{
-
 		$type = Type::fromString('int');
 		$param1 = new PhpParam('test1', $type, autoCreateVariable: true);
 		$param1->addAttribute(new PhpAttribute(HiddenVariable::class));
@@ -378,5 +378,24 @@ final class PhpMethodTest extends TestCase
 		$param->markAsVariadic();
 
 		$this->assertSame('int ...$test', (new Php8Renderer())->renderParam($param));
+	}
+
+	public function testVariadicParamInCtorAndPropertyPromotion(): void
+	{
+		$type = Type::fromString('int');
+		$param1 = new PhpParam('test1', $type, autoCreateVariable: true);
+		$param1->addAttribute(new PhpAttribute(HiddenVariable::class));
+
+		$param2 = new PhpParam('test2', $type, autoCreateVariable: true);
+		$param2->markAsVariadic();
+		$ctor = PhpMethod::constructor([
+			$param1,
+			$param2,
+		], [], true);
+
+		$c = new PhpClass('Test');
+		$c->addMethod($ctor);
+		$renderer = new Php8Renderer();
+		$this->assertSourceResult($renderer->renderClass($c), 'PhpMethodTest.testVariadicParamInCtorAndPropertyPromotion');
 	}
 }
