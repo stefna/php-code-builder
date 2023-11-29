@@ -15,16 +15,21 @@ class Php74Renderer extends Php7Renderer
 {
 	public function renderVariable(PhpVariable $variable, ?PhpTrait $parent = null): array|null
 	{
+		Type::setInvalidReturnTypes($this->invalidReturnTypes);
 		$ret = [];
 
 		if ($variable->getType()->isNullable() &&
 			$variable->getInitializedValue() === PhpVariable::NO_VALUE &&
-			$variable->getType()->getTypeHint()
+			$variable->getType()->getTypeHint() &&
+			$variable->getType()->getType() !== 'mixed'
 		) {
 			$variable->setInitializedValue(null);
 		}
 
 		$comment = $variable->getComment();
+		if (!$comment && $variable->getType()->needDockBlockTypeHint()) {
+			$comment = PhpDocComment::var($variable->getType());
+		}
 		if ($comment) {
 			$ret = FlattenSource::applySourceOn($this->renderComment($comment), $ret);
 		}
