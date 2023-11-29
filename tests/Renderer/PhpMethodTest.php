@@ -371,4 +371,12 @@ final class PhpMethodTest extends TestCase
 		$renderer = new Php8Renderer();
 		$this->assertSourceResult($renderer->renderMethod($ctor), 'PhpMethodTest.testParamAttributeWithPromotedProperties');
 	}
+
+	public function testVariadicParam(): void
+	{
+		$param = new PhpParam('test', Type::fromString('int'));
+		$param->markAsVariadic();
+
+		$this->assertSame('int ...$test', (new Php8Renderer())->renderParam($param));
+	}
 }

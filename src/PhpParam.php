@@ -19,6 +19,7 @@ class PhpParam
 	 * Optional connected method or function
 	 */
 	private null|PhpFunction|PhpMethod $parent = null;
+	protected bool $variadic = false;
 
 	public static function fromVariable(PhpVariable $var): self
 	{
@@ -40,10 +41,14 @@ class PhpParam
 	public function getVariable(): ?PhpVariable
 	{
 		if (!$this->variable && $this->autoCreateVariable) {
+			$type = $this->type;
+			if ($this->isVariadic()) {
+				$type = Type::fromString($type->getType() . '[]');
+			}
 			$this->variable = new PhpVariable(
 				$this->autoCreateVariableAccess,
 				Identifier::simple($this->name),
-				$this->type,
+				$type,
 				autoSetter: $this->autoCreateVariableSetter,
 				autoGetter: $this->autoCreateVariableGetter,
 			);
@@ -108,5 +113,18 @@ class PhpParam
 	public function __clone()
 	{
 		$this->type = clone $this->type;
+	}
+
+	public function markAsVariadic($flag = true): void
+	{
+		$this->variadic = $flag;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isVariadic(): bool
+	{
+		return $this->variadic;
 	}
 }

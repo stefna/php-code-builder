@@ -490,7 +490,12 @@ class Php7Renderer implements FullRendererInterface
 		if ($param->getType()->getTypeHint()) {
 			$ret .= $param->getType()->getTypeHint();
 		}
-		$ret .= ' $' . $param->getName();
+
+		$ret .= ' ';
+		if ($param->isVariadic()) {
+			$ret .= '...';
+		}
+		$ret .= '$' . $param->getName();
 		if ($param->getValue() !== PhpParam::NO_VALUE) {
 			$value = FormatValue::format($param->getValue());
 			if (is_array($value)) {

@@ -133,8 +133,17 @@ class Php8Renderer extends Php74Renderer
 		elseif ($type->getTypeHint()) {
 			$ret .= $type->getTypeHint();
 		}
-		$ret .= ' $' . $param->getName();
+
+		$ret .= ' ';
+		if ($param->isVariadic()) {
+			$ret .= '...';
+		}
+
+		$ret .= '$' . $param->getName();
 		if ($param->getValue() !== PhpParam::NO_VALUE) {
+			if ($param->isVariadic()) {
+				throw new \RuntimeException('Variadic params can\'t have default values');
+			}
 			$value = FormatValue::format($param->getValue());
 			if (is_array($value)) {
 				if (count($value) === 1) {
