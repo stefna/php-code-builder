@@ -10,6 +10,7 @@ use Stefna\PhpCodeBuilder\PhpParam;
 use Stefna\PhpCodeBuilder\PhpVariable;
 use Stefna\PhpCodeBuilder\Renderer\Php7Renderer;
 use Stefna\PhpCodeBuilder\Renderer\Php8Renderer;
+use Stefna\PhpCodeBuilder\ValueObject\Identifier;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 final class PhpMethodTest extends TestCase
