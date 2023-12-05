@@ -41,7 +41,6 @@ class FormatValue
 			'object', 'resource', 'resource (closed)', 'unknown type' =>
 				throw new \RuntimeException('Not supported value type'),
 			'string' => "'$value'",
-			default => $value,
 		};
 	}
 }
