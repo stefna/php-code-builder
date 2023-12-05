@@ -67,7 +67,6 @@ class Php8Renderer extends Php74Renderer
 	 */
 	public function renderVariable(PhpVariable $variable, ?PhpTrait $parent = null): array|null
 	{
-		if ($variable->isPromoted()) {
 		if ($variable->isPromoted() && $this->canPromoteParam($variable->getType())) {
 			return null;
 		}
