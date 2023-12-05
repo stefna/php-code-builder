@@ -115,7 +115,7 @@ class PhpParam
 		$this->type = clone $this->type;
 	}
 
-	public function markAsVariadic($flag = true): void
+	public function markAsVariadic(bool $flag = true): void
 	{
 		$this->variadic = $flag;
 	}

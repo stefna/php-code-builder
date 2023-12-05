@@ -16,7 +16,7 @@ parameters:
 			path: src/CodeHelper/Methods/JsonSerializeMethod.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function implode expects array\\<string\\>, array\\<int, array\\|string\\> given\\.$#"
+			message: "#^Parameter \\#2 \\$array of function implode expects array\\<string\\>, array\\<int\\<0, max\\>, array\\|string\\> given\\.$#"
 			count: 1
 			path: src/CodeHelper/StaticMethodCall.php
 

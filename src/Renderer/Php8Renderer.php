@@ -243,6 +243,9 @@ class Php8Renderer extends Php74Renderer
 		return $variable->getAccess() ?: 'protected';
 	}
 
+	/**
+	 * @return list<string>
+	 */
 	public function renderAttribute(PhpAttribute $attr): array
 	{
 		$args = $attr->getArgs();
