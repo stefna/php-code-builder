@@ -111,11 +111,11 @@ class Php8Renderer extends Php74Renderer
 			if ($multiLine && $param->getVariable()) {
 				if ($this->canPromoteParam($param)) {
 					$paramStr = $this->renderPromotedPropertyModifiers(
-							$param,
-							$param->getVariable(),
-							// @phpstan-ignore-next-line - check happens on line 57
-							$function,
-						) . ' ' . $paramStr;
+						$param,
+						$param->getVariable(),
+						// @phpstan-ignore-next-line - check happens on line 57
+						$function,
+					) . ' ' . $paramStr;
 				}
 				else {
 					$paramStr = $this->renderParam($param);
