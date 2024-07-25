@@ -92,4 +92,12 @@ final class PhpConstantTest extends TestCase
 
 		$this->assertSame('public const TEST_CASE = \'test_value\';', trim($render->render($const)));
 	}
+
+	public function testUpperCaseWithLeadingDigit(): void
+	{
+		$const = PhpConstant::public(identifier: '3DS');
+		$render = new Php7Renderer();
+
+		$this->assertSame(['public const _3DS = \'3DS\';'], $render->renderConstant($const));
+	}
 }

@@ -39,20 +39,20 @@ class PhpConstant
 	public function getName(): string
 	{
 		$currentName = $this->identifier;
-		$name = (string)preg_replace('/^(\d)/', '_$0', $currentName);
-		$name = str_replace('-', '_', $name);
+		$sanitizedName = (string)preg_replace('/^(\d)/', '_$0', $currentName);
+		$sanitizedName = str_replace('-', '_', $sanitizedName);
 
 		if ($this->case === self::CASE_NONE) {
-			return $name;
+			return $sanitizedName;
 		}
 
-		$name = (string)preg_replace('/(?<!^)[A-Z]/', '_$0', $name);
+		$name = (string)preg_replace('/(?<!^)[A-Z]/', '_$0', $sanitizedName);
 		if ($this->case === self::CASE_LOWER) {
 			return strtolower($name);
 		}
 
-		if ($currentName === strtoupper($currentName)) {
-			return $currentName;
+		if ($sanitizedName === strtoupper($sanitizedName)) {
+			return $sanitizedName;
 		}
 		return strtoupper($name);
 	}
