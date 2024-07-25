@@ -16,7 +16,7 @@ final class ExtendsField extends PhpDocElement implements HasIdentifiers
 
 	public function __construct(
 		private Identifier $extends,
-		TemplateField|Identifier ...$templateFields
+		TemplateField|Identifier ...$templateFields,
 	) {
 		parent::__construct('extends', Type::empty(), '', '');
 		$this->templateFields = $templateFields;

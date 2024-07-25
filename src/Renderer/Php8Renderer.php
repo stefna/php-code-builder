@@ -89,7 +89,8 @@ class Php8Renderer extends Php74Renderer
 	{
 		$multiLine = false;
 		$includeVariableAttributes = false;
-		if ($function instanceof PhpMethod &&
+		if (
+			$function instanceof PhpMethod &&
 			$function->isConstructor() &&
 			$function->doConstructorAutoAssign()
 		) {
@@ -205,7 +206,8 @@ class Php8Renderer extends Php74Renderer
 		$ret = $this->renderFunction($method);
 
 		if ($method->isConstructor()) {
-			if (is_array($ret[array_key_last($ret) - 1]) &&
+			if (
+				is_array($ret[array_key_last($ret) - 1]) &&
 				count($ret[array_key_last($ret) - 1]) === 0
 			) {
 				unset($ret[array_key_last($ret) - 1]);
@@ -249,7 +251,7 @@ class Php8Renderer extends Php74Renderer
 	public function renderAttribute(PhpAttribute $attr): array
 	{
 		$args = $attr->getArgs();
-		$start = '#['.$attr->getIdentifier()->toString();
+		$start = '#[' . $attr->getIdentifier()->toString();
 		if (!$args) {
 			return [
 				$start . ']',
@@ -262,7 +264,7 @@ class Php8Renderer extends Php74Renderer
 			$argString = implode(',' . PHP_EOL, $args);
 		}
 		return [
-			$start.'(' . $argString . ')]',
+			$start . '(' . $argString . ')]',
 		];
 	}
 

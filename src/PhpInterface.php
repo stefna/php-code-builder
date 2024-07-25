@@ -65,7 +65,7 @@ class PhpInterface extends PhpTrait
 		return parent::addVariable($variable);
 	}
 
-	public static function fromClass(Identifier $identifier, PhpClass  $class): self
+	public static function fromClass(Identifier $identifier, PhpClass $class): self
 	{
 		$interface = new self($identifier);
 		$interface->uses = $class->uses;

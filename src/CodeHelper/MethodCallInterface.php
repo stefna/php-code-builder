@@ -4,5 +4,4 @@ namespace Stefna\PhpCodeBuilder\CodeHelper;
 
 interface MethodCallInterface
 {
-
 }

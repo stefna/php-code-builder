@@ -219,7 +219,8 @@ class PhpMethod extends PhpFunction
 		if ($this->constructorAutoAssign) {
 			foreach ($this->params as $param) {
 				$var = $param->getVariable();
-				if ($var &&
+				if (
+					$var &&
 					!$parent instanceof PhpInterface &&
 					!$parent->hasVariable($var->getIdentifier())
 				) {

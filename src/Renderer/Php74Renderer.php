@@ -18,7 +18,8 @@ class Php74Renderer extends Php7Renderer
 		Type::setInvalidReturnTypes($this->invalidReturnTypes);
 		$ret = [];
 
-		if ($variable->getType()->isNullable() &&
+		if (
+			$variable->getType()->isNullable() &&
 			$variable->getInitializedValue() === PhpVariable::NO_VALUE &&
 			$variable->getType()->getTypeHint() &&
 			$variable->getType()->getType() !== 'mixed'

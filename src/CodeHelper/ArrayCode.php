@@ -51,12 +51,13 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 				foreach ($formattedValue as $z) {
 					$rows[] = $z;
 				}
-				$rows[] = $lastValue .',';
+				$rows[] = $lastValue . ',';
 				continue;
 			}
 
 			$formattedValue = FormatValue::format($value);
-			if ($value instanceof CodeInterface &&
+			if (
+				$value instanceof CodeInterface &&
 				is_array($formattedValue) &&
 				count($formattedValue) === 1 &&
 				is_string($formattedValue[0])
@@ -85,7 +86,7 @@ final class ArrayCode implements CodeInterface, \ArrayAccess, \IteratorAggregate
 			}
 			elseif (is_string($formattedValue)) {
 				$rows[] = sprintf(
-					"%s,",
+					'%s,',
 					$formattedValue
 				);
 			}

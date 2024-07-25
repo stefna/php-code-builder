@@ -27,7 +27,7 @@ final class ReturnCodeTest extends TestCase
 	{
 		$array = new ReturnCode(new ArrayCode([
 			'test1' => 2,
-			'test2' => "string",
+			'test2' => 'string',
 			'test3' => true,
 		]));
 

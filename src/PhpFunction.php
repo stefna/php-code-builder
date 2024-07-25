@@ -28,7 +28,7 @@ class PhpFunction
 		array $params,
 		protected array|CodeInterface $body,
 		protected ?Type $returnTypeHint = null,
-		protected ?PhpDocComment $comment = null
+		protected ?PhpDocComment $comment = null,
 	) {
 		$this->identifier = Identifier::fromUnknown($identifier);
 		foreach ($params as $param) {

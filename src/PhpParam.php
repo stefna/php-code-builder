@@ -64,7 +64,8 @@ class PhpParam
 	public function setParent(PhpFunction|PhpMethod $parent): void
 	{
 		$this->parent = $parent;
-		if ($this->variable &&
+		if (
+			$this->variable &&
 			$parent instanceof PhpMethod &&
 			$parent->doConstructorAutoAssign()
 		) {

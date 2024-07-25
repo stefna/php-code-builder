@@ -32,7 +32,7 @@ final class CastCode implements CodeInterface
 	public function getSourceArray(): array
 	{
 		return [
-			'(' . $this->castType .')' . $this->reference->toString(),
+			'(' . $this->castType . ')' . $this->reference->toString(),
 		];
 	}
 }

@@ -20,7 +20,7 @@ final class ClassMethodCall implements CodeInterface, MethodCallInterface
 	public function __construct(
 		private VariableReference $class,
 		private string $method,
-		private array $params = []
+		private array $params = [],
 	) {
 		$this->identifier = $class->toString();
 	}

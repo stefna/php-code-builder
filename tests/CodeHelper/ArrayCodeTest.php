@@ -15,7 +15,7 @@ final class ArrayCodeTest extends TestCase
 	{
 		$array = new ArrayCode([
 			'test1' => 2,
-			'test2' => "string",
+			'test2' => 'string',
 			'test3' => true,
 		]);
 
@@ -30,7 +30,7 @@ final class ArrayCodeTest extends TestCase
 	{
 		$array = new ArrayCode([
 			'test1' => 2,
-			'test2' => "string",
+			'test2' => 'string',
 			'test3' => true,
 		]);
 
@@ -49,7 +49,7 @@ final class ArrayCodeTest extends TestCase
 	{
 		$array = new ArrayCode([
 			'test1' => 2,
-			'test2' => "string",
+			'test2' => 'string',
 			'test3' => true,
 			'test4' => [
 				'sub1' => 'test',
@@ -117,9 +117,9 @@ final class ArrayCodeTest extends TestCase
 			$var,
 		]);
 
-		$this->assertSame("[
-	\$this->testVar,
-]", trim(FlattenSource::source($array->getSourceArray())));
+		$this->assertSame('[
+	$this->testVar,
+]', trim(FlattenSource::source($array->getSourceArray())));
 	}
 
 	public function testListOfTypes(): void

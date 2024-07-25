@@ -65,8 +65,8 @@ final class InstantiateClassTest extends TestCase
 		$this->assertSame([
 			'new self(',
 			[
-				"DateTimeImmutable::class,",
-				"EnumCase::class,",
+				'DateTimeImmutable::class,',
+				'EnumCase::class,',
 				'[',
 				[
 					"'id',",

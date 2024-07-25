@@ -19,6 +19,6 @@ final class VariableReferenceTest extends TestCase
 		$key = new VariableReference('key');
 		$var = VariableReference::array('input', $key);
 
-		$this->assertSame("\$input[\$key]", $var->toString());
+		$this->assertSame('$input[$key]', $var->toString());
 	}
 }

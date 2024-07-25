@@ -9,7 +9,7 @@ use Stefna\PhpCodeBuilder\ValueObject\Type;
  *
  * @author Fredrik Wallgren <fredrik.wallgren@gmail.com>
  * @author Andreas Sundqvist <andreas@stefna.is>
- * @license http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license http://www.opensource.org/licenses/mit-license.php MIT License
  */
 class PhpDocElement
 {
@@ -19,7 +19,7 @@ class PhpDocElement
 		private string $type,
 		string|Type $dataType,
 		private string $variableName,
-		private string $description
+		private string $description,
 	) {
 		$this->datatype = is_string($dataType) ? Type::fromString($dataType) : $dataType;
 	}
