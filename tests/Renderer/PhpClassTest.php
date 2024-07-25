@@ -393,7 +393,7 @@ final class PhpClassTest extends TestCase
 		}
 	}
 
-	public function testVariableAttributeFromCtorNotPropegateToSetter(): void
+	public function testVariableAttributeFromCtorNotPropagateToSetter(): void
 	{
 		$class = new PhpClass(Identifier::fromString('Test'));
 
@@ -407,6 +407,9 @@ final class PhpClassTest extends TestCase
 		$class->addMethod($ctor);
 
 		$renderer = new Php8Renderer();
-		$this->assertSourceResult($renderer->render($class), 'PhpClassTest.testVariableAttributeFromCtorNotPropegateToSetter');
+		$this->assertSourceResult(
+			$renderer->render($class),
+			'PhpClassTest.testVariableAttributeFromCtorNotPropegateToSetter',
+		);
 	}
 }

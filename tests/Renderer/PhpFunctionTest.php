@@ -19,7 +19,7 @@ final class PhpFunctionTest extends TestCase
 {
 	use AssertResultTrait;
 
-	public function testSimpleFunction()
+	public function testSimpleFunction(): void
 	{
 		$func = new PhpFunction(
 			'testFunction',
@@ -39,7 +39,7 @@ final class PhpFunctionTest extends TestCase
 		$this->assertSourceResult($renderer->renderFunction($func), 'PhpFunctionTest.' . __FUNCTION__);
 	}
 
-	public function testFunctionWithMoreThan3Params()
+	public function testFunctionWithMoreThan3Params(): void
 	{
 		$param3 = new PhpParam('test3', Type::fromString('string'));
 		$func = (new PhpFunction(
@@ -61,7 +61,7 @@ final class PhpFunctionTest extends TestCase
 		$this->assertSourceResult($renderer->render($func), 'PhpFunctionTest.' . __FUNCTION__);
 	}
 
-	public function testFunctionModifyParam()
+	public function testFunctionModifyParam(): void
 	{
 		$func = new PhpFunction(
 			'testFunction',
@@ -87,7 +87,7 @@ final class PhpFunctionTest extends TestCase
 		$this->assertSourceResult($renderer->renderFunction($func), 'PhpFunctionTest.' . __FUNCTION__);
 	}
 
-	public function testCloneHandlingParams()
+	public function testCloneHandlingParams(): void
 	{
 		$func = new PhpFunction('testFunction', [
 			new PhpParam('test', Type::fromString('string')),
@@ -102,7 +102,7 @@ final class PhpFunctionTest extends TestCase
 		);
 	}
 
-	public function testLegacyFunctionTestSimple()
+	public function testLegacyFunctionTestSimple(): void
 	{
 		$func = new PhpFunction('test', [
 			new PhpParam('foo', Type::fromString('string|int')),
@@ -123,7 +123,7 @@ final class PhpFunctionTest extends TestCase
 		], $renderer->renderFunction($func));
 	}
 
-	public function testLegacyFunctionTestWithoutReturnType()
+	public function testLegacyFunctionTestWithoutReturnType(): void
 	{
 		$func = new PhpFunction('test', [
 			new PhpParam('foo', Type::fromString('string|int')),
@@ -142,7 +142,7 @@ final class PhpFunctionTest extends TestCase
 		], $renderer->renderFunction($func));
 	}
 
-	public function testLegacyFunctionTestComplexSource()
+	public function testLegacyFunctionTestComplexSource(): void
 	{
 		$func = new PhpFunction('test', [
 			new PhpParam('foo', Type::fromString('string|int')),
@@ -169,7 +169,7 @@ function test($foo): int
 ', FlattenSource::source($renderer->renderFunction($func)));
 	}
 
-	public function testLegacyFunctionTestMultilineParams()
+	public function testLegacyFunctionTestMultilineParams(): void
 	{
 		$func = new PhpFunction('test', [
 			new PhpParam('fooIpsumLong', Type::fromString('string')),

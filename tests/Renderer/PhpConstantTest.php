@@ -8,7 +8,7 @@ use Stefna\PhpCodeBuilder\Renderer\Php7Renderer;
 
 final class PhpConstantTest extends TestCase
 {
-	public function testSimpleConstantWithoutValue()
+	public function testSimpleConstantWithoutValue(): void
 	{
 		$const = PhpConstant::private('test');
 
@@ -17,7 +17,7 @@ final class PhpConstantTest extends TestCase
 		$this->assertSame(['private const TEST = \'test\';'], $render->renderConstant($const));
 	}
 
-	public function testArrayConstant()
+	public function testArrayConstant(): void
 	{
 		$const = PhpConstant::protected('test', [
 			'test' => 1,
@@ -36,7 +36,7 @@ final class PhpConstantTest extends TestCase
 		], $render->renderConstant($const));
 	}
 
-	public function testLowerCase()
+	public function testLowerCase(): void
 	{
 		$const = new PhpConstant(
 			access: PhpConstant::PROTECTED_ACCESS,
@@ -48,7 +48,7 @@ final class PhpConstantTest extends TestCase
 		$this->assertSame(['protected const test = \'test\';'], $render->renderConstant($const));
 	}
 
-	public function testNoCase()
+	public function testNoCase(): void
 	{
 		$const = new PhpConstant(
 			access: PhpConstant::PUBLIC_ACCESS,
@@ -60,7 +60,7 @@ final class PhpConstantTest extends TestCase
 		$this->assertSame(['public const testCase = \'testCase\';'], $render->renderConstant($const));
 	}
 
-	public function testUpperCaseNoTransform()
+	public function testUpperCaseNoTransform(): void
 	{
 		$const = PhpConstant::public(identifier: 'TEST_CASE');
 		$render = new Php7Renderer();
@@ -68,7 +68,7 @@ final class PhpConstantTest extends TestCase
 		$this->assertSame(['public const TEST_CASE = \'TEST_CASE\';'], $render->renderConstant($const));
 	}
 
-	public function testChangeCase()
+	public function testChangeCase(): void
 	{
 		$const = new PhpConstant(
 			access: PhpConstant::PROTECTED_ACCESS,
@@ -84,7 +84,7 @@ final class PhpConstantTest extends TestCase
 		$this->assertSame(['protected const TEST = \'test\';'], $render->renderConstant($const));
 	}
 
-	public function testChangeValue()
+	public function testChangeValue(): void
 	{
 		$const = PhpConstant::public(identifier: 'TEST_CASE');
 		$const->setValue('test_value');

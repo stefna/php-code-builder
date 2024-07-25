@@ -12,7 +12,7 @@ final class PhpDocCommentTest extends TestCase
 {
 	use AssertResultTrait;
 
-	public function testVarBlock()
+	public function testVarBlock(): void
 	{
 		$comment = PhpDocComment::var(Type::fromString('string'));
 		$renderer = new Php7Renderer();
@@ -20,7 +20,7 @@ final class PhpDocCommentTest extends TestCase
 		$this->assertSame(['/** @var string */'], $renderer->renderComment($comment));
 	}
 
-	public function testWithDescription()
+	public function testWithDescription(): void
 	{
 		$comment = new PhpDocComment('Test Description');
 		$comment->setParams(PhpDocElementFactory::getParam('int', '$param', 'test desc'));
@@ -30,7 +30,7 @@ final class PhpDocCommentTest extends TestCase
 		$this->assertSourceResult($renderer->renderComment($comment), 'PhpDocCommentTest.' . __FUNCTION__);
 	}
 
-	public function testWithoutDescription()
+	public function testWithoutDescription(): void
 	{
 		$comment = new PhpDocComment();
 		$comment->setParams(PhpDocElementFactory::getParam('int', '$param', 'test desc'));
@@ -40,7 +40,7 @@ final class PhpDocCommentTest extends TestCase
 		$this->assertSourceResult($renderer->renderComment($comment), 'PhpDocCommentTest.' . __FUNCTION__);
 	}
 
-	public function testOnlyDescription()
+	public function testOnlyDescription(): void
 	{
 		$comment = new PhpDocComment('test');
 
@@ -48,7 +48,7 @@ final class PhpDocCommentTest extends TestCase
 		$this->assertSourceResult($renderer->renderComment($comment), 'PhpDocCommentTest.' . __FUNCTION__);
 	}
 
-	public function testEmpty()
+	public function testEmpty(): void
 	{
 		$comment = new PhpDocComment();
 		$renderer = new Php7Renderer();
@@ -56,7 +56,7 @@ final class PhpDocCommentTest extends TestCase
 		$this->assertCount(0, $renderer->renderComment($comment));
 	}
 
-	public function testDeprecation()
+	public function testDeprecation(): void
 	{
 		$deprecated = PhpDocElementFactory::getDeprecated('use X instead');
 		$comment = new PhpDocComment();
@@ -66,7 +66,7 @@ final class PhpDocCommentTest extends TestCase
 		$this->assertSourceResult($renderer->renderComment($comment), 'PhpDocCommentTest.' . __FUNCTION__);
 	}
 
-	public function testLicense()
+	public function testLicense(): void
 	{
 		$info = 'https://github.com/stefnadev/log/blob/develop/LICENSE.md MIT Licence';
 		$licence = PhpDocElementFactory::getLicence($info);
@@ -77,7 +77,7 @@ final class PhpDocCommentTest extends TestCase
 		$this->assertSourceResult($renderer->renderComment($comment), 'PhpDocCommentTest.' . __FUNCTION__);
 	}
 
-	public function testGenerated()
+	public function testGenerated(): void
 	{
 		$licence = PhpDocElementFactory::getGenerated('From X');
 		$comment = new PhpDocComment();
@@ -91,7 +91,7 @@ final class PhpDocCommentTest extends TestCase
 		], $renderer->renderComment($comment));
 	}
 
-	public function testCheckForParamInCommentAndRemove()
+	public function testCheckForParamInCommentAndRemove(): void
 	{
 		$comment = new PhpDocComment('Test Description');
 		$comment->setParams(

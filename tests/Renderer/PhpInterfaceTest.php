@@ -2,6 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder\Tests\Renderer;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\PhpClass;
 use Stefna\PhpCodeBuilder\PhpConstant;
@@ -19,7 +20,7 @@ final class PhpInterfaceTest extends TestCase
 {
 	use AssertResultTrait;
 
-	public function testSimpleInterface()
+	public function testSimpleInterface(): void
 	{
 		$interface = new PhpInterface(Identifier::fromString(\Test\TestInterface::class));
 		$interface->addMethod(PhpMethod::public('testMethod', [], []));
@@ -29,7 +30,7 @@ final class PhpInterfaceTest extends TestCase
 		$this->assertSourceResult($renderer->renderInterface($interface), 'PhpInterfaceTest.' . __FUNCTION__);
 	}
 
-	public function testExtendSingleInterface()
+	public function testExtendSingleInterface(): void
 	{
 		$interface = new PhpInterface(Identifier::fromString(\Test\TestInterface::class));
 		$interface->addMethod(PhpMethod::public('testMethod', [], []));
@@ -40,7 +41,7 @@ final class PhpInterfaceTest extends TestCase
 		$this->assertSourceResult($renderer->renderInterface($interface), 'PhpInterfaceTest.' . __FUNCTION__);
 	}
 
-	public function testExtendMultipleInterface()
+	public function testExtendMultipleInterface(): void
 	{
 		$interface = new PhpInterface(Identifier::fromString(\Test\TestInterface::class));
 		$interface->addMethod(PhpMethod::public('testMethod', [], []));
@@ -53,7 +54,7 @@ final class PhpInterfaceTest extends TestCase
 		$this->assertSourceResult($renderer->renderInterface($interface), 'PhpInterfaceTest.' . __FUNCTION__);
 	}
 
-	public function testInterfaceWithEverything()
+	public function testInterfaceWithEverything(): void
 	{
 		$interface = new PhpInterface(Identifier::fromString(\Test\TestInterface::class));
 		$interface->addMethod(PhpMethod::public('testMethod', [], []));
@@ -71,12 +72,10 @@ final class PhpInterfaceTest extends TestCase
 		$this->assertSourceResult($renderer->render($interface), 'PhpInterfaceTest.' . __FUNCTION__);
 	}
 
-	/**
-	 * @dataProvider privateProtectedStuff
-	 */
+	#[DataProvider('privateProtectedStuff')]
 	public function testAddingPrivateStuffToInterface(
 		PhpVariable|PhpConstant|PhpMethod $stuff,
-	) {
+	): void {
 		$interface = new PhpInterface(Identifier::fromString(\Test\TestInterface::class));
 
 		$this->expectException(\BadMethodCallException::class);
@@ -92,9 +91,7 @@ final class PhpInterfaceTest extends TestCase
 		}
 	}
 
-	/**
-	 * @dataProvider privateProtectedStuff
-	 */
+	#[DataProvider('privateProtectedStuff')]
 	public function testAddingPrivateStuffToInterfaceWithConvert(
 		PhpVariable|PhpConstant|PhpMethod $stuff,
 	): void {

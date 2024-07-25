@@ -2,6 +2,7 @@
 
 namespace ValueObject;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Stefna\PhpCodeBuilder\PhpClass;
 use Stefna\PhpCodeBuilder\ValueObject\Type;
 use PHPUnit\Framework\TestCase;
@@ -80,9 +81,7 @@ class TypeTest extends TestCase
 		$this->assertNotSame('\\' . \DateTimeImmutable::class, $type->getTypeHint());
 	}
 
-	/**
-	 * @dataProvider invalidInput
-	 */
+	#[DataProvider('invalidInput')]
 	public function testInvalidInput(string $input): void
 	{
 		$this->expectException(\InvalidArgumentException::class);
@@ -102,9 +101,7 @@ class TypeTest extends TestCase
 		];
 	}
 
-	/**
-	 * @dataProvider invalidTypeHints
-	 */
+	#[DataProvider('invalidTypeHints')]
 	public function testInvalidReturnTypeHints(string $input): void
 	{
 		Type::setInvalidReturnTypes([
@@ -129,9 +126,7 @@ class TypeTest extends TestCase
 		];
 	}
 
-	/**
-	 * @dataProvider arrayTypes
-	 */
+	#[DataProvider('arrayTypes')]
 	public function testArrayTypes(string $input, ?string $expectedType): void
 	{
 		$type = Type::fromString($input);
@@ -226,9 +221,7 @@ class TypeTest extends TestCase
 		$this->assertTrue($type->isNullable());
 	}
 
-	/**
-	 * @dataProvider nativeTypeProvider
-	 */
+	#[DataProvider('nativeTypeProvider')]
 	public function testIsNativeCheck(string $strType): void
 	{
 		$type = Type::fromString($strType);
@@ -236,9 +229,7 @@ class TypeTest extends TestCase
 		$this->assertTrue($type->isNative());
 	}
 
-	/**
-	 * @dataProvider notNativeTypeProvider
-	 */
+	#[DataProvider('notNativeTypeProvider')]
 	public function testIsNotNativeCheck(string $strType): void
 	{
 		$type = Type::fromString($strType);

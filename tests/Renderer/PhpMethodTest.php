@@ -2,6 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder\Tests\Renderer;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\PhpAttribute;
 use Stefna\PhpCodeBuilder\PhpClass;
@@ -17,7 +18,7 @@ final class PhpMethodTest extends TestCase
 {
 	use AssertResultTrait;
 
-	public function testPublicSimpleMethod()
+	public function testPublicSimpleMethod(): void
 	{
 		$method = PhpMethod::public('testMethod', [
 			new PhpParam('param1', Type::fromString('string')),
@@ -31,7 +32,7 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->renderMethod($method), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
-	public function testNullableParam()
+	public function testNullableParam(): void
 	{
 		$param = new PhpParam('param1', Type::fromString('string'));
 		$method = PhpMethod::public('testMethod', [$param], [
@@ -47,7 +48,7 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->renderMethod($method), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
-	public function testAbstractMethod()
+	public function testAbstractMethod(): void
 	{
 		$method = PhpMethod::public('testMethod', [
 			new PhpParam('param1', Type::fromString('string')),
@@ -58,7 +59,7 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->renderMethod($method), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
-	public function testConstructorWithAutoAssign()
+	public function testConstructorWithAutoAssign(): void
 	{
 		$var2 = PhpVariable::private('test2', Type::fromString('string'));
 		$var3 = PhpVariable::protected('test3', Type::fromString('int|string'));
@@ -73,7 +74,7 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->renderMethod($ctor), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
-	public function testConstructorWithAutoAssignPhp8()
+	public function testConstructorWithAutoAssignPhp8(): void
 	{
 		$var = PhpVariable::private('test2', Type::fromString('string'));
 		$ctor = PhpMethod::constructor([
@@ -87,7 +88,7 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->renderMethod($ctor), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
-	public function testConstructorSimplePhp8()
+	public function testConstructorSimplePhp8(): void
 	{
 		$ctor = PhpMethod::constructor([
 			new PhpParam('test1', Type::fromString('int')),
@@ -99,7 +100,7 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->renderMethod($ctor), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
-	public function testConstructorAlwaysMultiLineWhenPromotingPhp8()
+	public function testConstructorAlwaysMultiLineWhenPromotingPhp8(): void
 	{
 		$ctor = PhpMethod::constructor([
 			new PhpParam('test1', Type::fromString('int'), autoCreateVariable: true),
@@ -109,7 +110,7 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->render($ctor), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
-	public function testConstructorPromotionWithUnionType()
+	public function testConstructorPromotionWithUnionType(): void
 	{
 		$type = Type::fromString('int');
 		$type->addUnion('string');
@@ -127,7 +128,7 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->renderMethod($ctor), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
-	public function testConstructorPromotingNotRenderingVariablePhp8()
+	public function testConstructorPromotingNotRenderingVariablePhp8(): void
 	{
 		$var = PhpVariable::protected('test', Type::fromString('float'));
 		$ctor = PhpMethod::constructor([
@@ -140,28 +141,28 @@ final class PhpMethodTest extends TestCase
 		$this->assertTrue($var->isPromoted());
 	}
 
-	public function testFinalAbstractMethod()
+	public function testFinalAbstractMethod(): void
 	{
 		$this->expectException(\BadMethodCallException::class);
 
 		PhpMethod::protected('testMethod', [], [])->setAbstract()->setFinal();
 	}
 
-	public function testPrivateAbstractMethod()
+	public function testPrivateAbstractMethod(): void
 	{
 		$this->expectException(\BadMethodCallException::class);
 
 		PhpMethod::private('testMethod', [], [])->setAbstract();
 	}
 
-	public function testFinalPrivateMethod()
+	public function testFinalPrivateMethod(): void
 	{
 		$this->expectException(\BadMethodCallException::class);
 
 		PhpMethod::private('testMethod', [], [])->setFinal();
 	}
 
-	public function testFinalStaticMethod()
+	public function testFinalStaticMethod(): void
 	{
 		$method = PhpMethod::private('testMethod', [], [])
 			->setStatic()
@@ -172,7 +173,7 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->renderMethod($method), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
-	public function testLegacyFunctionTestConstructorMethod()
+	public function testLegacyFunctionTestConstructorMethod(): void
 	{
 		$method = PhpMethod::constructor([
 			new PhpParam('fooIpsumLong', Type::fromString('string')),
@@ -207,7 +208,7 @@ final class PhpMethodTest extends TestCase
 		], $renderer->renderMethod($method));
 	}
 
-	public function testLegacyFunctionTestMultilineParamsAbstract()
+	public function testLegacyFunctionTestMultilineParamsAbstract(): void
 	{
 		$func = new PhpMethod('protected', 'test', [
 			new PhpParam('fooIpsumLong', Type::fromString('string')),
@@ -226,7 +227,7 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->renderMethod($func), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
-	public function testAbstractMethodWithBody()
+	public function testAbstractMethodWithBody(): void
 	{
 		$func = new PhpMethod('protected', 'test', [
 			new PhpParam('foo', Type::fromString('string|int')),
@@ -239,7 +240,7 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->renderMethod($func), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
-	public function testImmutableSetter()
+	public function testImmutableSetter(): void
 	{
 		$var = PhpVariable::protected('test', Type::fromString('string'));
 		$setter = PhpMethod::setter($var, immutable: true);
@@ -248,7 +249,7 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->renderMethod($setter), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
-	public function testConstructorWithPropertyPromotionWithCustomAccess()
+	public function testConstructorWithPropertyPromotionWithCustomAccess(): void
 	{
 		$var = PhpVariable::private('test2', Type::fromString('string'));
 		$ctor = PhpMethod::constructor([
@@ -262,9 +263,7 @@ final class PhpMethodTest extends TestCase
 		$this->assertSourceResult($renderer->renderMethod($ctor), 'PhpMethodTest.' . __FUNCTION__);
 	}
 
-	/**
-	 * @dataProvider getterPrefixes
-	 */
+	#[DataProvider('getterPrefixes')]
 	public function testAutoGetterPrefix(string $name, Type $type, string $expectedMethodName): void
 	{
 		$var = PhpVariable::protected($name, $type);
@@ -273,7 +272,10 @@ final class PhpMethodTest extends TestCase
 		$this->assertSame($expectedMethodName, $method->getIdentifier()->toString());
 	}
 
-	public static function getterPrefixes()
+	/**
+	 * @return array<mixed>
+	 */
+	public static function getterPrefixes(): array
 	{
 		return [
 			['hasError', Type::fromString('bool'), 'hasError'],

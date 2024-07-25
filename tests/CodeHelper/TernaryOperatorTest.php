@@ -61,8 +61,6 @@ final class TernaryOperatorTest extends TestCase
 			]),
 		);
 
-		echo FlattenSource::source($t->getSourceArray());
-
 		$this->assertSame('$classTest ? $classTest->success(
 	\'test1\',
 	\'test2\',

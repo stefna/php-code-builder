@@ -3,6 +3,7 @@
 namespace Stefna\PhpCodeBuilder\Tests\Renderer;
 
 use JetBrains\PhpStorm\ArrayShape;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stefna\OpenApiRuntime\ServerConfiguration\SecurityScheme;
 use Stefna\PhpCodeBuilder\PhpAttribute;
@@ -97,9 +98,7 @@ final class PhpVariableTest extends TestCase
 		$this->assertSame(['private static Class $test;'], $renderer->renderVariable($var));
 	}
 
-	/**
-	 * @dataProvider defaultValueProvider
-	 */
+	#[DataProvider('defaultValueProvider')]
 	public function testVariableWithDefaultValue(Type $type, $value, $expected): void
 	{
 		$variable = PhpVariable::private('test', $type);
@@ -133,9 +132,7 @@ final class PhpVariableTest extends TestCase
 		}
 	}
 
-	/**
-	 * @dataProvider defaultValueProvider
-	 */
+	#[DataProvider('defaultValueProvider')]
 	public function test74VariableWithDefaultValue(Type $type, $value, $expected): void
 	{
 		$variable = PhpVariable::private('test', $type);
@@ -171,6 +168,9 @@ final class PhpVariableTest extends TestCase
 		}
 	}
 
+	/**
+	 * @return array<mixed>
+	 */
 	public static function defaultValueProvider(): array
 	{
 		return [

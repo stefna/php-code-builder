@@ -16,7 +16,7 @@ final class PhpFileTest extends TestCase
 {
 	use AssertResultTrait;
 
-	public function testSingleClassFile()
+	public function testSingleClassFile(): void
 	{
 		$class = new PhpClass(
 			Identifier::fromString(Test\TestClass::class),

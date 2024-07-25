@@ -2,6 +2,7 @@
 
 namespace Stefna\PhpCodeBuilder\Tests\Renderer;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\PhpEnum;
 use Stefna\PhpCodeBuilder\Renderer\Php74Renderer;
@@ -15,9 +16,7 @@ class PhpEnumTest extends TestCase
 {
 	use AssertResultTrait;
 
-	/**
-	 * @dataProvider enumTypes
-	 */
+	#[DataProvider('enumTypes')]
 	public function testPhp7(PhpEnum $enum, string $expectedFile): void
 	{
 		$renderer = new Php74Renderer();
@@ -25,9 +24,7 @@ class PhpEnumTest extends TestCase
 		$this->assertSourceResult($renderer->render($enum), 'PhpEnumTest.' . __FUNCTION__ . '.' . $expectedFile);
 	}
 
-	/**
-	 * @dataProvider enumTypes
-	 */
+	#[DataProvider('enumTypes')]
 	public function testPhp81(PhpEnum $enum, string $expectedFile): void
 	{
 		$renderer = new Php81Renderer();
