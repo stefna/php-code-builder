@@ -93,7 +93,10 @@ class Php7Renderer implements FullRendererInterface
 		foreach ($classes as $identifier) {
 			/** @var PhpTrait|PhpClass|PhpInterface $class */
 			$class = $classes[$identifier];
-			if ($class instanceof PhpInterface) {
+			if ($class instanceof PhpEnum) {
+				$source = $this->renderEnum($class);
+			}
+			elseif ($class instanceof PhpInterface) {
 				$source = $this->renderInterface($class);
 			}
 			elseif ($class instanceof PhpClass) {

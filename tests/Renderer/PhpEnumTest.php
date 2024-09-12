@@ -5,8 +5,8 @@ namespace Stefna\PhpCodeBuilder\Tests\Renderer;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\PhpEnum;
+use Stefna\PhpCodeBuilder\PhpFile;
 use Stefna\PhpCodeBuilder\Renderer\Php74Renderer;
-use Stefna\PhpCodeBuilder\Renderer\Php7Renderer;
 use Stefna\PhpCodeBuilder\Renderer\Php81Renderer;
 use Stefna\PhpCodeBuilder\ValueObject\EnumBackedCase;
 use Stefna\PhpCodeBuilder\ValueObject\EnumCase;
@@ -60,5 +60,20 @@ class PhpEnumTest extends TestCase
 				'backed',
 			],
 		];
+	}
+
+	public function testRenderEnumInFile(): void
+	{
+		$renderer = new Php81Renderer();
+		$enum = new PhpEnum(
+			'Test',
+			cases: [
+				new EnumCase('Up'),
+				new EnumCase('Down'),
+			],
+		);
+		$file = PhpFile::createFromClass($enum);
+
+		$this->assertSourceResult($renderer->render($file), 'PhpEnumTest.' . __FUNCTION__);
 	}
 }
