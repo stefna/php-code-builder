@@ -1,0 +1,4 @@
+#[TestAttribute]
+class Test
+{
+}

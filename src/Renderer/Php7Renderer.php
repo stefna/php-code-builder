@@ -194,6 +194,9 @@ class Php7Renderer implements FullRendererInterface
 	public function renderClass(PhpClass $class): array
 	{
 		$ret = FlattenSource::applySourceOn($this->renderComment($class->getComment()), []);
+		foreach ($class->getAttributes() as $attribute) {
+			$ret = FlattenSource::applySourceOn($this->renderAttribute($attribute), $ret);
+		}
 
 		$declaration = $this->formatClassModifiers($class);
 		$declaration[] = 'class';

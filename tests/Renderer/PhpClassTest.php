@@ -412,4 +412,15 @@ final class PhpClassTest extends TestCase
 			'PhpClassTest.testVariableAttributeFromCtorNotPropegateToSetter',
 		);
 	}
+
+	public function testClassLevelAttribute(): void
+	{
+		$class = new PhpClass(Identifier::fromString('Test'));
+		$class->addAttribute(new PhpAttribute(TestAttribute::class));
+		$renderer = new Php8Renderer();
+		$this->assertSourceResult(
+			$renderer->render($class),
+			'PhpClassTest.testClassLevelAttribute',
+		);
+	}
 }
