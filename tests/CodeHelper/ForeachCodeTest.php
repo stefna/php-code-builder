@@ -37,6 +37,7 @@ final class ForeachCodeTest extends TestCase
 			'}',
 		], $loop->getSourceArray());
 	}
+
 	public function testLoopThatReturnCodeInterface(): void
 	{
 		$loop = new ForeachCode(
