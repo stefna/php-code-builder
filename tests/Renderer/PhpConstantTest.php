@@ -5,6 +5,8 @@ namespace Stefna\PhpCodeBuilder\Tests\Renderer;
 use PHPUnit\Framework\TestCase;
 use Stefna\PhpCodeBuilder\PhpConstant;
 use Stefna\PhpCodeBuilder\Renderer\Php7Renderer;
+use Stefna\PhpCodeBuilder\Renderer\Php84Renderer;
+use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 final class PhpConstantTest extends TestCase
 {
@@ -107,5 +109,13 @@ final class PhpConstantTest extends TestCase
 		$render = new Php7Renderer();
 
 		$this->assertSame(['public const _S_2M = \'>2m\';'], $render->renderConstant($const));
+	}
+
+	public function testTypedConstants(): void
+	{
+		$const = PhpConstant::public('NAME', '>2m', type: Type::fromString('string'));
+		$render = new Php84Renderer();
+
+		$this->assertSame(['public const string NAME = \'>2m\';'], $render->renderConstant($const));
 	}
 }

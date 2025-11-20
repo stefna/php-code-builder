@@ -3,6 +3,7 @@
 namespace Stefna\PhpCodeBuilder;
 
 use Stefna\PhpCodeBuilder\ValueObject\Identifier;
+use Stefna\PhpCodeBuilder\ValueObject\Type;
 
 class PhpConstant
 {
@@ -14,19 +15,19 @@ class PhpConstant
 	public const CASE_LOWER = 1;
 	public const CASE_NONE = 2;
 
-	public static function public(string $identifier, mixed $value = null): self
+	public static function public(string $identifier, mixed $value = null, ?Type $type = null): self
 	{
-		return new self(self::PUBLIC_ACCESS, $identifier, $value);
+		return new self(self::PUBLIC_ACCESS, $identifier, $value, type: $type);
 	}
 
-	public static function private(string $identifier, mixed $value = null): self
+	public static function private(string $identifier, mixed $value = null, ?Type $type = null): self
 	{
-		return new self(self::PRIVATE_ACCESS, $identifier, $value);
+		return new self(self::PRIVATE_ACCESS, $identifier, $value, type: $type);
 	}
 
-	public static function protected(string $identifier, mixed $value = null): self
+	public static function protected(string $identifier, mixed $value = null, ?Type $type = null): self
 	{
-		return new self(self::PROTECTED_ACCESS, $identifier, $value);
+		return new self(self::PROTECTED_ACCESS, $identifier, $value, type: $type);
 	}
 
 	public function __construct(
@@ -34,6 +35,7 @@ class PhpConstant
 		protected string $identifier,
 		protected mixed $value = null,
 		protected int $case = self::CASE_UPPER,
+		protected ?Type $type = null,
 	) {}
 
 	public function getName(): string
@@ -81,6 +83,11 @@ class PhpConstant
 	public function getAccess(): string
 	{
 		return $this->access;
+	}
+
+	public function getType(): ?Type
+	{
+		return $this->type;
 	}
 
 	public function setAccess(string $access): static
