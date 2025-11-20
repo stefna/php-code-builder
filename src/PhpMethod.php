@@ -113,7 +113,7 @@ class PhpMethod extends PhpFunction
 	 * @param PhpParam[] $params
 	 * @param array<array-key, string|string[]> $source
 	 */
-	public static function public(string $identifier, array $params, array $source, Type $type = null): self
+	public static function public(string $identifier, array $params, array $source, ?Type $type = null): self
 	{
 		return new self(self::PUBLIC_ACCESS, $identifier, $params, $source, $type ?? Type::empty());
 	}
@@ -122,7 +122,7 @@ class PhpMethod extends PhpFunction
 	 * @param PhpParam[] $params
 	 * @param array<array-key, string|string[]> $source
 	 */
-	public static function private(string $identifier, array $params, array $source, Type $type = null): self
+	public static function private(string $identifier, array $params, array $source, ?Type $type = null): self
 	{
 		return new self(self::PRIVATE_ACCESS, $identifier, $params, $source, $type ?? Type::empty());
 	}
@@ -131,7 +131,7 @@ class PhpMethod extends PhpFunction
 	 * @param PhpParam[] $params
 	 * @param array<array-key, string|string[]> $source
 	 */
-	public static function protected(string $identifier, array $params, array $source, Type $type = null): self
+	public static function protected(string $identifier, array $params, array $source, ?Type $type = null): self
 	{
 		return new self(self::PROTECTED_ACCESS, $identifier, $params, $source, $type ?? Type::empty());
 	}

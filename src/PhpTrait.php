@@ -54,7 +54,7 @@ class PhpTrait
 		return $this->comment;
 	}
 
-	public function addUse(Identifier|string $class, string $alias = null): static
+	public function addUse(Identifier|string $class, ?string $alias = null): static
 	{
 		$class = Identifier::fromUnknown($class);
 		if (!$alias && $this->identifier->equal($class)) {

@@ -139,7 +139,7 @@ class PhpFile
 	/**
 	 * Add use statement after namespace declaration
 	 */
-	public function addUse(Identifier|string $identifier, string $alias = null): self
+	public function addUse(Identifier|string $identifier, ?string $alias = null): self
 	{
 		$identifier = Identifier::fromUnknown($identifier);
 		if ($alias) {
