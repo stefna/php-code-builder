@@ -18,7 +18,7 @@ use Stefna\PhpCodeBuilder\Renderer\RenderInterface;
  */
 final class JsonSerializeMethod extends PhpMethod
 {
-	public static function fromClass(PhpClass $class, TypeCallResolverInterface $resolver = null): self
+	public static function fromClass(PhpClass $class, ?TypeCallResolverInterface $resolver = null): self
 	{
 		$resolver = $resolver ?? new JsonSerializeTypeCallResolver();
 
