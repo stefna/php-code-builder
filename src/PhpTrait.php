@@ -84,7 +84,7 @@ class PhpTrait
 	 */
 	public function addConstant(PhpConstant $constant): static
 	{
-		if ($this->constants->contains($constant->getIdentifier())) {
+		if ($this->constants->offsetExists($constant->getIdentifier())) {
 			throw new DuplicateValue(sprintf(
 				'A constant of the name (%s) does already exist.',
 				$constant->getIdentifier()->getName(),
@@ -131,7 +131,7 @@ class PhpTrait
 	 */
 	public function addMethod(PhpMethod $method): static
 	{
-		if ($this->methods->contains($method->getIdentifier())) {
+		if ($this->methods->offsetExists($method->getIdentifier())) {
 			throw new DuplicateValue(sprintf(
 				'A method of the name (%s) is already defined.',
 				$method->getIdentifier()->getName(),
@@ -160,7 +160,7 @@ class PhpTrait
 	public function hasVariable(Identifier|string $identifier): bool
 	{
 		$identifier = Identifier::fromUnknown($identifier);
-		return $this->variables->contains($identifier);
+		return $this->variables->offsetExists($identifier);
 	}
 
 	/**
@@ -169,7 +169,7 @@ class PhpTrait
 	public function hasMethod(Identifier|string $identifier): bool
 	{
 		$identifier = Identifier::fromUnknown($identifier);
-		return $this->methods->contains($identifier);
+		return $this->methods->offsetExists($identifier);
 	}
 
 	/**
@@ -178,7 +178,7 @@ class PhpTrait
 	public function hasConstant(Identifier|string $identifier): bool
 	{
 		$identifier = Identifier::fromUnknown($identifier);
-		return $this->constants->contains($identifier);
+		return $this->constants->offsetExists($identifier);
 	}
 
 	public function getVariable(Identifier|string $identifier): ?PhpVariable

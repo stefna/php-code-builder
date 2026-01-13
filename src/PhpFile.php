@@ -83,7 +83,7 @@ class PhpFile
 
 	protected function addObject(PhpClass|PhpTrait|PhpInterface $class, string $type): static
 	{
-		if ($this->classes->contains($class->getIdentifier())) {
+		if ($this->classes->offsetExists($class->getIdentifier())) {
 			throw new DuplicateValue(sprintf(
 				'A %s of the name (%s) does already exist.',
 				$type,
@@ -145,8 +145,8 @@ class PhpFile
 		if ($alias) {
 			$identifier->setAlias($alias);
 		}
-		if (!$this->use->contains($identifier)) {
-			$this->use->attach($identifier);
+		if (!$this->use->offsetExists($identifier)) {
+			$this->use->offsetSet($identifier);
 		}
 
 		return $this;
@@ -154,7 +154,7 @@ class PhpFile
 
 	public function hasClass(Identifier|string $identifier): bool
 	{
-		return $this->classes->contains(Identifier::fromUnknown($identifier));
+		return $this->classes->offsetExists(Identifier::fromUnknown($identifier));
 	}
 
 	public function hasFunction(Identifier|string $identifier): bool
