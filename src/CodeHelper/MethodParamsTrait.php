@@ -163,8 +163,8 @@ trait MethodParamsTrait
 				else {
 					foreach ($param->getSourceArray() as $v) {
 						$return[] = $v;
+						$currentIndex += 1;
 					}
-					$currentIndex += 1;
 				}
 				$previousArray = true;
 				continue;
@@ -179,7 +179,7 @@ trait MethodParamsTrait
 				if (!is_scalar($tmpValue)) {
 					throw InvalidCode::invalidType();
 				}
-				if ($return[$currentIndex - 1] !== '[') {
+				if (!$noCustomFirstLine && $return[$currentIndex - 1] !== '[') {
 					$return[$currentIndex - 1] .= ', ' . $tmpValue;
 				}
 				else {
