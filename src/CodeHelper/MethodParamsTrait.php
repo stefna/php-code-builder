@@ -146,6 +146,7 @@ trait MethodParamsTrait
 			if (!$param instanceof CodeInterface) {
 				$return[] = FormatValue::format($param);
 				$currentIndex += 1;
+				$previousArray = false;
 				continue;
 			}
 
@@ -194,6 +195,7 @@ trait MethodParamsTrait
 			}
 
 			$currentIndex += 1;
+			$previousArray = false;
 		}
 		return $return;
 	}
