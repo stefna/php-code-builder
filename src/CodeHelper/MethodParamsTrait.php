@@ -182,6 +182,10 @@ trait MethodParamsTrait
 				if ($return[$currentIndex - 1] !== '[') {
 					$return[$currentIndex - 1] .= ', ' . $tmpValue;
 				}
+				else {
+					$return[] = $tmpValue;
+				}
+
 				foreach ($value as $c) {
 					$return[] = $c;
 					$currentIndex += 1;
